@@ -1,100 +1,225 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Navbar } from "@/components/layout/Navbar";
 
-export default function Home() {
+const domains = [
+  {
+    code: "D1",
+    name: "Personality Architecture",
+    description:
+      "Core personality traits across 6 dimensions — Conscientious Execution, Exploratory Openness, Emotional Steadiness, Interpersonal Orientation, and Social Assertiveness. The sixth dimension (Integrity Orientation / D1-IN) is governance-restricted in V1.",
+    status: "Operational",
+    statusClass: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    dimensions: 6,
+  },
+  {
+    code: "D2",
+    name: "Cognition",
+    description:
+      "Cognitive reasoning patterns and mental agility measured under real-world constraints and time pressure.",
+    status: "Available",
+    statusClass: "bg-sky-50 text-sky-700 border border-sky-200",
+    dimensions: null,
+  },
+  {
+    code: "D3",
+    name: "Motivations",
+    description:
+      "Underlying drive patterns that predict engagement, commitment, and long-term role-fit across job levels.",
+    status: "Available",
+    statusClass: "bg-sky-50 text-sky-700 border border-sky-200",
+    dimensions: null,
+  },
+  {
+    code: "D4",
+    name: "Emotional & Social",
+    description:
+      "Emotional regulation, interpersonal sensitivity, and social adaptability under varying conditions.",
+    status: "Available",
+    statusClass: "bg-sky-50 text-sky-700 border border-sky-200",
+    dimensions: null,
+  },
+  {
+    code: "D5",
+    name: "Workplace Effectiveness",
+    description:
+      "Synthesis layer translating foundational traits into 8 business-facing behavioral dimensions. Deferred to Phase 2.",
+    status: "Phase 2",
+    statusClass: "bg-violet-50 text-violet-700 border border-violet-200",
+    dimensions: 8,
+  },
+  {
+    code: "D6",
+    name: "Domain 6",
+    description:
+      "Extended capability dimensions for specialized enterprise assessment contexts. Detail finalized in roadmap.",
+    status: "Roadmap",
+    statusClass: "bg-slate-100 text-slate-500",
+    dimensions: null,
+  },
+];
+
+const layers = [
+  { n: "01", name: "Session Orchestration", desc: "Assessment path, module sequence, and routing" },
+  { n: "02", name: "Measurement", desc: "Item administration, raw response & response-time capture" },
+  { n: "03", name: "Response Quality", desc: "Detects careless, inconsistent, or impression-managed responding" },
+  { n: "04", name: "Psychometric Scoring", desc: "Theta scores and precision / confidence estimates" },
+  { n: "05", name: "Profile Modeling", desc: "Domain profiles and facet pattern synthesis" },
+  { n: "06", name: "Contextual Interpretation", desc: "Maps scores to job levels, role families, and use cases" },
+  { n: "07", name: "Governance", desc: "Enforces use permissions, redactions, and confidence warnings" },
+];
+
+export default function HomePage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen bg-white">
+      <Navbar />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* Hero */}
+      <section className="bg-slate-900 px-6 py-28 text-center">
+        <div className="mx-auto max-w-3xl">
+          <span className="inline-block rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1 text-xs font-medium uppercase tracking-widest text-blue-400">
+            Enterprise Assessment Platform
+          </span>
+          <h1 className="mt-6 text-5xl font-bold tracking-tight text-white">
+            Measure What Matters
+          </h1>
+          <p className="mt-5 text-lg leading-relaxed text-slate-400 text-balance">
+            Nexus evaluates human capability across six scientifically validated domains to produce
+            deterministic, audience-specific reports for hiring and development decisions.
+          </p>
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/login"
+              className="rounded-lg bg-blue-600 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+            >
+              Start an Assessment
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-lg border border-slate-600 px-8 py-3 text-sm font-semibold text-slate-300 transition-colors hover:border-slate-400 hover:text-white"
+            >
+              View Dashboard
+            </Link>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </section>
+
+      {/* Stats */}
+      <section className="border-y border-slate-200 bg-slate-50 px-6 py-10">
+        <div className="mx-auto grid max-w-5xl grid-cols-2 gap-8 text-center sm:grid-cols-4">
+          {[
+            { value: "6", label: "Assessment Domains" },
+            { value: "7", label: "System Layers" },
+            { value: "3", label: "Job-Level Routes" },
+            { value: "V1", label: "Current Release" },
+          ].map((stat) => (
+            <div key={stat.label}>
+              <p className="text-3xl font-bold text-slate-900">{stat.value}</p>
+              <p className="mt-1 text-sm text-slate-500">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Domains */}
+      <section className="px-6 py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-12 text-center">
+            <h2 className="text-3xl font-bold text-slate-900">Six Assessment Domains</h2>
+            <p className="mx-auto mt-3 max-w-xl text-slate-500">
+              Each domain measures a distinct layer of human capability using validated
+              psychometric instruments and multi-format item banks.
+            </p>
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {domains.map((domain) => (
+              <div
+                key={domain.code}
+                className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <div className="flex items-start justify-between">
+                  <span className="rounded-lg bg-blue-50 px-2.5 py-1 font-mono text-xs font-bold text-blue-700">
+                    {domain.code}
+                  </span>
+                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${domain.statusClass}`}>
+                    {domain.status}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-base font-semibold text-slate-900">{domain.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500">{domain.description}</p>
+                {domain.dimensions && (
+                  <p className="mt-3 text-xs text-slate-400">{domain.dimensions} dimensions</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Architecture */}
+      <section className="bg-slate-900 px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-12 text-center">
+            <h2 className="text-3xl font-bold text-white">Seven-Layer Architecture</h2>
+            <p className="mx-auto mt-3 max-w-xl text-slate-400">
+              Every assessment flows through a rigorous pipeline ensuring measurement integrity,
+              psychometric precision, and governance compliance before a single result is surfaced.
+            </p>
+          </div>
+          <div className="space-y-2.5">
+            {layers.map((layer) => (
+              <div
+                key={layer.n}
+                className="flex items-center gap-5 rounded-xl border border-slate-700 bg-slate-800 px-6 py-4"
+              >
+                <span className="w-8 shrink-0 font-mono text-xl font-bold text-blue-400">
+                  {layer.n}
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-white">{layer.name}</p>
+                  <p className="mt-0.5 text-xs text-slate-400">{layer.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-6 py-20 text-center">
+        <div className="mx-auto max-w-2xl">
+          <h2 className="text-3xl font-bold text-slate-900">Ready to get started?</h2>
+          <p className="mt-4 text-slate-500">
+            Begin an assessment session or explore the dashboard to see how Nexus routes and
+            reports across job levels.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/login"
+              className="rounded-lg bg-blue-700 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
+            >
+              Start Assessment
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-lg border border-slate-300 px-8 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+            >
+              Open Dashboard
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-200 px-6 py-8">
+        <div className="mx-auto flex max-w-6xl items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-700 font-bold text-xs text-white">
+              N
+            </div>
+            <span className="text-sm font-semibold text-slate-700">Nexus</span>
+          </div>
+          <p className="text-xs text-slate-400">Enterprise Assessment Platform · V1</p>
+        </div>
       </footer>
     </div>
   );
