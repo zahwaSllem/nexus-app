@@ -77,7 +77,7 @@ export default function AssessmentPortalPage() {
               <p className="font-mono text-xs text-slate-500">{CANDIDATE.id}</p>
             </div>
             <Link
-              href="/login"
+              href="/logout"
               className="rounded-lg border border-slate-700 px-3 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-600 hover:text-slate-200"
             >
               Sign out

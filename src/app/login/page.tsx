@@ -34,7 +34,10 @@ export default function LoginPage() {
     e.preventDefault();
     const creds = MOCK_CREDENTIALS[role];
     if (email === creds.email && password === creds.password) {
-      router.push(role === "admin" ? "/dashboard" : "/assessment");
+      document.cookie = `nexus_session=${role}; path=/; max-age=86400; SameSite=Strict`;
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect");
+      router.push(redirect ?? (role === "admin" ? "/dashboard/agent" : "/assessment"));
     } else {
       setError("Invalid email or password. Check the mock credentials below.");
     }

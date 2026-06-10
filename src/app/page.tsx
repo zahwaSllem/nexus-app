@@ -91,14 +91,14 @@ export default function HomePage() {
               href="/login"
               className="rounded-lg bg-blue-600 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
             >
-              Start an Assessment
+              Sign In
             </Link>
-            <Link
-              href="/login"
+            <a
+              href="mailto:demo@nexus.io"
               className="rounded-lg border border-slate-600 px-8 py-3 text-sm font-semibold text-slate-300 transition-colors hover:border-slate-400 hover:text-white"
             >
-              View Dashboard
-            </Link>
+              Request Demo
+            </a>
           </div>
         </div>
       </section>
@@ -156,7 +156,7 @@ export default function HomePage() {
       </section>
 
       {/* Architecture */}
-      <section className="bg-slate-900 px-6 py-20">
+      <section id="about" className="bg-slate-900 px-6 py-20">
         <div className="mx-auto max-w-5xl">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold text-white">Seven-Layer Architecture</h2>
@@ -189,22 +189,21 @@ export default function HomePage() {
         <div className="mx-auto max-w-2xl">
           <h2 className="text-3xl font-bold text-slate-900">Ready to get started?</h2>
           <p className="mt-4 text-slate-500">
-            Begin an assessment session or explore the dashboard to see how Nexus routes and
-            reports across job levels.
+            Sign in to access the platform, or contact us to arrange a guided demo for your organisation.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/login"
               className="rounded-lg bg-blue-700 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
             >
-              Start Assessment
+              Sign In
             </Link>
-            <Link
-              href="/login"
+            <a
+              href="mailto:demo@nexus.io"
               className="rounded-lg border border-slate-300 px-8 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
             >
-              Open Dashboard
-            </Link>
+              Request Demo
+            </a>
           </div>
         </div>
       </section>

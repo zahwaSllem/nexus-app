@@ -5,9 +5,8 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/assessment", label: "Assessment" },
-  { href: "/admin", label: "Admin" },
+  { href: "/", label: "Home" },
+  { href: "/#about", label: "About Nexus" },
 ];
 
 export function Navbar() {
@@ -30,7 +29,7 @@ export function Navbar() {
               href={link.href}
               className={cn(
                 "text-sm font-medium transition-colors",
-                pathname.startsWith(link.href)
+                pathname === "/" && link.href === "/"
                   ? "text-blue-700"
                   : "text-slate-600 hover:text-slate-900",
               )}

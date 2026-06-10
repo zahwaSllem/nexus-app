@@ -12,6 +12,34 @@ interface NavItem {
 
 const dashboardNav: NavItem[] = [
   {
+    href: "/dashboard/agent",
+    label: "Agent",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+        <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
+  {
+    href: "/dashboard/blueprints",
+    label: "Blueprints",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
+  {
+    href: "/dashboard/assessments",
+    label: "Assessments",
+    icon: (
+      <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+      </svg>
+    ),
+  },
+  {
     href: "/dashboard",
     label: "Overview",
     icon: (
@@ -110,6 +138,8 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
                 ? pathname === item.href
                 : pathname.startsWith(item.href);
 
+            const isAgent = item.href === "/dashboard/agent";
+
             return (
               <li key={item.href}>
                 <Link
@@ -118,11 +148,18 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                     isActive
                       ? "bg-blue-700 text-white"
+                      : isAgent
+                      ? "text-blue-400 hover:bg-slate-800 hover:text-blue-300"
                       : "text-slate-400 hover:bg-slate-800 hover:text-white",
                   )}
                 >
                   {item.icon}
                   {item.label}
+                  {isAgent && !isActive && (
+                    <span className="ml-auto rounded-full bg-blue-500/20 px-1.5 py-0.5 text-xs font-semibold text-blue-400">
+                      New
+                    </span>
+                  )}
                 </Link>
               </li>
             );
@@ -130,7 +167,7 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
         </ul>
       </nav>
 
-      <div className="border-t border-slate-700 px-3 py-4">
+      <div className="space-y-0.5 border-t border-slate-700 px-3 py-4">
         <Link
           href="/"
           className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
@@ -143,6 +180,19 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
             />
           </svg>
           Back to Home
+        </Link>
+        <Link
+          href="/logout"
+          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-500 transition-colors hover:bg-slate-800 hover:text-slate-300"
+        >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+            <path
+              fillRule="evenodd"
+              d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Sign Out
         </Link>
       </div>
     </aside>
