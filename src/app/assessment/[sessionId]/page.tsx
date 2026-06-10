@@ -90,7 +90,7 @@ const LIKERT = [
   { value: 5, label: "Strongly Agree" },
 ];
 
-const MODULES = [...new Set(QUESTIONS.map((q) => q.module))];
+const MODULES = Array.from(new Set(QUESTIONS.map((q) => q.module)));
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
