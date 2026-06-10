@@ -24,7 +24,7 @@ export default function CandidatesPage() {
           <p className="mt-1 text-sm text-slate-500">All candidates in the assessment pipeline.</p>
         </div>
         <Link
-          href="/assessment"
+          href="/dashboard/agent"
           className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-800"
         >
           + New Assessment

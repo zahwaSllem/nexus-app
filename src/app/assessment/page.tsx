@@ -64,13 +64,27 @@ export default function AssessmentPortalPage() {
       {/* Top bar */}
       <header className="border-b border-slate-800 bg-slate-900/80 px-6 py-4 backdrop-blur-sm">
         <div className="mx-auto flex max-w-4xl items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-sm text-white">
-              N
-            </div>
-            <span className="text-base font-semibold text-white">Nexus</span>
-          </Link>
 
+          {/* Left: back link + logo */}
+          <div className="flex items-center gap-4">
+            <Link
+              href="/candidate/dashboard"
+              className="flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-slate-300"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              Dashboard
+            </Link>
+            <Link href="/candidate/dashboard" className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-sm text-white">
+                N
+              </div>
+              <span className="text-base font-semibold text-white">Nexus</span>
+            </Link>
+          </div>
+
+          {/* Right: identity + sign out */}
           <div className="flex items-center gap-3">
             <div className="text-right">
               <p className="text-sm font-medium text-slate-200">{CANDIDATE.name}</p>

@@ -116,7 +116,7 @@ export default function DashboardPage() {
           <p className="mt-1 text-sm text-slate-400">Admin overview · Nexus V1</p>
         </div>
         <Link
-          href="/assessment"
+          href="/dashboard/agent"
           className="rounded-lg bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
         >
           + New Assessment
@@ -214,7 +214,7 @@ export default function DashboardPage() {
             </div>
             <div className="space-y-2 p-4">
               {[
-                { href: "/assessment",           label: "New Assessment",   symbol: "+" },
+                { href: "/dashboard/agent",      label: "New Assessment",   symbol: "+" },
                 { href: "/dashboard/reports",    label: "View Reports",     symbol: "→" },
                 { href: "/dashboard/candidates", label: "All Candidates",   symbol: "→" },
                 { href: "/admin",                label: "Admin Panel",      symbol: "→" },

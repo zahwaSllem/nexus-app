@@ -37,7 +37,29 @@ export const ASSIGNMENT_2: AssessmentAssignment = {
   completed_at: "2026-06-08T10:15:00Z",
 };
 
-export const ASSIGNMENTS = [ASSIGNMENT_1, ASSIGNMENT_2];
+// ─── Assignment 3 — Completed demo result for Alex Jordan (cand-001) ─────────
+// Shares session sess-001 / report rpt-001 with ASSIGNMENT_2 for demo purposes.
+// This gives candidate@nexus.io a completed result to view in the candidate portal.
+
+export const ASSIGNMENT_3: AssessmentAssignment = {
+  assignment_id: "asgn-003",
+  blueprint_id: "bp-001",
+  assessment_blueprint_id: "abp-001",
+  candidate_id: "cand-001",
+  candidate_name: "Alex Jordan",
+  candidate_email: "candidate@nexus.io",
+  use_case: "hiring_support_validated_blueprint",
+  status: "completed",
+  consent_confirmed: true,
+  consent_date: "2026-06-08T09:30:00Z",
+  deadline: "2026-06-15",
+  assigned_at: "2026-06-07T14:00:00Z",
+  assigned_by: "admin@nexus.io",
+  session_id: "sess-001",
+  completed_at: "2026-06-08T10:15:00Z",
+};
+
+export const ASSIGNMENTS = [ASSIGNMENT_1, ASSIGNMENT_2, ASSIGNMENT_3];
 
 export function getAssignmentById(id: string): AssessmentAssignment | undefined {
   return ASSIGNMENTS.find((a) => a.assignment_id === id);
