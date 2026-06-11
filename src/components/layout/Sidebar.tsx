@@ -48,17 +48,17 @@ function ThemeToggle() {
   const { t } = useLanguage();
 
   const options: { value: Theme; icon: React.ReactNode; label: string }[] = [
-    { value: "light", icon: <SunIcon />, label: t.theme.light },
-    { value: "dark", icon: <MoonIcon />, label: t.theme.dark },
+    { value: "light",  icon: <SunIcon />,     label: t.theme.light  },
+    { value: "dark",   icon: <MoonIcon />,    label: t.theme.dark   },
     { value: "system", icon: <MonitorIcon />, label: t.theme.system },
   ];
 
   return (
-    <div className="px-3 py-2">
-      <p className="mb-1.5 px-2 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+    <div className="px-1 py-2">
+      <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
         {t.theme.label}
       </p>
-      <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+      <div className="flex rounded-lg border border-slate-200/80 bg-slate-100 p-0.5 dark:border-slate-600/40 dark:bg-slate-700/50">
         {options.map((opt) => (
           <button
             key={opt.value}
@@ -66,10 +66,11 @@ function ThemeToggle() {
             onClick={() => setTheme(opt.value)}
             title={opt.label}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1 rounded-md py-1.5 text-xs font-medium transition-all",
+              "flex flex-1 items-center justify-center rounded-md py-1.5 text-xs font-medium transition-all duration-150",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-800",
               theme === opt.value
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
-                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300",
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white"
+                : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300",
             )}
           >
             {opt.icon}
@@ -86,21 +87,22 @@ function LangToggle() {
   const { lang, setLang, t } = useLanguage();
 
   return (
-    <div className="px-3 py-1.5">
-      <p className="mb-1.5 px-2 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+    <div className="px-1 pb-1 pt-0">
+      <p className="mb-1.5 px-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
         {t.language.label}
       </p>
-      <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+      <div className="flex rounded-lg border border-slate-200/80 bg-slate-100 p-0.5 dark:border-slate-600/40 dark:bg-slate-700/50">
         {(["en", "ar"] as const).map((l) => (
           <button
             key={l}
             type="button"
             onClick={() => setLang(l)}
             className={cn(
-              "flex-1 rounded-md py-1.5 text-xs font-medium transition-all",
+              "flex-1 rounded-md py-1.5 text-xs font-medium transition-all duration-150",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-800",
               lang === l
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
-                : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300",
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white"
+                : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300",
             )}
           >
             {l === "en" ? t.language.en : t.language.ar}
@@ -243,10 +245,27 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
   const navItems = variant === "admin" ? adminNav : dashboardNav;
 
   return (
-    <aside className="flex h-full w-60 shrink-0 flex-col border-r border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-      {/* Brand */}
-      <div className="flex h-16 items-center gap-2 border-b border-slate-200 px-5 dark:border-slate-700">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
+    <aside
+      className={cn(
+        // Responsive: hidden on mobile, flex column on md+
+        "hidden md:flex md:flex-col",
+        "h-full w-60 shrink-0",
+        // Light mode: white surface elevated above slate-50 content
+        "border-r border-slate-200/80 bg-white",
+        // Dark mode: slate-800 surface elevated above slate-900 content
+        "dark:border-slate-700/60 dark:bg-slate-800",
+      )}
+    >
+      {/* ── Brand header ────────────────────────────────────────────── */}
+      <div className="flex h-16 shrink-0 items-center gap-3 border-b border-slate-200/80 px-5 dark:border-slate-700/60">
+        <div
+          className={cn(
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+            "bg-gradient-to-br from-indigo-600 to-violet-600",
+            "text-sm font-bold text-white",
+            "shadow-[0_2px_8px_0_rgba(79,70,229,0.30)]",
+          )}
+        >
           N
         </div>
         <span className="text-base font-semibold text-slate-900 dark:text-white">
@@ -254,12 +273,13 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
         </span>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+      {/* ── Navigation ──────────────────────────────────────────────── */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
+        <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
           {variant === "admin" ? t.nav.administration : t.nav.workspace}
         </p>
-        <ul className="space-y-0.5">
+
+        <ul className="space-y-0.5" role="list">
           {navItems.map((item) => {
             const isActive =
               item.href === "/dashboard" || item.href === "/admin"
@@ -271,19 +291,39 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
+                    "transition-all duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+                    "focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-800",
                     isActive
-                      ? "bg-blue-600 text-white dark:bg-blue-700"
+                      ? // Active: brand gradient — clear visual anchor
+                        "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
                       : isAgent
-                      ? "text-blue-600 hover:bg-slate-100 hover:text-blue-700 dark:text-blue-400 dark:hover:bg-slate-800 dark:hover:text-blue-300"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white",
+                      ? // Agent link: branded indigo accent when inactive
+                        "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300"
+                      : // Standard links
+                        "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white",
                   )}
                 >
-                  {item.icon}
-                  {t.nav[item.labelKey]}
+                  {/* Icon */}
+                  <span
+                    className={cn(
+                      "flex h-4 w-4 shrink-0 items-center justify-center",
+                      isActive ? "opacity-90" : "group-hover:opacity-100",
+                    )}
+                    aria-hidden="true"
+                  >
+                    {item.icon}
+                  </span>
+
+                  {/* Label */}
+                  <span className="flex-1 truncate">{t.nav[item.labelKey]}</span>
+
+                  {/* Agent "New" badge (inactive only) */}
                   {isAgent && !isActive && (
-                    <span className="ml-auto rounded-full bg-blue-500/20 px-1.5 py-0.5 text-xs font-semibold text-blue-600 dark:text-blue-400">
+                    <span className="rounded-full bg-indigo-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400">
                       {t.nav.newBadge}
                     </span>
                   )}
@@ -294,19 +334,29 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
         </ul>
       </nav>
 
-      {/* Controls: Theme + Language */}
-      <div className="border-t border-slate-200 pb-2 pt-3 dark:border-slate-700">
+      {/* ── Theme + Language controls ────────────────────────────────── */}
+      <div className="border-t border-slate-200/80 px-3 pb-2 pt-3 dark:border-slate-700/60">
         <ThemeToggle />
         <LangToggle />
       </div>
 
-      {/* Footer links */}
-      <div className="space-y-0.5 border-t border-slate-200 px-3 py-3 dark:border-slate-700">
+      {/* ── Footer actions ───────────────────────────────────────────── */}
+      <div className="space-y-0.5 border-t border-slate-200/80 px-3 py-3 dark:border-slate-700/60">
         <Link
           href="/"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-150",
+            "text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+            "dark:text-slate-500 dark:hover:bg-slate-700/50 dark:hover:text-slate-300",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-800",
+          )}
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-4 w-4 shrink-0"
+            aria-hidden="true"
+          >
             <path
               fillRule="evenodd"
               d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
@@ -315,11 +365,23 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
           </svg>
           {t.nav.backToHome}
         </Link>
+
         <Link
           href="/logout"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-150",
+            // Subtle destructive signal on hover — visually separated from navigation
+            "text-slate-400 hover:bg-red-50 hover:text-red-600",
+            "dark:text-slate-500 dark:hover:bg-red-500/10 dark:hover:text-red-400",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-800",
+          )}
         >
-          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-4 w-4 shrink-0"
+            aria-hidden="true"
+          >
             <path
               fillRule="evenodd"
               d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
