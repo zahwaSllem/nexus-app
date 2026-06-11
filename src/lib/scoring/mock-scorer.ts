@@ -35,7 +35,7 @@ import type {
 // Forced-choice polarity map: option A = 1 (scores primary dimension), option B = 0
 // This is a provisional placeholder — real polarity maps belong in a config table.
 
-const FORCED_CHOICE_POLARITY: Record<string, { a_scores: string; b_scores: string }> = {
+const _FORCED_CHOICE_POLARITY: Record<string, { a_scores: string; b_scores: string }> = {
   "NEX-GMB-007": { a_scores: "D1-CE", b_scores: "D1-EO" },
   "NEX-GMB-008": { a_scores: "D1-CE", b_scores: "D1-CE" },
   "NEX-GMB-023": { a_scores: "D1-CE", b_scores: "D1-EO" },

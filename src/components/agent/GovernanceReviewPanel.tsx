@@ -90,7 +90,7 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
       <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
         <h3 className="mb-1 text-sm font-semibold text-white">Governance Review</h3>
         <p className="mb-4 text-xs text-slate-500">
-          These warnings were automatically generated from the selected items' governance metadata.
+          These warnings were automatically generated from the selected items&apos; governance metadata.
           Acknowledge all caution and info items to enable approval.
         </p>
         <div className="flex flex-wrap gap-3">

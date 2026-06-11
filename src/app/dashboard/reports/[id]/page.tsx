@@ -140,7 +140,7 @@ interface PageProps {
   params: { id: string };
 }
 
-export default function ReportDetailPage({ params }: PageProps) {
+export default function ReportDetailPage({ params: _params }: PageProps) {
   return (
     <div className="min-h-full bg-slate-900 p-8">
 

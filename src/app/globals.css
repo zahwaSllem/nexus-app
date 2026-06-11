@@ -4,6 +4,7 @@
 
 /* ── Light theme (default) ─────────────────────────────────────── */
 :root {
+  /* Surface & layout */
   --background: #F8FAFC;
   --foreground: #0F172A;
   --surface-1: #FFFFFF;
@@ -14,10 +15,70 @@
   --text-primary: #0F172A;
   --text-secondary: #475569;
   --text-muted: #94A3B8;
+
+  /* ── Brand: Indigo + Violet ─────────────────────────────────── */
+  --color-brand:          #4F46E5;
+  --color-brand-dim:      #4338CA;
+  --color-brand-deep:     #3730A3;
+  --color-brand-tint:     rgba(79, 70, 229, 0.08);
+  --color-brand-border:   rgba(79, 70, 229, 0.20);
+  --color-brand-ring:     rgba(79, 70, 229, 0.35);
+  --color-on-brand:       #ffffff;
+
+  --color-violet:         #7C3AED;
+  --color-violet-dim:     #6D28D9;
+  --color-violet-tint:    rgba(124, 58, 237, 0.08);
+  --color-violet-border:  rgba(124, 58, 237, 0.20);
+
+  /* ── Gradients ──────────────────────────────────────────────── */
+  --gradient-brand:        linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+  --gradient-brand-hover:  linear-gradient(135deg, #4338CA 0%, #6D28D9 100%);
+  --gradient-brand-subtle: linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.08) 100%);
+
+  /* ── Semantic status ────────────────────────────────────────── */
+  --color-success:        #10B981;
+  --color-success-tint:   rgba(16, 185, 129, 0.08);
+  --color-success-border: rgba(16, 185, 129, 0.20);
+
+  --color-warning:        #F59E0B;
+  --color-warning-tint:   rgba(245, 158, 11, 0.08);
+  --color-warning-border: rgba(245, 158, 11, 0.20);
+
+  --color-error:          #EF4444;
+  --color-error-tint:     rgba(239, 68, 68, 0.08);
+  --color-error-border:   rgba(239, 68, 68, 0.20);
+
+  /* ── Shadow scale ───────────────────────────────────────────── */
+  --shadow-xs:       0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm:       0 1px 3px 0 rgb(0 0 0 / 0.10), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+  --shadow-md:       0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-lg:       0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --shadow-brand:    0 4px 14px 0 rgba(79, 70, 229, 0.25);
+  --shadow-brand-lg: 0 8px 25px 0 rgba(79, 70, 229, 0.30);
+  --shadow-card:     0 1px 3px 0 rgb(0 0 0 / 0.06), 0 4px 12px 0 rgba(79, 70, 229, 0.04);
+
+  /* ── Border-radius scale ────────────────────────────────────── */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  20px;
+  --radius-pill: 9999px;
+
+  /* ── Easing functions ───────────────────────────────────────── */
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);
+  --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Focus ring ─────────────────────────────────────────────── */
+  --ring-color:        rgba(79, 70, 229, 0.40);
+  --ring-offset-color: #F8FAFC;
 }
 
 /* ── Dark theme ────────────────────────────────────────────────── */
 .dark {
+  /* Surface & layout */
   --background: #0F172A;
   --foreground: #F8FAFC;
   --surface-1: #1E293B;
@@ -28,6 +89,36 @@
   --text-primary: #F8FAFC;
   --text-secondary: #94A3B8;
   --text-muted: #64748B;
+
+  /* ── Brand: lighter tints for dark surfaces ─────────────────── */
+  --color-brand:          #6366F1;
+  --color-brand-dim:      #4F46E5;
+  --color-brand-deep:     #4338CA;
+  --color-brand-tint:     rgba(99, 102, 241, 0.12);
+  --color-brand-border:   rgba(99, 102, 241, 0.25);
+  --color-brand-ring:     rgba(99, 102, 241, 0.40);
+
+  --color-violet:         #8B5CF6;
+  --color-violet-dim:     #7C3AED;
+  --color-violet-tint:    rgba(139, 92, 246, 0.12);
+  --color-violet-border:  rgba(139, 92, 246, 0.25);
+
+  /* ── Gradients (lighter endpoints for dark mode) ───────────── */
+  --gradient-brand:       linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  --gradient-brand-hover: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+
+  /* ── Shadows (stronger on dark) ─────────────────────────────── */
+  --shadow-xs:       0 1px 2px 0 rgb(0 0 0 / 0.30);
+  --shadow-sm:       0 1px 3px 0 rgb(0 0 0 / 0.40), 0 1px 2px -1px rgb(0 0 0 / 0.30);
+  --shadow-md:       0 4px 6px -1px rgb(0 0 0 / 0.40), 0 2px 4px -2px rgb(0 0 0 / 0.30);
+  --shadow-lg:       0 10px 15px -3px rgb(0 0 0 / 0.50), 0 4px 6px -4px rgb(0 0 0 / 0.30);
+  --shadow-brand:    0 4px 14px 0 rgba(99, 102, 241, 0.35);
+  --shadow-brand-lg: 0 8px 25px 0 rgba(99, 102, 241, 0.40);
+  --shadow-card:     0 1px 3px 0 rgb(0 0 0 / 0.30), 0 4px 12px 0 rgba(99, 102, 241, 0.07);
+
+  /* ── Focus ring ─────────────────────────────────────────────── */
+  --ring-color:        rgba(99, 102, 241, 0.50);
+  --ring-offset-color: #0F172A;
 }
 
 body {
@@ -39,5 +130,15 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Brand gradient as a utility class */
+  .bg-gradient-brand {
+    background: var(--gradient-brand);
+  }
+
+  /* Consistent focus ring using design tokens */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2;
   }
 }

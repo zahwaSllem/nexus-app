@@ -49,7 +49,7 @@ const CONTEXT_FIELDS: Array<{ key: string; label: string; max: number }> = [
   { key: "leadership_scope",           label: "Leadership Scope",             max: 4 },
 ];
 
-const BQ_COMPONENTS: Array<{ key: keyof ReturnType<typeof getBlueprintById>["blueprint_quality" & any]; label: string; weight: string }> = [
+const BQ_COMPONENTS: Array<{ key: string; label: string; weight: string }> = [
   { key: "evidence_completeness",  label: "Evidence Completeness",  weight: "30%" },
   { key: "construct_clarity",      label: "Construct Clarity",      weight: "25%" },
   { key: "sme_agreement",          label: "SME Agreement",          weight: "20%" },
