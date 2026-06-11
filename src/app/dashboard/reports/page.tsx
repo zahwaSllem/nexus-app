@@ -1,101 +1,30 @@
+"use client";
+
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
+import { useStore } from "@/lib/providers/store-provider";
 
-// ─── Mock data ─────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const REPORTS = [
-  {
-    id: "demo-report",
-    reference: "NSX-2026-0042",
-    candidate: "Alex Jordan",
-    candidateId: "C-007",
-    jobTitle: "Software Engineer",
-    level: "Entry / IC",
-    useCase: "Hiring",
-    domains: ["D1", "D2", "D3", "D4"],
-    generated: "Jun 9, 2026",
-    status: "Available",
-  },
-  {
-    id: "r-002",
-    reference: "NSX-2026-0038",
-    candidate: "Maya Chen",
-    candidateId: "C-003",
-    jobTitle: "Product Manager",
-    level: "Manager",
-    useCase: "Development",
-    domains: ["D1", "D2"],
-    generated: "Jun 7, 2026",
-    status: "Available",
-  },
-  {
-    id: "r-003",
-    reference: "NSX-2026-0031",
-    candidate: "Omar Khalil",
-    candidateId: "C-011",
-    jobTitle: "Data Analyst",
-    level: "Entry / IC",
-    useCase: "Hiring",
-    domains: ["D1", "D2", "D3"],
-    generated: "Jun 5, 2026",
-    status: "Available",
-  },
-  {
-    id: "r-004",
-    reference: "NSX-2026-0044",
-    candidate: "Sarah Mitchell",
-    candidateId: "C-014",
-    jobTitle: "UX Designer",
-    level: "Senior / Expert",
-    useCase: "Hiring",
-    domains: ["D1", "D2"],
-    generated: "—",
-    status: "Processing",
-  },
-  {
-    id: "r-005",
-    reference: "NSX-2026-0047",
-    candidate: "James Okafor",
-    candidateId: "C-019",
-    jobTitle: "Engineering Manager",
-    level: "Manager",
-    useCase: "Succession",
-    domains: ["D1", "D2", "D4"],
-    generated: "—",
-    status: "Processing",
-  },
-  {
-    id: "r-006",
-    reference: "NSX-2026-0051",
-    candidate: "Priya Sharma",
-    candidateId: "C-022",
-    jobTitle: "Software Engineer",
-    level: "Entry / IC",
-    useCase: "Hiring",
-    domains: ["D1"],
-    generated: "—",
-    status: "Pending",
-  },
-];
+const blueprintMap = new Map(BLUEPRINTS.map((b) => [b.blueprint_id, b]));
 
-const STATUS_VARIANT: Record<string, "success" | "warning" | "default"> = {
-  Available: "success",
-  Processing: "warning",
-  Pending: "default",
+const USE_CASE_LABELS: Record<string, string> = {
+  developmental:                     "Developmental",
+  hiring_support_validated_blueprint: "Hiring Support",
 };
 
-const USE_CASE_COLORS: Record<string, string> = {
-  Hiring:     "bg-blue-500/10 text-blue-300",
-  Development:"bg-violet-500/10 text-violet-300",
-  Succession: "bg-emerald-500/10 text-emerald-300",
-};
+function fmtDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    day: "numeric", month: "short", year: "numeric",
+  });
+}
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ReportsPage() {
-  const available = REPORTS.filter((r) => r.status === "Available").length;
-  const processing = REPORTS.filter((r) => r.status === "Processing").length;
-  const pending = REPORTS.filter((r) => r.status === "Pending").length;
+  const { assignments } = useStore();
+  const completed = assignments.filter((a) => a.status === "completed");
 
   return (
     <div className="min-h-full bg-slate-900 p-8">
@@ -108,7 +37,7 @@ export default function ReportsPage() {
           </p>
           <h1 className="mt-2 text-2xl font-bold text-white">Reports</h1>
           <p className="mt-1 text-sm text-slate-400">
-            Generated assessment reports by candidate and use case.
+            Assessment reports for completed assignments.
           </p>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/5 px-3 py-1.5">
@@ -119,107 +48,124 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Summary stats */}
-      <div className="mb-6 grid grid-cols-3 gap-4">
-        {[
-          { label: "Available",  value: available,  color: "text-emerald-400" },
-          { label: "Processing", value: processing, color: "text-amber-400" },
-          { label: "Pending",    value: pending,    color: "text-slate-400" },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border border-slate-700 bg-slate-800 px-5 py-4"
-          >
-            <p className="text-xs text-slate-500">{stat.label}</p>
-            <p className={`mt-1 text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+      {/* Summary stat */}
+      <div className="mb-6">
+        <div className="inline-flex rounded-xl border border-slate-700 bg-slate-800 px-5 py-4">
+          <div>
+            <p className="text-xs text-slate-500">Available</p>
+            <p className="mt-1 text-2xl font-bold text-emerald-400">{completed.length}</p>
           </div>
-        ))}
+        </div>
       </div>
 
-      {/* Reports table */}
-      <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-slate-700">
-                {["Candidate", "Reference", "Use Case", "Level", "Domains", "Generated", "Status", ""].map((h) => (
-                  <th
-                    key={h}
-                    className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-700/60">
-              {REPORTS.map((r) => (
-                <tr key={r.id} className="transition-colors hover:bg-slate-700/30">
+      {/* Reports table or empty state */}
+      {completed.length === 0 ? (
 
-                  {/* Candidate */}
-                  <td className="px-5 py-4">
-                    <p className="text-sm font-semibold text-white">{r.candidate}</p>
-                    <p className="mt-0.5 font-mono text-xs text-slate-500">{r.candidateId} · {r.jobTitle}</p>
-                  </td>
+        <div className="rounded-xl border border-slate-700 bg-slate-800 px-6 py-16 text-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-700">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-6 w-6 text-slate-500">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-slate-400">No reports generated yet.</p>
+          <p className="mt-1 text-xs text-slate-600">
+            Reports appear after candidates complete their assessments.
+          </p>
+        </div>
 
-                  {/* Reference */}
-                  <td className="px-5 py-4 font-mono text-xs text-slate-400">{r.reference}</td>
+      ) : (
 
-                  {/* Use case */}
-                  <td className="px-5 py-4">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${USE_CASE_COLORS[r.useCase] ?? "bg-slate-700 text-slate-300"}`}>
-                      {r.useCase}
-                    </span>
-                  </td>
-
-                  {/* Level */}
-                  <td className="px-5 py-4 text-xs text-slate-400">{r.level}</td>
-
-                  {/* Domains */}
-                  <td className="px-5 py-4">
-                    <div className="flex flex-wrap gap-1">
-                      {r.domains.map((d) => (
-                        <span
-                          key={d}
-                          className="rounded bg-blue-500/10 px-1.5 py-0.5 font-mono text-xs font-bold text-blue-300"
-                        >
-                          {d}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-
-                  {/* Generated date */}
-                  <td className="px-5 py-4 text-xs text-slate-400">{r.generated}</td>
-
-                  {/* Status */}
-                  <td className="px-5 py-4">
-                    <Badge dark variant={STATUS_VARIANT[r.status] ?? "default"}>{r.status}</Badge>
-                  </td>
-
-                  {/* Action */}
-                  <td className="px-5 py-4">
-                    {r.id === "demo-report" ? (
-                      <Link
-                        href={`/dashboard/reports/${r.id}`}
-                        className="text-xs font-semibold text-blue-400 transition-colors hover:text-blue-300"
-                      >
-                        Open →
-                      </Link>
-                    ) : (
-                      <span className="text-xs text-slate-600">—</span>
-                    )}
-                  </td>
+        <div className="overflow-hidden rounded-xl border border-slate-700 bg-slate-800">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-slate-700">
+                  {["Candidate", "Blueprint / Role", "Use Case", "Domains", "Completed", "Status", ""].map((h) => (
+                    <th
+                      key={h}
+                      className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500"
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-700/60">
+                {completed.map((a) => {
+                  const blueprint = blueprintMap.get(a.blueprint_id);
+                  return (
+                    <tr key={a.assignment_id} className="transition-colors hover:bg-slate-700/30">
+
+                      {/* Candidate */}
+                      <td className="px-5 py-4">
+                        <p className="text-sm font-semibold text-white">{a.candidate_name}</p>
+                        <p className="mt-0.5 font-mono text-xs text-slate-500">{a.candidate_email}</p>
+                      </td>
+
+                      {/* Blueprint */}
+                      <td className="px-5 py-4">
+                        {blueprint ? (
+                          <p className="text-sm text-slate-200">{blueprint.role_context.role_title}</p>
+                        ) : (
+                          <span className="font-mono text-xs text-slate-600">{a.blueprint_id}</span>
+                        )}
+                      </td>
+
+                      {/* Use case */}
+                      <td className="px-5 py-4">
+                        <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-xs font-medium text-slate-300">
+                          {USE_CASE_LABELS[a.use_case] ?? a.use_case}
+                        </span>
+                      </td>
+
+                      {/* Domains */}
+                      <td className="px-5 py-4">
+                        <div className="flex flex-wrap gap-1">
+                          {(blueprint?.included_domains ?? []).map((d) => (
+                            <span
+                              key={d}
+                              className="rounded bg-blue-500/10 px-1.5 py-0.5 font-mono text-xs font-bold text-blue-300"
+                            >
+                              {d}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+
+                      {/* Completed date */}
+                      <td className="px-5 py-4 text-xs text-slate-400">
+                        {a.completed_at ? fmtDate(a.completed_at) : "—"}
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-5 py-4">
+                        <Badge variant="success">Available</Badge>
+                      </td>
+
+                      {/* Action */}
+                      <td className="px-5 py-4">
+                        <Link
+                          href="/dashboard/reports/demo-report"
+                          className="text-xs font-semibold text-blue-400 transition-colors hover:text-blue-300"
+                        >
+                          Open →
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="border-t border-slate-700 bg-slate-800/60 px-5 py-3">
+            <p className="text-xs text-slate-600">
+              {completed.length} report{completed.length !== 1 ? "s" : ""} · Mock mode: reports are generated only for completed mock assignments.
+            </p>
+          </div>
         </div>
 
-        <div className="border-t border-slate-700 bg-slate-800/60 px-5 py-3">
-          <p className="text-xs text-slate-500">{REPORTS.length} reports total · Mock data only</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

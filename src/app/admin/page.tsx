@@ -28,8 +28,8 @@ export default function AdminPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Administration</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Administration</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Platform governance, system layer status, and configuration.
         </p>
       </div>
@@ -40,12 +40,12 @@ export default function AdminPage() {
           <CardHeader>
             <CardTitle>V1 Governance Gates</CardTitle>
           </CardHeader>
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100 dark:divide-slate-700">
             {governanceGates.map((gate) => (
               <div key={gate.id} className="flex items-start justify-between gap-4 px-6 py-4">
                 <div>
-                  <p className="font-mono text-xs font-bold text-slate-700">{gate.id}</p>
-                  <p className="mt-0.5 text-xs text-slate-500">{gate.desc}</p>
+                  <p className="font-mono text-xs font-bold text-slate-700 dark:text-slate-300">{gate.id}</p>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{gate.desc}</p>
                 </div>
                 <Badge variant={gate.status === "Enforced" ? "info" : "warning"}>
                   {gate.status}
@@ -60,12 +60,12 @@ export default function AdminPage() {
           <CardHeader>
             <CardTitle>System Layers</CardTitle>
           </CardHeader>
-          <div className="divide-y divide-slate-100">
+          <div className="divide-y divide-slate-100 dark:divide-slate-700">
             {systemLayers.map((mod) => (
               <div key={mod.layer} className="flex items-center justify-between px-6 py-3">
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs font-bold text-slate-400">{mod.layer}</span>
-                  <span className="text-sm text-slate-700">{mod.name}</span>
+                  <span className="font-mono text-xs font-bold text-slate-400 dark:text-slate-500">{mod.layer}</span>
+                  <span className="text-sm text-slate-700 dark:text-slate-300">{mod.name}</span>
                 </div>
                 <Badge variant={layerStatusVariants[mod.status]}>{mod.status}</Badge>
               </div>
@@ -83,13 +83,13 @@ export default function AdminPage() {
           <Link
             key={card.href}
             href={card.href}
-            className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-5 transition-shadow hover:shadow-md"
+            className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-5 transition-shadow hover:shadow-md dark:border-slate-700 dark:bg-slate-800"
           >
             <div>
-              <p className="font-semibold text-slate-900">{card.title}</p>
-              <p className="mt-0.5 text-xs text-slate-500">{card.desc}</p>
+              <p className="font-semibold text-slate-900 dark:text-white">{card.title}</p>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{card.desc}</p>
             </div>
-            <span className="text-slate-400">→</span>
+            <span className="text-slate-400 dark:text-slate-500">→</span>
           </Link>
         ))}
       </div>

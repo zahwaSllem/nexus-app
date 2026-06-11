@@ -3,32 +3,70 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/providers/language-provider";
+import { useTheme } from "@/lib/providers/theme-provider";
+import type { Theme } from "@/lib/providers/theme-provider";
+import { cn } from "@/lib/utils";
 
 type Role = "candidate" | "admin";
-
-const ROLES: { value: Role; label: string; hint: string }[] = [
-  { value: "candidate", label: "Candidate", hint: "Taking an assessment session" },
-  { value: "admin", label: "Admin / HR", hint: "Platform and report management" },
-];
 
 const MOCK_CREDENTIALS: Record<Role, { email: string; password: string }> = {
   candidate: { email: "candidate@nexus.io", password: "password123" },
   admin: { email: "admin@nexus.io", password: "admin123" },
 };
 
-const FEATURES = [
-  "Psychometric scoring with precision and confidence estimates",
-  "Job-level routing for Entry, Manager, and Executive",
-  "Seven-layer governance-enforced reporting architecture",
-];
+function SunIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+      <path
+        fillRule="evenodd"
+        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+function MoonIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+    </svg>
+  );
+}
+function MonitorIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+      <path
+        fillRule="evenodd"
+        d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t, lang, setLang } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const [role, setRole] = useState<Role>("candidate");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+
+  const ROLES: { value: Role; label: string; hint: string }[] = [
+    { value: "candidate", label: t.login.candidate, hint: t.login.candidateHint },
+    { value: "admin", label: t.login.admin, hint: t.login.adminHint },
+  ];
+
+  const FEATURES = [t.login.f1, t.login.f2, t.login.f3];
+
+  const themeOptions: { value: Theme; icon: React.ReactNode; label: string }[] = [
+    { value: "light", icon: <SunIcon />, label: t.theme.light },
+    { value: "dark", icon: <MoonIcon />, label: t.theme.dark },
+    { value: "system", icon: <MonitorIcon />, label: t.theme.system },
+  ];
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,16 +77,15 @@ export default function LoginPage() {
       const redirect = params.get("redirect");
       router.push(redirect ?? (role === "admin" ? "/dashboard/agent" : "/candidate/dashboard"));
     } else {
-      setError("Invalid email or password. Check the mock credentials below.");
+      setError(t.login.errorMessage);
     }
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-900">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900">
 
-      {/* ── Left brand panel (desktop only) ───────────────────────── */}
+      {/* ── Left brand panel (desktop only) ─────────────────────────── */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-blue-950 via-slate-900 to-slate-950 p-12 lg:flex lg:w-[52%]">
-        {/* Subtle grid texture */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.03]"
@@ -61,25 +98,24 @@ export default function LoginPage() {
 
         {/* Logo */}
         <div className="relative flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 font-bold text-lg text-white shadow-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg">
             N
           </div>
-          <span className="text-xl font-semibold text-white">Nexus</span>
+          <span className="text-xl font-semibold text-white">{t.common.nexus}</span>
         </div>
 
         {/* Headline */}
         <div className="relative">
           <p className="mb-4 text-xs font-medium uppercase tracking-widest text-blue-400">
-            Enterprise Assessment Platform
+            {t.login.enterprisePlatform}
           </p>
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-white">
-            Precision Assessment
+            {t.login.mainHeading1}
             <br />
-            for Human Capability
+            {t.login.mainHeading2}
           </h1>
           <p className="mt-5 max-w-sm text-base leading-relaxed text-slate-400">
-            Six scientifically validated domains. Seven governance layers.
-            Deterministic, audience-specific reports.
+            {t.login.mainSubheading}
           </p>
 
           <ul className="mt-10 space-y-4">
@@ -91,7 +127,6 @@ export default function LoginPage() {
             ))}
           </ul>
 
-          {/* Domain badges */}
           <div className="mt-10 flex flex-wrap gap-2">
             {["D1 Personality", "D2 Cognition", "D3 Motivations", "D4 Emotional", "D5 Workplace"].map(
               (d, i) => (
@@ -105,55 +140,104 @@ export default function LoginPage() {
                 >
                   {d}
                 </span>
-              )
+              ),
             )}
           </div>
         </div>
 
-        <p className="relative text-xs text-slate-600">
-          Nexus Enterprise Assessment Platform · V1
-        </p>
+        <p className="relative text-xs text-slate-600">{t.login.version}</p>
       </div>
 
-      {/* ── Right form panel ───────────────────────────────────────── */}
+      {/* ── Right form panel ─────────────────────────────────────────── */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-16">
         {/* Mobile logo */}
         <Link href="/" className="mb-10 flex items-center gap-2 lg:hidden">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 font-bold text-white">
             N
           </div>
-          <span className="text-lg font-semibold text-white">Nexus</span>
+          <span className="text-lg font-semibold text-slate-900 dark:text-white">
+            {t.common.nexus}
+          </span>
         </Link>
 
         <div className="w-full max-w-sm">
+
+          {/* Theme + Language row */}
+          <div className="mb-8 flex items-center justify-end gap-3">
+            {/* Theme toggle */}
+            <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+              {themeOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setTheme(opt.value)}
+                  title={opt.label}
+                  className={cn(
+                    "flex items-center justify-center rounded-md px-2 py-1.5 text-xs transition-all",
+                    theme === opt.value
+                      ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
+                  )}
+                >
+                  {opt.icon}
+                </button>
+              ))}
+            </div>
+            {/* Language toggle */}
+            <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+              {(["en", "ar"] as const).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLang(l)}
+                  className={cn(
+                    "rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
+                    lang === l
+                      ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
+                  )}
+                >
+                  {l === "en" ? "EN" : "AR"}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Heading */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white">Welcome back</h2>
-            <p className="mt-1 text-sm text-slate-400">Sign in to continue to Nexus</p>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              {t.login.welcomeBack}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {t.login.signInSubtitle}
+            </p>
           </div>
 
           {/* Role selector */}
           <div className="mb-7">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-500">
-              Sign in as
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              {t.login.signInAs}
             </p>
-            <div className="flex rounded-lg border border-slate-700 bg-slate-800/60 p-1">
+            <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800/60">
               {ROLES.map((r) => (
                 <button
                   key={r.value}
                   type="button"
-                  onClick={() => { setRole(r.value); setError(""); }}
+                  onClick={() => {
+                    setRole(r.value);
+                    setError("");
+                  }}
                   className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
                     role === r.value
                       ? "bg-blue-700 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-200"
+                      : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                   }`}
                 >
                   {r.label}
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-xs text-slate-500">
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
               {ROLES.find((r) => r.value === role)?.hint}
             </p>
           </div>
@@ -164,9 +248,9 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="mb-1.5 block text-sm font-medium text-slate-300"
+                className="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
-                Email address
+                {t.login.emailLabel}
               </label>
               <input
                 id="email"
@@ -174,8 +258,11 @@ export default function LoginPage() {
                 autoComplete="email"
                 placeholder={MOCK_CREDENTIALS[role].email}
                 value={email}
-                onChange={(e) => { setEmail(e.target.value); setError(""); }}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setError("");
+                }}
+                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-600"
               />
             </div>
 
@@ -184,16 +271,16 @@ export default function LoginPage() {
               <div className="mb-1.5 flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="text-sm font-medium text-slate-300"
+                  className="text-sm font-medium text-slate-700 dark:text-slate-300"
                 >
-                  Password
+                  {t.login.passwordLabel}
                 </label>
                 <button
                   type="button"
                   tabIndex={-1}
-                  className="text-xs text-blue-400 transition-colors hover:text-blue-300"
+                  className="text-xs text-blue-600 transition-colors hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
                 >
-                  Forgot password?
+                  {t.login.forgotPassword}
                 </button>
               </div>
               <div className="relative">
@@ -203,15 +290,18 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 pr-11 text-sm text-white placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setError("");
+                  }}
+                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 pr-11 text-sm text-slate-900 placeholder-slate-400 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-600"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
                   tabIndex={-1}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 transition-colors hover:text-slate-300"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+                  aria-label={showPassword ? t.login.hidePassword : t.login.showPassword}
                 >
                   {showPassword ? (
                     <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -257,24 +347,22 @@ export default function LoginPage() {
             {/* Submit */}
             <button
               type="submit"
-              className="mt-1 w-full rounded-lg bg-blue-700 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+              className="mt-1 w-full rounded-lg bg-blue-700 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900"
             >
-              Sign in as {role === "candidate" ? "Candidate" : "Admin"}
+              {role === "candidate" ? t.login.signInButtonCandidate : t.login.signInButtonAdmin}
             </button>
           </form>
 
           {/* Mock credentials hint */}
-          <div className="mt-6 rounded-lg border border-slate-700/60 bg-slate-800/40 px-4 py-3">
-            <p className="mb-2 text-xs font-medium text-slate-500">
-              Mock credentials
-            </p>
-            <div className="space-y-1 font-mono text-xs text-slate-600">
+          <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700/60 dark:bg-slate-800/40">
+            <p className="mb-2 text-xs font-medium text-slate-500">{t.login.mockCredentials}</p>
+            <div className="space-y-1 font-mono text-xs text-slate-500 dark:text-slate-600">
               <p>
-                <span className="text-slate-500">candidate</span>
+                <span className="text-slate-400 dark:text-slate-500">candidate</span>
                 {" "}candidate@nexus.io · password123
               </p>
               <p>
-                <span className="text-slate-500">admin</span>
+                <span className="text-slate-400 dark:text-slate-500">admin</span>
                 {" · · "}admin@nexus.io · admin123
               </p>
             </div>
@@ -283,9 +371,9 @@ export default function LoginPage() {
           <div className="mt-8 text-center">
             <Link
               href="/"
-              className="text-xs text-slate-500 transition-colors hover:text-slate-300"
+              className="text-xs text-slate-400 transition-colors hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
             >
-              ← Back to home
+              {t.login.backToHome}
             </Link>
           </div>
         </div>

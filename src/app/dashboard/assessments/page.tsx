@@ -1,7 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
-import { ASSIGNMENTS } from "@/lib/mock-data/assignments";
 import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
+import { useStore } from "@/lib/providers/store-provider";
 import type { AssessmentAssignment } from "@/lib/types/nexus";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -34,9 +36,10 @@ const USE_CASE_LABELS: Record<string, string> = {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AssessmentsPage() {
-  const total     = ASSIGNMENTS.length;
-  const pending   = ASSIGNMENTS.filter((a) => a.status === "not_started" || a.status === "in_progress").length;
-  const completed = ASSIGNMENTS.filter((a) => a.status === "completed").length;
+  const { assignments } = useStore();
+  const total     = assignments.length;
+  const pending   = assignments.filter((a) => a.status === "not_started" || a.status === "in_progress").length;
+  const completed = assignments.filter((a) => a.status === "completed").length;
 
   return (
     <div className="min-h-full bg-slate-900 p-8">
@@ -94,7 +97,7 @@ export default function AssessmentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/60">
-              {ASSIGNMENTS.map((a) => {
+              {assignments.map((a) => {
                 const blueprint = blueprintMap.get(a.blueprint_id);
                 const statusCfg = STATUS_BADGE[a.status];
 
@@ -137,7 +140,7 @@ export default function AssessmentsPage() {
 
                     {/* Status */}
                     <td className="px-5 py-4">
-                      <Badge dark variant={statusCfg.variant}>{statusCfg.label}</Badge>
+                      <Badge variant={statusCfg.variant}>{statusCfg.label}</Badge>
                     </td>
 
                     {/* Deadline */}
@@ -178,7 +181,7 @@ export default function AssessmentsPage() {
 
         <div className="border-t border-slate-700 bg-slate-800/60 px-5 py-3">
           <p className="text-xs text-slate-600">
-            {total} assignment{total !== 1 ? "s" : ""} · Mock data only — new assignments reset on page refresh
+            {total} assignment{total !== 1 ? "s" : ""} · Mock mode: new assignments reset on refresh.
           </p>
         </div>
       </div>

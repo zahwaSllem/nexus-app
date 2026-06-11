@@ -2,20 +2,20 @@ import Link from "next/link";
 
 export default function AssessmentCompletePage() {
   return (
-    <div className="flex min-h-screen flex-col bg-slate-900">
+    <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
 
       {/* Top bar */}
-      <header className="border-b border-slate-800 bg-slate-900/80 px-6 py-4 backdrop-blur-sm">
+      <header className="border-b border-slate-200 bg-white/80 px-6 py-4 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80">
         <div className="mx-auto flex max-w-2xl items-center justify-between">
           <Link href="/candidate/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-sm text-white">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
               N
             </div>
-            <span className="text-base font-semibold text-white">Nexus</span>
+            <span className="text-base font-semibold text-slate-900 dark:text-white">Nexus</span>
           </Link>
           <Link
             href="/candidate/dashboard"
-            className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-slate-200"
+            className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-200"
           >
             <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -42,14 +42,14 @@ export default function AssessmentCompletePage() {
             </svg>
           </div>
 
-          <h1 className="text-2xl font-bold text-white">Assessment Submitted</h1>
-          <p className="mt-3 text-slate-400">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Assessment Submitted</h1>
+          <p className="mt-3 text-slate-500 dark:text-slate-400">
             Your responses have been recorded. Your results are now ready to view.
           </p>
 
           {/* What happens next */}
-          <div className="mt-8 rounded-xl border border-slate-700 bg-slate-800 p-5 text-left">
-            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">
+          <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 text-left dark:border-slate-700 dark:bg-slate-800">
+            <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
               What happens next
             </p>
             <ul className="space-y-2.5 text-sm">
@@ -60,13 +60,13 @@ export default function AssessmentCompletePage() {
               ].map((step) => (
                 <li key={step} className="flex items-start gap-2.5">
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
-                  <span className="text-slate-400">{step}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{step}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Navigation CTAs */}
+          {/* CTAs */}
           <div className="mt-8 flex flex-col gap-3">
             <Link
               href="/candidate/results/demo"
@@ -79,7 +79,7 @@ export default function AssessmentCompletePage() {
             </Link>
             <Link
               href="/candidate/report/demo"
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-700 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-800 hover:text-white"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
             >
               View My Report
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -88,7 +88,7 @@ export default function AssessmentCompletePage() {
             </Link>
             <Link
               href="/candidate/dashboard"
-              className="flex w-full items-center justify-center rounded-lg border border-slate-700/60 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:border-slate-600 hover:bg-slate-800/60 hover:text-slate-300"
+              className="flex w-full items-center justify-center rounded-lg border border-slate-200/60 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-600 dark:border-slate-700/60 dark:text-slate-500 dark:hover:border-slate-600 dark:hover:bg-slate-800/60 dark:hover:text-slate-300"
             >
               Return to Candidate Dashboard
             </Link>

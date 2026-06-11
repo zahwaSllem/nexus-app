@@ -2,14 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Light theme (default) ─────────────────────────────────────── */
 :root {
   --background: #F8FAFC;
   --foreground: #0F172A;
+  --surface-1: #FFFFFF;
+  --surface-2: #F1F5F9;
+  --surface-3: #E2E8F0;
+  --border-subtle: #E2E8F0;
+  --border-strong: #CBD5E1;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+}
+
+/* ── Dark theme ────────────────────────────────────────────────── */
+.dark {
+  --background: #0F172A;
+  --foreground: #F8FAFC;
+  --surface-1: #1E293B;
+  --surface-2: #334155;
+  --surface-3: #475569;
+  --border-subtle: #334155;
+  --border-strong: #475569;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 @layer utilities {

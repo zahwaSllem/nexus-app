@@ -11,40 +11,27 @@ import { RoleBlueprintReview } from "@/components/agent/RoleBlueprintReview";
 import { AssessmentBlueprintPreview } from "@/components/agent/AssessmentBlueprintPreview";
 import { GovernanceReviewPanel } from "@/components/agent/GovernanceReviewPanel";
 import { ApprovalChecklist } from "@/components/agent/ApprovalChecklist";
+import { useLanguage } from "@/lib/providers/language-provider";
 
 type Step = 1 | 2 | 3 | 4 | 5;
-
-const STEP_TITLES: Record<Step, { title: string; subtitle: string }> = {
-  1: {
-    title: "Role Interview",
-    subtitle: "The agent will ask questions to understand the role and generate a blueprint.",
-  },
-  2: {
-    title: "Role Blueprint",
-    subtitle: "Review the agent-generated Role Blueprint. All selections are read-only.",
-  },
-  3: {
-    title: "Assessment Blueprint",
-    subtitle: "Review the 22 items selected and contextualized by the agent for this role.",
-  },
-  4: {
-    title: "Governance Review",
-    subtitle: "Acknowledge all governance warnings before proceeding to approval.",
-  },
-  5: {
-    title: "Approval",
-    subtitle: "Confirm the compliance checklist and formally approve this blueprint.",
-  },
-};
 
 const USE_CASE_LABEL = "Hiring Support — Validated Blueprint";
 
 export default function AgentPage() {
   const [step, setStep] = useState<Step>(1);
   const [allAcknowledged, setAllAcknowledged] = useState(false);
+  const { t } = useLanguage();
+
+  const STEP_TITLES: Record<Step, { title: string; subtitle: string }> = {
+    1: { title: t.agent.stepRoleInterview,         subtitle: t.agent.stepRoleInterviewSub },
+    2: { title: t.agent.stepRoleBlueprint,         subtitle: t.agent.stepRoleBlueprintSub },
+    3: { title: t.agent.stepAssessmentBlueprint,   subtitle: t.agent.stepAssessmentBlueprintSub },
+    4: { title: t.agent.stepGovernanceReview,      subtitle: t.agent.stepGovernanceReviewSub },
+    5: { title: t.agent.stepApproval,              subtitle: t.agent.stepApprovalSub },
+  };
 
   const advance = () => setStep((s) => Math.min(5, s + 1) as Step);
-  const back = () => setStep((s) => Math.max(1, s - 1) as Step);
+  const back    = () => setStep((s) => Math.max(1, s - 1) as Step);
 
   const handleAllAcknowledged = useCallback(() => {
     setAllAcknowledged(true);
@@ -53,23 +40,23 @@ export default function AgentPage() {
   const { title, subtitle } = STEP_TITLES[step];
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-900">
+    <div className="flex min-h-full flex-col bg-slate-50 dark:bg-slate-900">
 
       {/* Page header */}
-      <div className="border-b border-slate-800 px-8 py-6">
+      <div className="border-b border-slate-200 px-8 py-6 dark:border-slate-800">
         <div className="mx-auto max-w-4xl">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
-              <p className="text-xs font-medium uppercase tracking-widest text-blue-400">
-                AI Assessment Agent
+              <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400">
+                {t.agent.title}
               </p>
-              <h1 className="mt-1 text-xl font-bold text-white">{title}</h1>
-              <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>
+              <h1 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">{title}</h1>
+              <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-500">{subtitle}</p>
             </div>
-            <div className="flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-800/60 px-3 py-1.5">
-              <span className="font-mono text-xs text-slate-500">bp-001</span>
-              <span className="text-slate-700">·</span>
-              <span className="text-xs text-slate-500">Junior Software Engineer</span>
+            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-100/60 px-3 py-1.5 dark:border-slate-700 dark:bg-slate-800/60">
+              <span className="font-mono text-xs text-slate-400 dark:text-slate-500">bp-001</span>
+              <span className="text-slate-300 dark:text-slate-700">·</span>
+              <span className="text-xs text-slate-500 dark:text-slate-500">Junior Software Engineer</span>
             </div>
           </div>
 
@@ -81,22 +68,14 @@ export default function AgentPage() {
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-4xl px-8 py-8">
 
-          {/* Step 1 — Interview */}
           {step === 1 && (
             <div className="flex h-[560px] flex-col">
-              <AgentChatInterface
-                transcript={TRANSCRIPT_A}
-                onComplete={advance}
-              />
+              <AgentChatInterface transcript={TRANSCRIPT_A} onComplete={advance} />
             </div>
           )}
 
-          {/* Step 2 — Role Blueprint */}
-          {step === 2 && (
-            <RoleBlueprintReview blueprint={BLUEPRINT_A} />
-          )}
+          {step === 2 && <RoleBlueprintReview blueprint={BLUEPRINT_A} />}
 
-          {/* Step 3 — Assessment Blueprint */}
           {step === 3 && (
             <AssessmentBlueprintPreview
               blueprint={ASSESSMENT_BLUEPRINT_A}
@@ -104,7 +83,6 @@ export default function AgentPage() {
             />
           )}
 
-          {/* Step 4 — Governance */}
           {step === 4 && (
             <GovernanceReviewPanel
               warnings={BLUEPRINT_A.governance_warnings}
@@ -112,7 +90,6 @@ export default function AgentPage() {
             />
           )}
 
-          {/* Step 5 — Approval */}
           {step === 5 && (
             <ApprovalChecklist
               blueprintId={BLUEPRINT_A.blueprint_id}
@@ -124,24 +101,26 @@ export default function AgentPage() {
         </div>
       </div>
 
-      {/* Bottom navigation — steps 2, 3, 4 only */}
+      {/* Bottom navigation — steps 2–4 */}
       {step >= 2 && step <= 4 && (
-        <div className="border-t border-slate-800 bg-slate-900/80 px-8 py-4 backdrop-blur-sm">
+        <div className="border-t border-slate-200 bg-white/80 px-8 py-4 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80">
           <div className="mx-auto flex max-w-4xl items-center justify-between">
             {/* Back */}
             <button
               type="button"
               onClick={back}
-              className="flex items-center gap-2 rounded-lg border border-slate-700 px-5 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:border-slate-600 hover:text-slate-200"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-200"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
                 <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
               </svg>
-              Back
+              {t.agent.back}
             </button>
 
             {/* Step label */}
-            <span className="text-xs text-slate-600">Step {step} of 5</span>
+            <span className="text-xs text-slate-400 dark:text-slate-600">
+              {t.agent.stepOf.replace("{step}", String(step))}
+            </span>
 
             {/* Forward */}
             {step === 2 && (
@@ -150,7 +129,7 @@ export default function AgentPage() {
                 onClick={advance}
                 className="flex items-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
               >
-                Confirm Blueprint, Continue
+                {t.agent.reviewBlueprint}
                 <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
                   <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
@@ -162,7 +141,7 @@ export default function AgentPage() {
                 onClick={advance}
                 className="flex items-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
               >
-                Preview Complete, Continue
+                {t.agent.reviewItems}
                 <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
                   <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
@@ -175,7 +154,7 @@ export default function AgentPage() {
                 disabled={!allAcknowledged}
                 className="flex items-center gap-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Governance Complete, Approve
+                {allAcknowledged ? t.agent.continueToApproval : t.agent.reviewWarningsFirst}
                 <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
                   <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>

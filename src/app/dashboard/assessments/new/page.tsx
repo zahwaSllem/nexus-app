@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
 import { getAssessmentBlueprintByRoleBlueprint } from "@/lib/mock-data/assessment-blueprints";
+import { useStore } from "@/lib/providers/store-provider";
 import type { RoleBlueprint } from "@/lib/types/nexus";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -22,11 +23,6 @@ const APPROVAL_STATUS_CONFIG: Record<string, { label: string; selectable: boolea
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-}
-
-function generateAssignmentId(): string {
-  const suffix = Math.random().toString(36).slice(2, 8).toUpperCase();
-  return `ASGN-${suffix}`;
 }
 
 function fmtDeadline(iso: string): string {
@@ -210,6 +206,7 @@ function ConfirmationView({ assignmentId, candidateEmail }: { assignmentId: stri
 // ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function NewAssessmentPage() {
+  const { createAssignment } = useStore();
   const [blueprintId, setBlueprintId]     = useState("");
   const [candidateName, setCandidateName] = useState("");
   const [candidateEmail, setCandidateEmail] = useState("");
@@ -234,8 +231,16 @@ export default function NewAssessmentPage() {
   const formValid  = blueprintId !== "" && nameValid && emailValid && dateValid;
 
   function handleSubmit() {
-    if (!formValid) return;
-    const id = generateAssignmentId();
+    if (!formValid || !selectedBlueprint) return;
+    const id = createAssignment({
+      blueprintId: selectedBlueprint.blueprint_id,
+      assessmentBlueprintId: assessmentBlueprint?.assessment_blueprint_id ?? `abp-${selectedBlueprint.blueprint_id}`,
+      candidateName,
+      candidateEmail,
+      deadline,
+      useCase: selectedBlueprint.role_context.use_case,
+      includedDomains: selectedBlueprint.included_domains,
+    });
     setAssignmentId(id);
     setConfirmed(true);
     window.scrollTo({ top: 0, behavior: "smooth" });

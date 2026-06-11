@@ -173,7 +173,7 @@ export default function ReportDetailPage({ params }: PageProps) {
             <p className="font-mono text-xs text-slate-500">{REPORT_META.reference}</p>
             <p className="mt-0.5 text-xs text-slate-600">Generated {REPORT_META.generatedDate}</p>
           </div>
-          <Badge dark variant="success">{REPORT_META.status}</Badge>
+          <Badge variant="success">{REPORT_META.status}</Badge>
         </div>
       </div>
 
@@ -287,7 +287,7 @@ export default function ReportDetailPage({ params }: PageProps) {
                     </span>
                     <h2 className="text-sm font-semibold text-white">{domain.name}</h2>
                   </div>
-                  <Badge dark variant="success">Included</Badge>
+                  <Badge variant="success">Included</Badge>
                 </div>
 
                 <div className="p-5">
@@ -367,8 +367,8 @@ export default function ReportDetailPage({ params }: PageProps) {
                 <h2 className="text-sm font-semibold text-white">Workplace Effectiveness</h2>
               </div>
               <div className="flex items-center gap-2">
-                <Badge dark variant="pilot">Phase 2</Badge>
-                <Badge dark variant="error">Blocked</Badge>
+                <Badge variant="pilot">Phase 2</Badge>
+                <Badge variant="error">Blocked</Badge>
               </div>
             </div>
             <div className="p-5">
