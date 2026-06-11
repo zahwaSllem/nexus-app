@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,30 @@ function MonitorIcon() {
       <path
         fillRule="evenodd"
         d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+function HamburgerIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+      <path
+        fillRule="evenodd"
+        d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+      <path
+        fillRule="evenodd"
+        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
         clipRule="evenodd"
       />
     </svg>
@@ -233,47 +258,23 @@ const adminNav: NavItem[] = [
   },
 ];
 
-// ── Sidebar ────────────────────────────────────────────────────────────────────
+// ── Shared nav + controls + footer ─────────────────────────────────────────────
+// Used by both the desktop sidebar and the mobile drawer.
 
-interface SidebarProps {
-  variant?: "dashboard" | "admin";
-}
-
-export function Sidebar({ variant = "dashboard" }: SidebarProps) {
+function SidebarNavContents({
+  variant,
+  onNavigate,
+}: {
+  variant: "dashboard" | "admin";
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
   const { t } = useLanguage();
   const navItems = variant === "admin" ? adminNav : dashboardNav;
 
   return (
-    <aside
-      className={cn(
-        // Responsive: hidden on mobile, flex column on md+
-        "hidden md:flex md:flex-col",
-        "h-full w-60 shrink-0",
-        // Light mode: white surface elevated above slate-50 content
-        "border-r border-slate-200/80 bg-white",
-        // Dark mode: slate-800 surface elevated above slate-900 content
-        "dark:border-slate-700/60 dark:bg-slate-800",
-      )}
-    >
-      {/* ── Brand header ────────────────────────────────────────────── */}
-      <div className="flex h-16 shrink-0 items-center gap-3 border-b border-slate-200/80 px-5 dark:border-slate-700/60">
-        <div
-          className={cn(
-            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-            "bg-gradient-to-br from-indigo-600 to-violet-600",
-            "text-sm font-bold text-white",
-            "shadow-[0_2px_8px_0_rgba(79,70,229,0.30)]",
-          )}
-        >
-          N
-        </div>
-        <span className="text-base font-semibold text-slate-900 dark:text-white">
-          {t.common.nexus}
-        </span>
-      </div>
-
-      {/* ── Navigation ──────────────────────────────────────────────── */}
+    <>
+      {/* ── Navigation ────────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Main navigation">
         <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
           {variant === "admin" ? t.nav.administration : t.nav.workspace}
@@ -291,6 +292,7 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  onClick={onNavigate}
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
@@ -298,16 +300,12 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                     "focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-800",
                     isActive
-                      ? // Active: brand gradient — clear visual anchor
-                        "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
                       : isAgent
-                      ? // Agent link: branded indigo accent when inactive
-                        "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300"
-                      : // Standard links
-                        "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white",
+                      ? "text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-300"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white",
                   )}
                 >
-                  {/* Icon */}
                   <span
                     className={cn(
                       "flex h-4 w-4 shrink-0 items-center justify-center",
@@ -317,11 +315,7 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
                   >
                     {item.icon}
                   </span>
-
-                  {/* Label */}
                   <span className="flex-1 truncate">{t.nav[item.labelKey]}</span>
-
-                  {/* Agent "New" badge (inactive only) */}
                   {isAgent && !isActive && (
                     <span className="rounded-full bg-indigo-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400">
                       {t.nav.newBadge}
@@ -344,6 +338,7 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
       <div className="space-y-0.5 border-t border-slate-200/80 px-3 py-3 dark:border-slate-700/60">
         <Link
           href="/"
+          onClick={onNavigate}
           className={cn(
             "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-150",
             "text-slate-500 hover:bg-slate-100 hover:text-slate-700",
@@ -368,9 +363,9 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
 
         <Link
           href="/logout"
+          onClick={onNavigate}
           className={cn(
             "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-150",
-            // Subtle destructive signal on hover — visually separated from navigation
             "text-slate-400 hover:bg-red-50 hover:text-red-600",
             "dark:text-slate-500 dark:hover:bg-red-500/10 dark:hover:text-red-400",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-800",
@@ -391,6 +386,161 @@ export function Sidebar({ variant = "dashboard" }: SidebarProps) {
           {t.nav.signOut}
         </Link>
       </div>
-    </aside>
+    </>
+  );
+}
+
+// ── Sidebar ────────────────────────────────────────────────────────────────────
+
+interface SidebarProps {
+  variant?: "dashboard" | "admin";
+}
+
+export function Sidebar({ variant = "dashboard" }: SidebarProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useLanguage();
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  const close = useCallback(() => {
+    setMobileOpen(false);
+    // Restore focus to the trigger that opened the drawer
+    setTimeout(() => hamburgerRef.current?.focus(), 0);
+  }, []);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileOpen, close]);
+
+  // Prevent background scroll while drawer is open
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  // Move focus into the drawer when it opens
+  useEffect(() => {
+    if (mobileOpen) closeButtonRef.current?.focus();
+  }, [mobileOpen]);
+
+  // Shared brand mark element
+  const brandMark = (
+    <div
+      className={cn(
+        "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+        "bg-gradient-to-br from-indigo-600 to-violet-600",
+        "text-sm font-bold text-white",
+        "shadow-[0_2px_8px_0_rgba(79,70,229,0.30)]",
+      )}
+    >
+      N
+    </div>
+  );
+
+  return (
+    <>
+      {/* ── Desktop sidebar (md+) — behavior unchanged ───────────────────── */}
+      <aside
+        className={cn(
+          "hidden md:flex md:flex-col",
+          "h-full w-60 shrink-0",
+          "border-r border-slate-200/80 bg-white",
+          "dark:border-slate-700/60 dark:bg-slate-800",
+        )}
+      >
+        {/* Brand header */}
+        <div className="flex h-16 shrink-0 items-center gap-3 border-b border-slate-200/80 px-5 dark:border-slate-700/60">
+          {brandMark}
+          <span className="text-base font-semibold text-slate-900 dark:text-white">
+            {t.common.nexus}
+          </span>
+        </div>
+
+        <SidebarNavContents variant={variant} />
+      </aside>
+
+      {/* ── Mobile hamburger trigger (below md) ──────────────────────────── */}
+      <button
+        ref={hamburgerRef}
+        type="button"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open navigation menu"
+        aria-expanded={mobileOpen}
+        aria-controls="mobile-nav-drawer"
+        aria-haspopup="dialog"
+        className={cn(
+          "fixed left-4 top-4 z-30 md:hidden",
+          "flex h-9 w-9 items-center justify-center rounded-lg",
+          "border border-slate-200/80 bg-white shadow-md",
+          "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+          "dark:border-slate-700/60 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+          "transition-colors duration-150",
+        )}
+      >
+        <HamburgerIcon />
+      </button>
+
+      {/* ── Mobile drawer (below md) ─────────────────────────────────────── */}
+      {mobileOpen && (
+        <>
+          {/* Backdrop — click closes drawer */}
+          <div
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden"
+            aria-hidden="true"
+            onClick={close}
+          />
+
+          {/* Drawer panel */}
+          <aside
+            id="mobile-nav-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+            className={cn(
+              "fixed inset-y-0 left-0 z-50 flex w-72 flex-col md:hidden",
+              "border-r border-slate-200/80 bg-white shadow-xl",
+              "dark:border-slate-700/60 dark:bg-slate-800",
+            )}
+            style={{ animation: "slideInLeft 0.22s ease-out" }}
+          >
+            {/* Drawer header: brand + close button */}
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200/80 px-5 dark:border-slate-700/60">
+              <div className="flex items-center gap-3">
+                {brandMark}
+                <span className="text-base font-semibold text-slate-900 dark:text-white">
+                  {t.common.nexus}
+                </span>
+              </div>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                onClick={close}
+                aria-label="Close navigation menu"
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-lg",
+                  "text-slate-400 hover:bg-slate-100 hover:text-slate-900",
+                  "dark:text-slate-500 dark:hover:bg-slate-700/50 dark:hover:text-white",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+                  "transition-colors duration-150",
+                )}
+              >
+                <XIcon />
+              </button>
+            </div>
+
+            <SidebarNavContents variant={variant} onNavigate={close} />
+          </aside>
+        </>
+      )}
+    </>
   );
 }
