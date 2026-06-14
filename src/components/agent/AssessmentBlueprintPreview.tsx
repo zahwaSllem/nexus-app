@@ -2,7 +2,7 @@ import type { AssessmentBlueprint, BankItem, ContextualizedItem } from "@/lib/ty
 import { ItemContextCard } from "./ItemContextCard";
 
 const DOMAIN_COLORS: Record<string, string> = {
-  D1: "bg-blue-500/10 text-blue-300 border border-blue-500/20",
+  D1: "bg-indigo-500/10 text-indigo-300 border border-indigo-500/20",
   D2: "bg-amber-500/10 text-amber-300 border border-amber-500/20",
   D4: "bg-violet-500/10 text-violet-300 border border-violet-500/20",
 };
@@ -56,7 +56,7 @@ export function AssessmentBlueprintPreview({ blueprint, bankItems }: AssessmentB
       <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-blue-400">Assessment Blueprint</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-indigo-400">Assessment Blueprint</p>
             <p className="mt-1 text-sm text-slate-400">
               <span className="font-semibold text-white">{total_items} items</span>
               {" · "}
@@ -92,8 +92,8 @@ export function AssessmentBlueprintPreview({ blueprint, bankItems }: AssessmentB
       </div>
 
       {/* Agent rationale */}
-      <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 px-5 py-4">
-        <p className="mb-1 text-xs font-medium text-blue-400">Agent Selection Rationale</p>
+      <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-5 py-4">
+        <p className="mb-1 text-xs font-medium text-indigo-400">Agent Selection Rationale</p>
         <p className="text-sm leading-relaxed text-slate-300">{blueprint.agent_selection_rationale}</p>
       </div>
 

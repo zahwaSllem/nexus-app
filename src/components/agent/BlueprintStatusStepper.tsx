@@ -1,4 +1,5 @@
 import type { BlueprintApprovalStatus } from "@/lib/types/nexus";
+import { cn } from "@/lib/utils";
 
 const STAGES: { key: BlueprintApprovalStatus; label: string }[] = [
   { key: "draft", label: "Draft" },
@@ -33,13 +34,14 @@ export function BlueprintStatusStepper({ status }: BlueprintStatusStepperProps) 
           <div key={stage.key} className="flex items-center">
             <div className="flex flex-col items-center gap-1">
               <div
-                className={`flex h-5 w-5 items-center justify-center rounded-full text-xs transition-all ${
+                className={cn(
+                  "flex h-5 w-5 items-center justify-center rounded-full text-xs transition-all duration-200",
                   isComplete
                     ? "bg-emerald-500 text-white"
                     : isActive
-                    ? "bg-blue-600 text-white"
-                    : "bg-slate-700 text-slate-600"
-                }`}
+                    ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white"
+                    : "border border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-700 dark:text-slate-500",
+                )}
               >
                 {isComplete ? (
                   <svg viewBox="0 0 20 20" fill="currentColor" className="h-3 w-3">
@@ -50,22 +52,26 @@ export function BlueprintStatusStepper({ status }: BlueprintStatusStepperProps) 
                 )}
               </div>
               <span
-                className={`whitespace-nowrap text-xs ${
+                className={cn(
+                  "whitespace-nowrap text-xs transition-colors duration-200",
                   isComplete
-                    ? "text-emerald-400"
+                    ? "text-emerald-600 dark:text-emerald-400"
                     : isActive
-                    ? "font-medium text-white"
-                    : "text-slate-600"
-                }`}
+                    ? "font-medium text-indigo-600 dark:text-indigo-400"
+                    : "text-slate-400 dark:text-slate-600",
+                )}
               >
                 {stage.label}
               </span>
             </div>
             {!isLast && (
               <div
-                className={`mx-2 mb-4 h-px w-8 ${
-                  isComplete ? "bg-emerald-500/50" : "bg-slate-700"
-                }`}
+                className={cn(
+                  "mx-2 mb-4 h-px w-8 transition-all duration-300",
+                  isComplete
+                    ? "bg-emerald-500/50"
+                    : "bg-slate-200 dark:bg-slate-700",
+                )}
               />
             )}
           </div>

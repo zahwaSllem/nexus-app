@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 const STEPS = [
   { n: 1, label: "Interview" },
   { n: 2, label: "Role Blueprint" },
@@ -12,7 +14,7 @@ interface AgentStepIndicatorProps {
 
 export function AgentStepIndicator({ currentStep }: AgentStepIndicatorProps) {
   return (
-    <div className="flex items-center gap-0">
+    <div className="flex items-center">
       {STEPS.map((step, i) => {
         const isComplete = step.n < currentStep;
         const isActive = step.n === currentStep;
@@ -20,16 +22,17 @@ export function AgentStepIndicator({ currentStep }: AgentStepIndicatorProps) {
 
         return (
           <div key={step.n} className="flex items-center">
-            {/* Step node */}
+            {/* Node + label */}
             <div className="flex flex-col items-center gap-1.5">
               <div
-                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold transition-all ${
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-300",
                   isComplete
                     ? "bg-emerald-500 text-white"
                     : isActive
-                    ? "bg-blue-600 text-white ring-2 ring-blue-500/40"
-                    : "bg-slate-700 text-slate-500"
-                }`}
+                    ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white ring-4 ring-indigo-500/20 shadow-[0_0_14px_0_rgba(99,102,241,0.30)]"
+                    : "border border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500",
+                )}
               >
                 {isComplete ? (
                   <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
@@ -40,24 +43,28 @@ export function AgentStepIndicator({ currentStep }: AgentStepIndicatorProps) {
                 )}
               </div>
               <span
-                className={`whitespace-nowrap text-xs font-medium transition-colors ${
+                className={cn(
+                  "whitespace-nowrap text-xs transition-colors duration-200",
                   isComplete
-                    ? "text-emerald-400"
+                    ? "font-medium text-emerald-600 dark:text-emerald-400"
                     : isActive
-                    ? "text-white"
-                    : "text-slate-600"
-                }`}
+                    ? "font-semibold text-indigo-600 dark:text-indigo-400"
+                    : "text-slate-400 dark:text-slate-600",
+                )}
               >
                 {step.label}
               </span>
             </div>
 
-            {/* Connector line */}
+            {/* Connector */}
             {!isLast && (
               <div
-                className={`mx-2 mb-5 h-px w-12 transition-all sm:w-16 ${
-                  isComplete ? "bg-emerald-500/50" : "bg-slate-700"
-                }`}
+                className={cn(
+                  "mx-2 mb-5 h-px w-12 transition-all duration-500 sm:w-16",
+                  isComplete
+                    ? "bg-gradient-to-r from-emerald-500/70 to-emerald-400/40 dark:from-emerald-500/60 dark:to-emerald-400/30"
+                    : "bg-slate-200 dark:bg-slate-700",
+                )}
               />
             )}
           </div>

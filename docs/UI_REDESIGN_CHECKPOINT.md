@@ -3,9 +3,9 @@
 **Context:** This file tracks the separate UI/UX redesign stream.  
 **Do not confuse with:** The functional implementation phases in `CURRENT_PHASE.md` and `IMPLEMENTATION_ROADMAP.md`, which track data layer and feature builds. Both streams run in parallel on the same codebase.
 
-**Last updated:** 2026-06-11  
+**Last updated:** 2026-06-14  
 **Design system:** UI UX Pro Max — Enterprise SaaS / Indigo-Violet  
-**Current status:** Phase 2 complete ✅ — awaiting Phase 3 approval
+**Current status:** Phase 4 complete ✅ — awaiting Phase 5 approval
 
 ---
 
@@ -100,11 +100,33 @@ These were set by the user and must be respected in every phase:
 ### Phase 2 files
 | File | Change |
 |---|---|
-| `src/components/layout/Sidebar.tsx` | Full visual redesign — see Phase 2 above |
+| `src/components/layout/Sidebar.tsx` | Full visual redesign + mobile hamburger + slide-in drawer |
 | `src/app/dashboard/layout.tsx` | `min-w-0` on `<main>` |
 | `src/app/admin/layout.tsx` | `min-w-0` on `<main>` |
+| `src/app/globals.css` | `@keyframes slideInLeft` for drawer animation |
 
-### Unchanged (out of scope through Phase 2)
+### Phase 3 files
+| File | Change |
+|---|---|
+| `src/app/login/page.tsx` | Brand panel mesh gradient; indigo form accents; gradient role selector; Button component for submit |
+| `src/app/dashboard/page.tsx` | KPI card elevation + animations; table left-accent; indigo brand tokens; animated progress bars; quick-action polish |
+| `src/app/globals.css` | `@keyframes fadeInUp` + `.animate-fade-in-up` utility |
+
+### Phase 4 files
+| File | Change |
+|---|---|
+| `src/app/dashboard/agent/page.tsx` | Header indigo; dark terminal panel for chat; `animate-fade-in-up` per step; gradient nav buttons |
+| `src/components/agent/AgentStepIndicator.tsx` | Full rewrite: gradient active node, gradient connectors, full light/dark mode |
+| `src/components/agent/AgentChatBubble.tsx` | Gradient avatar marks; gradient admin bubble; `animate-dot-bounce` dots; removed inline `<style>` |
+| `src/components/agent/AgentChatInterface.tsx` | Indigo input focus; gradient send + CTA buttons |
+| `src/components/agent/RoleBlueprintReview.tsx` | D1 color blue→indigo; label + bullets + bars blue→indigo |
+| `src/components/agent/AssessmentBlueprintPreview.tsx` | D1 color blue→indigo; label + rationale panel blue→indigo |
+| `src/components/agent/GovernanceReviewPanel.tsx` | `info` severity blue→indigo; checkbox accent; summary badge |
+| `src/components/agent/ApprovalChecklist.tsx` | Logo mark gradient; approve + CTA buttons gradient |
+| `src/components/agent/BlueprintStatusStepper.tsx` | Full rewrite: gradient active, full light/dark mode |
+| `src/app/globals.css` | `@keyframes dotBounce` + `.animate-dot-bounce` utility |
+
+### Unchanged (out of scope through Phase 4)
 - All `src/app/**/page.tsx` files — not yet touched
 - `src/components/layout/Navbar.tsx` — landing page nav, not admin shell
 - `src/lib/**` — all data, types, scoring, i18n, providers untouched
@@ -133,15 +155,108 @@ npm run build   # Must complete with all routes listed, exit 0
 
 These are described in the approved audit. Each requires explicit approval before starting.
 
-### Phase 3 — Login + Dashboard Home
-**Files:** `src/app/login/page.tsx`, `src/app/dashboard/page.tsx`  
-**Scope:**
-- Login: Stronger brand panel gradient mesh; indigo form accents; refined toggle controls
-- Dashboard: Elevated KPI cards with colored shadow (`shadow-card`); thicker domain progress bars; table row hover with left accent; use `Card` component variants
+### Phase 3 — Login + Dashboard Home ✅
+**Files:** `src/app/login/page.tsx`, `src/app/dashboard/page.tsx`, `src/app/globals.css`
 
-### Phase 4 — Agent Workflow
-**Files:** `src/app/dashboard/agent/page.tsx`, all `src/components/agent/*.tsx`  
-**Scope:** Premium step indicator with gradient connector lines; polish on chat bubbles; domain color coding on blueprint/item cards. This is the highest-impact surface.
+**Login page changes:**
+- **Brand panel background:** Dark indigo mesh — `linear-gradient(155deg, #0f0b2d → #0f172a → #0d1020)` replacing flat `from-blue-950`
+- **Gradient mesh nodes:** Three absolutely-positioned blurred radial circles (`indigo-600/20`, `violet-700/15`, `indigo-800/10`) for depth
+- **Gradient headline:** Second heading line uses `bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-transparent`
+- **Brand mark:** Upgraded to `bg-gradient-to-br from-indigo-500 to-violet-600` with indigo glow shadow (matches sidebar)
+- **Enterprise label / bullets / domain badges:** All converted from `blue-*` → `indigo-*`
+- **Role selector:** Active tab now uses `bg-gradient-to-r from-indigo-600 to-violet-600 text-white` (was flat `bg-blue-700`)
+- **Input focus rings:** `focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20` (was blue-500); shows red border on error state
+- **Submit button:** Replaced raw `<button bg-blue-700>` with `<Button variant="primary" size="lg">` component — full gradient CTA
+- **Forgot password link:** `text-indigo-600` (was blue-600)
+- **Mobile logo:** Same gradient mark + glow shadow
+- **Error alert:** Added `role="alert"` for accessibility
+- **Focus rings on toggles:** Added `focus-visible:ring-2 focus-visible:ring-indigo-500` to theme/lang buttons
+
+**Dashboard home changes:**
+- **New Assessment button:** Replaced `<Link bg-blue-700>` with full gradient indigo/violet link (matching Button primary style)
+- **KPI cards:** `shadow-card` elevation + `hover:-translate-y-0.5 hover:shadow-md` lift + 0.5px colored top accent bar per card + icon scales `group-hover:scale-110` + label is uppercase micro-label + delta text uses card's accent color (was always gray)
+- **First KPI (Total Candidates):** Color updated from `blue-*` → `indigo-*` to match brand
+- **Candidates table:**
+  - Header cells: uppercase micro-label style (`text-[10px] font-semibold uppercase tracking-widest`)
+  - Row left-accent on hover: thin `w-0.5 bg-indigo-500` absolutely-positioned in first cell, fades in with `group-hover:opacity-100`
+  - Candidate IDs: `text-indigo-600 dark:text-indigo-400` (was blue)
+  - Domain tags: `bg-indigo-500/10 text-indigo-600 dark:text-indigo-300` (was blue)
+  - "View all" link: `text-indigo-600` (was blue-600)
+- **Quick actions:** First action (New Assessment) gets indigo-tinted treatment (`bg-indigo-50/80 border-indigo-200/80 text-indigo-700`); arrow symbol has `group-hover:translate-x-0.5` micro-animation
+- **V1 release note:** Updated `border-blue-500/20 bg-blue-500/5` → `border-indigo-500/20 bg-indigo-500/5`
+- **Domain coverage cards:** Domain code badges updated from `blue-*` → `indigo-*`; progress bars thickened `h-1.5 → h-2`; animated fill from 0% on mount (`useEffect` + `useState`); cards get `hover:-translate-y-0.5 hover:shadow-md`
+- **Entry animations:** `animate-fade-in-up` CSS class (`fadeInUp` keyframe in globals.css) with staggered `animation-delay` on all sections and cards
+
+**New CSS added (globals.css):**
+```css
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { … } }
+.animate-fade-in-up { animation: fadeInUp 0.45s ease-out both; }
+```
+
+### Phase 4 — Agent Workflow ✅
+**Files:** `src/app/dashboard/agent/page.tsx`, all `src/components/agent/*.tsx`
+
+**Page changes (`dashboard/agent/page.tsx`):**
+- **Header:** Added `bg-white dark:bg-slate-900` for proper light/dark surface; title accent `text-blue-600` → `text-indigo-600 dark:text-indigo-400`; refined typography hierarchy (`text-[11px] font-semibold uppercase tracking-widest`)
+- **Step 1 chat container:** Wrapped in premium dark terminal panel (`bg-slate-950` + `border-slate-800` + `shadow-lg`) with a macOS-style title bar showing three dot indicators and "Nexus Agent · Role Interview"
+- **Step 2–5 content:** Each step wrapped in `animate-fade-in-up` for entry animation
+- **Bottom nav forward buttons:** All three replaced — `bg-blue-700` → `bg-gradient-to-r from-indigo-600 to-violet-600` with `shadow-brand`, `hover:shadow-brand-lg`, `active:scale-[0.97]`, full `focus-visible` ring; back button gained `focus-visible` ring
+
+**AgentStepIndicator.tsx:**
+- Complete rewrite — full light/dark mode compatibility (was dark-only)
+- **Active node:** `bg-gradient-to-br from-indigo-600 to-violet-600` with `ring-4 ring-indigo-500/20` + indigo glow shadow (was `bg-blue-600 ring-blue-500/40`)
+- **Pending node:** `border border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500` (was dark-only `bg-slate-700 text-slate-500`)
+- **Connector (complete):** `bg-gradient-to-r from-emerald-500/70 to-emerald-400/40` (was flat `bg-emerald-500/50`)
+- **Connector (pending):** `bg-slate-200 dark:bg-slate-700` (was dark-only `bg-slate-700`)
+- **Labels:** Proper light/dark — active `text-indigo-600 dark:text-indigo-400 font-semibold` (was `text-white`); complete `text-emerald-600 dark:text-emerald-400` (was `text-emerald-400`); pending `text-slate-400 dark:text-slate-600` (was `text-slate-600`)
+- Node size increased `h-7 w-7 → h-8 w-8` for better tap target and visual weight
+
+**AgentChatBubble.tsx:**
+- **Agent avatar:** `bg-blue-600` → `bg-gradient-to-br from-indigo-600 to-violet-600` with `shadow-sm`; applied to all three bubble types (agent, typing, generating)
+- **Admin bubble:** `bg-blue-700` → `bg-gradient-to-br from-indigo-600 to-violet-600 shadow-sm`
+- **Generating dots:** `bg-blue-400` with inline `@keyframes bounce` → `bg-indigo-400 animate-dot-bounce` (uses global CSS keyframe)
+- **Typing dots:** `bg-slate-500` → `bg-indigo-400/70 animate-dot-bounce` with staggered `animationDelay`
+- **Removed:** All inline `<style>` tags (keyframes moved to `globals.css`)
+- Agent/typing bubble borders: `border-slate-700` → `border-slate-700/80`; bubble bg `bg-slate-800` → `bg-slate-800/90`
+
+**AgentChatInterface.tsx:**
+- **Input focus:** `focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50` → `focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20`
+- **Send button:** `bg-blue-700 hover:bg-blue-600` → gradient with `shadow-brand`, `hover:shadow-brand-lg`
+- **"Review Role Blueprint" CTA:** `bg-blue-700 hover:bg-blue-600` → gradient with full interaction states + `focus-visible` ring
+- **Separator border:** `border-slate-800` → `border-slate-800/80`
+
+**RoleBlueprintReview.tsx:**
+- `DOMAIN_COLORS.D1`: `bg-blue-500/10 text-blue-300 border-blue-500/20` → `bg-indigo-500/10 text-indigo-300 border-indigo-500/20`
+- "Agent-Generated Blueprint" label: `text-blue-400` → `text-indigo-400`
+- Key responsibilities bullet: `bg-blue-500` → `bg-indigo-400`
+- Context profile progress bars: `bg-blue-500` → `bg-indigo-500`
+
+**AssessmentBlueprintPreview.tsx:**
+- `DOMAIN_COLORS.D1`: blue → indigo (same as above)
+- "Assessment Blueprint" label: `text-blue-400` → `text-indigo-400`
+- Agent rationale panel: `border-blue-500/20 bg-blue-500/5 text-blue-400` → indigo equivalents
+
+**GovernanceReviewPanel.tsx:**
+- `info` severity config: all `blue-*` references (border, bg, iconColor, badgeClass) → `indigo-*`
+- Summary `infoCount` badge: `border-blue-500/30 bg-blue-500/10 text-blue-400` → `indigo-*`
+- Checkbox `accent-blue-600` → `accent-indigo-600`
+
+**ApprovalChecklist.tsx:**
+- Preamble Nexus logo: `bg-blue-600` → `bg-gradient-to-br from-indigo-600 to-violet-600 shadow-sm`
+- Approve button: `bg-blue-700 hover:bg-blue-600` → gradient with `shadow-brand`, `hover:shadow-brand-lg`, `active:scale-[0.97]`
+- Post-approval "Assign Assessment" CTA: same gradient treatment
+
+**BlueprintStatusStepper.tsx:**
+- Complete rewrite — full light/dark mode compatibility
+- Active stage: `bg-blue-600` → `bg-gradient-to-br from-indigo-600 to-violet-600`
+- Pending node: `bg-slate-700 text-slate-600` → `border border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-700 dark:text-slate-500`
+- Labels: proper light/dark `text-indigo-600 dark:text-indigo-400` for active; `text-emerald-600 dark:text-emerald-400` for complete
+
+**globals.css additions:**
+```css
+@keyframes dotBounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+.animate-dot-bounce { animation: dotBounce 1.2s ease-in-out infinite; }
+```
 
 ### Phase 5 — Candidate Experience
 **Files:** `src/app/candidate/dashboard/page.tsx`, `src/app/assessment/page.tsx`, `src/app/assessment/layout.tsx`, `src/app/assessment/complete/page.tsx`, `src/app/candidate/results/[id]/page.tsx`, `src/app/candidate/report/[id]/page.tsx`  

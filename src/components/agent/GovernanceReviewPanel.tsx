@@ -36,10 +36,10 @@ const SEVERITY_CONFIG: Record<GovernanceSeverity, {
     ),
   },
   info: {
-    border: "border-blue-500/25",
-    bg: "bg-blue-500/5",
-    iconColor: "text-blue-400",
-    badgeClass: "bg-blue-500/15 text-blue-400 border border-blue-500/30",
+    border: "border-indigo-500/25",
+    bg: "bg-indigo-500/5",
+    iconColor: "text-indigo-400",
+    badgeClass: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/30",
     label: "Info",
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -107,8 +107,8 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
             </span>
           )}
           {infoCount > 0 && (
-            <span className="flex items-center gap-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
               {infoCount} info
             </span>
           )}
@@ -191,7 +191,7 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
                         type="checkbox"
                         checked={isAcknowledged}
                         onChange={() => toggle(warning.code)}
-                        className="h-4 w-4 rounded border-slate-600 bg-slate-700 accent-blue-600"
+                        className="h-4 w-4 rounded border-slate-600 bg-slate-700 accent-indigo-600"
                       />
                       <span className="text-xs text-slate-500">Acknowledge</span>
                     </label>

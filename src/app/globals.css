@@ -147,3 +147,22 @@ body {
   from { transform: translateX(-100%); }
   to   { transform: translateX(0); }
 }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes dotBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.45s ease-out both;
+  }
+  .animate-dot-bounce {
+    animation: dotBounce 1.2s ease-in-out infinite;
+  }
+}

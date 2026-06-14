@@ -102,7 +102,7 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
       </div>
 
       {/* Input area */}
-      <div className="mt-4 border-t border-slate-800 pt-4">
+      <div className="mt-4 border-t border-slate-800/80 pt-4">
         {interviewComplete ? (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-5 py-5">
             <div className="flex items-center gap-2 text-sm font-medium text-emerald-400">
@@ -117,7 +117,7 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
             <button
               type="button"
               onClick={onComplete}
-              className="flex items-center gap-2 rounded-lg bg-blue-700 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
+              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-2.5 text-sm font-semibold text-white shadow-brand transition-all duration-200 hover:from-indigo-700 hover:to-violet-700 hover:shadow-brand-lg active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
             >
               Review Role Blueprint
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -134,12 +134,12 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
               onChange={(e) => setAdminInput(e.target.value)}
               disabled={isTyping}
               placeholder={isTyping ? "Agent is responding…" : "Type your response…"}
-              className="flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 disabled:opacity-50"
+              className="flex-1 rounded-lg border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none transition-all duration-150 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={!adminInput.trim() || isTyping}
-              className="flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-brand transition-all duration-200 hover:from-indigo-700 hover:to-violet-700 hover:shadow-brand-lg disabled:cursor-not-allowed disabled:opacity-40"
             >
               Send
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">

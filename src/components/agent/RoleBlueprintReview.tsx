@@ -34,7 +34,7 @@ const BQ_COMPONENTS = [
 ] as const;
 
 const DOMAIN_COLORS: Record<string, string> = {
-  D1: "bg-blue-500/10 text-blue-300 border border-blue-500/20",
+  D1: "bg-indigo-500/10 text-indigo-300 border border-indigo-500/20",
   D2: "bg-amber-500/10 text-amber-300 border border-amber-500/20",
   D4: "bg-violet-500/10 text-violet-300 border border-violet-500/20",
 };
@@ -71,7 +71,7 @@ export function RoleBlueprintReview({ blueprint }: RoleBlueprintReviewProps) {
       <div className="rounded-xl border border-slate-700 bg-slate-800 p-6">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-widest text-blue-400">Agent-Generated Blueprint</p>
+            <p className="text-xs font-medium uppercase tracking-widest text-indigo-400">Agent-Generated Blueprint</p>
             <h2 className="mt-1 text-xl font-bold text-white">{role_context.role_title}</h2>
             <p className="mt-0.5 text-sm text-slate-400">
               {role_context.job_level} · {role_context.job_family}
@@ -101,7 +101,7 @@ export function RoleBlueprintReview({ blueprint }: RoleBlueprintReviewProps) {
           <ul className="space-y-1.5">
             {role_context.key_responsibilities.map((r) => (
               <li key={r} className="flex items-start gap-2.5 text-sm text-slate-300">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
                 {r}
               </li>
             ))}
@@ -193,7 +193,7 @@ export function RoleBlueprintReview({ blueprint }: RoleBlueprintReviewProps) {
                 <p className="text-xs text-slate-500">{label}</p>
                 <div className="mt-1.5 flex items-center gap-2">
                   <div className="h-1 flex-1 overflow-hidden rounded-full bg-slate-700">
-                    <div className="h-1 rounded-full bg-blue-500" style={{ width: `${pct}%` }} />
+                    <div className="h-1 rounded-full bg-indigo-500" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="w-5 text-right font-mono text-xs font-bold text-slate-300">
                     {value}/{max}

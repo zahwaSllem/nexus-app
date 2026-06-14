@@ -7,6 +7,7 @@ import { useLanguage } from "@/lib/providers/language-provider";
 import { useTheme } from "@/lib/providers/theme-provider";
 import type { Theme } from "@/lib/providers/theme-provider";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/Button";
 
 type Role = "candidate" | "admin";
 
@@ -85,34 +86,60 @@ export default function LoginPage() {
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900">
 
       {/* ── Left brand panel (desktop only) ─────────────────────────── */}
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-blue-950 via-slate-900 to-slate-950 p-12 lg:flex lg:w-[52%]">
+      <div className="relative hidden flex-col justify-between overflow-hidden lg:flex lg:w-[52%]"
+        style={{ background: "linear-gradient(155deg, #0f0b2d 0%, #0f172a 45%, #0d1020 100%)" }}
+      >
+        {/* Gradient mesh nodes — decorative only */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
+          className="pointer-events-none absolute -left-24 -top-24 h-96 w-96 rounded-full bg-indigo-600/20 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-0 right-0 h-[28rem] w-[28rem] rounded-full bg-violet-700/15 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/3 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full bg-indigo-800/10 blur-2xl"
+        />
+
+        {/* Subtle grid overlay */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.025]"
           style={{
             backgroundImage:
               "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
+            backgroundSize: "48px 48px",
           }}
         />
 
         {/* Logo */}
-        <div className="relative flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white shadow-lg">
+        <div className="relative flex items-center gap-3 p-12">
+          <div
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-xl",
+              "bg-gradient-to-br from-indigo-500 to-violet-600",
+              "text-lg font-bold text-white",
+              "shadow-[0_4px_16px_0_rgba(99,102,241,0.40)]",
+            )}
+          >
             N
           </div>
           <span className="text-xl font-semibold text-white">{t.common.nexus}</span>
         </div>
 
         {/* Headline */}
-        <div className="relative">
-          <p className="mb-4 text-xs font-medium uppercase tracking-widest text-blue-400">
+        <div className="relative px-12 pb-4">
+          <p className="mb-4 text-[11px] font-semibold uppercase tracking-widest text-indigo-400/80">
             {t.login.enterprisePlatform}
           </p>
           <h1 className="text-4xl font-bold leading-tight tracking-tight text-white">
             {t.login.mainHeading1}
             <br />
-            {t.login.mainHeading2}
+            <span className="bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-transparent">
+              {t.login.mainHeading2}
+            </span>
           </h1>
           <p className="mt-5 max-w-sm text-base leading-relaxed text-slate-400">
             {t.login.mainSubheading}
@@ -121,7 +148,7 @@ export default function LoginPage() {
           <ul className="mt-10 space-y-4">
             {FEATURES.map((feat) => (
               <li key={feat} className="flex items-start gap-3 text-sm text-slate-400">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-400" />
                 {feat}
               </li>
             ))}
@@ -132,11 +159,12 @@ export default function LoginPage() {
               (d, i) => (
                 <span
                   key={d}
-                  className={`rounded-full border px-3 py-1 font-mono text-xs ${
+                  className={cn(
+                    "rounded-full border px-3 py-1 font-mono text-xs",
                     i === 4
-                      ? "border-violet-500/30 bg-violet-500/10 text-violet-400"
-                      : "border-blue-500/20 bg-blue-500/10 text-blue-300"
-                  }`}
+                      ? "border-violet-500/30 bg-violet-500/10 text-violet-300"
+                      : "border-indigo-500/25 bg-indigo-500/10 text-indigo-300",
+                  )}
                 >
                   {d}
                 </span>
@@ -145,14 +173,22 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="relative text-xs text-slate-600">{t.login.version}</p>
+        <p className="relative px-12 pb-10 text-xs text-slate-600">{t.login.version}</p>
       </div>
 
       {/* ── Right form panel ─────────────────────────────────────────── */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-16">
+
         {/* Mobile logo */}
         <Link href="/" className="mb-10 flex items-center gap-2 lg:hidden">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 font-bold text-white">
+          <div
+            className={cn(
+              "flex h-9 w-9 items-center justify-center rounded-xl",
+              "bg-gradient-to-br from-indigo-500 to-violet-600",
+              "font-bold text-white",
+              "shadow-[0_4px_12px_0_rgba(99,102,241,0.35)]",
+            )}
+          >
             N
           </div>
           <span className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -173,7 +209,8 @@ export default function LoginPage() {
                   onClick={() => setTheme(opt.value)}
                   title={opt.label}
                   className={cn(
-                    "flex items-center justify-center rounded-md px-2 py-1.5 text-xs transition-all",
+                    "flex items-center justify-center rounded-md px-2 py-1.5 text-xs transition-all duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                     theme === opt.value
                       ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
                       : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
@@ -191,7 +228,8 @@ export default function LoginPage() {
                   type="button"
                   onClick={() => setLang(l)}
                   className={cn(
-                    "rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
+                    "rounded-md px-2.5 py-1.5 text-xs font-medium transition-all duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                     lang === l
                       ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
                       : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
@@ -205,17 +243,17 @@ export default function LoginPage() {
 
           {/* Heading */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
               {t.login.welcomeBack}
             </h2>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-1.5 text-sm text-slate-500 dark:text-slate-400">
               {t.login.signInSubtitle}
             </p>
           </div>
 
           {/* Role selector */}
           <div className="mb-7">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">
               {t.login.signInAs}
             </p>
             <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800/60">
@@ -227,11 +265,13 @@ export default function LoginPage() {
                     setRole(r.value);
                     setError("");
                   }}
-                  className={`flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all ${
+                  className={cn(
+                    "flex-1 rounded-md px-4 py-2.5 text-sm font-medium transition-all duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                     role === r.value
-                      ? "bg-blue-700 text-white shadow-sm"
-                      : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-                  }`}
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                      : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200",
+                  )}
                 >
                   {r.label}
                 </button>
@@ -262,7 +302,16 @@ export default function LoginPage() {
                   setEmail(e.target.value);
                   setError("");
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-600"
+                className={cn(
+                  "w-full rounded-lg border bg-white px-4 py-2.5 text-sm text-slate-900",
+                  "placeholder-slate-400 outline-none transition-all duration-150",
+                  "focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20",
+                  "dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-600",
+                  "dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20",
+                  error
+                    ? "border-red-400 dark:border-red-500/60"
+                    : "border-slate-200",
+                )}
               />
             </div>
 
@@ -278,7 +327,7 @@ export default function LoginPage() {
                 <button
                   type="button"
                   tabIndex={-1}
-                  className="text-xs text-blue-600 transition-colors hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                  className="text-xs text-indigo-600 transition-colors hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
                 >
                   {t.login.forgotPassword}
                 </button>
@@ -294,7 +343,16 @@ export default function LoginPage() {
                     setPassword(e.target.value);
                     setError("");
                   }}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 pr-11 text-sm text-slate-900 placeholder-slate-400 outline-none transition-colors focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-600"
+                  className={cn(
+                    "w-full rounded-lg border bg-white px-4 py-2.5 pr-11 text-sm text-slate-900",
+                    "placeholder-slate-400 outline-none transition-all duration-150",
+                    "focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20",
+                    "dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-600",
+                    "dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20",
+                    error
+                      ? "border-red-400 dark:border-red-500/60"
+                      : "border-slate-200",
+                  )}
                 />
                 <button
                   type="button"
@@ -328,11 +386,15 @@ export default function LoginPage() {
 
             {/* Inline error */}
             {error && (
-              <div className="flex items-start gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
+              <div
+                role="alert"
+                className="flex items-start gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3"
+              >
                 <svg
                   viewBox="0 0 20 20"
                   fill="currentColor"
                   className="mt-0.5 h-4 w-4 shrink-0 text-red-400"
+                  aria-hidden
                 >
                   <path
                     fillRule="evenodd"
@@ -340,17 +402,14 @@ export default function LoginPage() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <p className="text-sm text-red-400">{error}</p>
+                <p className="text-sm text-red-500 dark:text-red-400">{error}</p>
               </div>
             )}
 
             {/* Submit */}
-            <button
-              type="submit"
-              className="mt-1 w-full rounded-lg bg-blue-700 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900"
-            >
+            <Button type="submit" variant="primary" size="lg" className="mt-1 w-full">
               {role === "candidate" ? t.login.signInButtonCandidate : t.login.signInButtonAdmin}
-            </button>
+            </Button>
           </form>
 
           {/* Mock credentials hint */}

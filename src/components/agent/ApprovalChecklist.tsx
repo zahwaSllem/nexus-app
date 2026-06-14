@@ -87,7 +87,7 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
         <div className="flex flex-col gap-3">
           <Link
             href="/dashboard/assessments/new"
-            className="flex items-center justify-center gap-2 rounded-lg bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
+            className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-brand transition-all duration-200 hover:from-indigo-700 hover:to-violet-700 hover:shadow-brand-lg active:scale-[0.97]"
           >
             Assign Assessment
             <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -110,7 +110,7 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
       {/* Preamble */}
       <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
         <div className="flex items-start gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 font-bold text-sm text-white">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-bold text-white shadow-sm">
             N
           </div>
           <div>
@@ -166,7 +166,7 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
         type="button"
         onClick={handleApprove}
         disabled={!allChecked}
-        className="w-full rounded-lg bg-blue-700 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 py-3 text-sm font-semibold text-white shadow-brand transition-all duration-200 hover:from-indigo-700 hover:to-violet-700 hover:shadow-brand-lg active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40"
       >
         Approve Blueprint
       </button>
