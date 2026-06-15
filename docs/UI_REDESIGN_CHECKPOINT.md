@@ -700,3 +700,62 @@ shadcn init (run between sessions) introduced two build-breaking changes:
 - `✔ No ESLint warnings or errors`
 - `23 routes compiled · exit 0`
 - Homepage route `/` → 991 B (Static)
+
+---
+
+## Radial Orbital Timeline — Seven-Layer Architecture ✅
+**Date:** 2026-06-15
+
+**Scope:** Replaced the static numbered list in the Seven-Layer Architecture section on the public homepage with an interactive radial orbital timeline component. No routes, mock data, auth, admin logic, candidate logic, assessment/scoring/governance logic changed.
+
+### Files changed
+
+| File | Change |
+|---|---|
+| `src/components/ui/radial-orbital-timeline.tsx` | **NEW** — self-contained interactive client component; 7 orbital nodes, click-to-select, detail panel, mobile stacked fallback |
+| `src/app/page.tsx` | Added import; removed `layers` array + `layerNumberColor` helper; replaced `<div className="space-y-3">` list with `<RadialOrbitalTimeline />` |
+
+### Component design
+
+**Desktop (lg+, ≥1024px):**
+- Flex row layout: 480×480px orbital ring area (left) + flex-1 detail panel (right)
+- 7 nodes positioned on a 175px-radius orbit using polar coordinates (`angle = -90 + 360/7 * i`)
+- Center hub (172px circle): shows selected layer's ID, title, and phase
+- SVG layer: dashed orbit ring, inner reference ring, connection lines to selected + related nodes
+- Detail panel: phase chip, layer number (4xl mono) + title, description, system weight bar (per-phase color), connected layer buttons, progress dots + prev/next nav
+- Node interaction: click to select; glow shadow on active node; related nodes dimly highlighted; connection lines from center to active + related
+
+**Mobile (< lg):**
+- Stacked expandable list — click to toggle description; phase badge per row; no orbital rendering
+
+**Phase color system (all static class strings, Tailwind JIT-safe):**
+
+| Phase | Layers | Number | Node glow | Detail border |
+|---|---|---|---|---|
+| input | 01–02 | `text-indigo-400` | `shadow-[0_0_24px_rgba(99,102,241,0.45)]` | `border-indigo-500/25` |
+| processing | 03–05 | `text-violet-400` | `shadow-[0_0_24px_rgba(139,92,246,0.45)]` | `border-violet-500/25` |
+| output | 06–07 | `text-emerald-400` | `shadow-[0_0_24px_rgba(16,185,129,0.40)]` | `border-emerald-500/25` |
+
+**No new dependencies.** `lucide-react`, `class-variance-authority`, and `@radix-ui/react-slot` (via `radix-ui`) were already installed. Component uses zero imports beyond `react` and `@/lib/utils`.
+
+**No new CSS added.** No custom keyframes added to `globals.css`. All transitions use Tailwind utilities (`transition-all duration-300`, `transition-all duration-500`). No overrides to existing `.animate-*` utilities.
+
+### Architecture data embedded in component
+
+```
+01 Session Orchestration  — input phase
+02 Measurement            — input phase
+03 Response Quality       — processing phase
+04 Psychometric Scoring   — processing phase
+05 Profile Modeling       — processing phase
+06 Contextual Interp.     — output phase
+07 Governance             — output phase
+```
+
+Each node has: `id`, `title`, `description`, `phase`, `energy` (0–100), `related` (connected layer IDs). The `related` field drives SVG connection lines and the "Connected Layers" button strip in the detail panel.
+
+### Build & lint (Radial Orbital Timeline)
+- `✔ No ESLint warnings or errors`
+- `23 routes compiled · exit 0`
+- Homepage route `/` → 4 kB (Static) — increase from 991 B reflects component JS bundled into page
+- Build note: stale `.next` cache caused intermittent `PageNotFoundError` failures on earlier runs; cleared with `Remove-Item -Recurse -Force .next` → clean build passes consistently

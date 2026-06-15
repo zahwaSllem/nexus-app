@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Navbar } from "@/components/layout/Navbar";
 import { PageAmbient } from "@/components/layout/PageAmbient";
+import { RadialOrbitalTimeline } from "@/components/ui/radial-orbital-timeline";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -55,16 +56,6 @@ const domains = [
   },
 ];
 
-const layers = [
-  { n: "01", name: "Session Orchestration",    desc: "Assessment path, module sequence, and routing" },
-  { n: "02", name: "Measurement",               desc: "Item administration, raw response & response-time capture" },
-  { n: "03", name: "Response Quality",          desc: "Detects careless, inconsistent, or impression-managed responding" },
-  { n: "04", name: "Psychometric Scoring",      desc: "Theta scores and precision / confidence estimates" },
-  { n: "05", name: "Profile Modeling",          desc: "Domain profiles and facet pattern synthesis" },
-  { n: "06", name: "Contextual Interpretation", desc: "Maps scores to job levels, role families, and use cases" },
-  { n: "07", name: "Governance",                desc: "Enforces use permissions, redactions, and confidence warnings" },
-];
-
 const journeySteps = [
   { n: "01", label: "Assigned",   desc: "Admin assigns an assessment package via the platform portal" },
   { n: "02", label: "Session",    desc: "Secure session orchestration begins; item banks activate" },
@@ -80,12 +71,6 @@ function domainStatusBadge(status: string) {
   if (status === "Available")   return "border-indigo-500/30 bg-indigo-500/10 text-indigo-400";
   if (status === "Phase 2")     return "border-violet-500/30 bg-violet-500/10 text-violet-400";
   return "border-slate-700/50 bg-slate-800/60 text-slate-500";
-}
-
-function layerNumberColor(i: number) {
-  if (i < 2) return "text-indigo-400";
-  if (i < 5) return "text-violet-400";
-  return "text-emerald-400";
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -379,22 +364,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="space-y-3">
-            {layers.map((layer, i) => (
-              <div
-                key={layer.n}
-                className="flex items-start gap-5 rounded-xl border border-slate-700/50 bg-slate-800/40 px-6 py-4 backdrop-blur-sm transition-all duration-200 hover:border-indigo-500/30 hover:bg-slate-800/70"
-              >
-                <span className={`w-8 shrink-0 font-mono text-xl font-bold tabular-nums ${layerNumberColor(i)}`}>
-                  {layer.n}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white">{layer.name}</p>
-                  <p className="mt-0.5 text-xs text-slate-500">{layer.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <RadialOrbitalTimeline />
         </div>
       </section>
 
