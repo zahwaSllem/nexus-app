@@ -4,7 +4,6 @@ import "@fontsource-variable/plus-jakarta-sans";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import { LanguageProvider } from "@/lib/providers/language-provider";
-
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
@@ -37,7 +36,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="font-sans">
       <head>
         <script dangerouslySetInnerHTML={{ __html: antiFlashScript }} />
       </head>

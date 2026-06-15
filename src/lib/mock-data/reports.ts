@@ -164,3 +164,7 @@ export function getReportById(reportId: string): Report | undefined {
 export function getReportByScoringRun(scoringRunId: string): Report | undefined {
   return REPORTS.find((r) => r.scoring_run_id === scoringRunId);
 }
+
+export function getReportByCandidateId(candidateId: string): Report | undefined {
+  return REPORTS.find((r) => r.admin_view.candidate_id === candidateId);
+}

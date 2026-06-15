@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
+import { getReportByCandidateId } from "@/lib/mock-data/reports";
 import { useStore } from "@/lib/providers/store-provider";
 import { PageAmbient } from "@/components/layout/PageAmbient";
 
@@ -232,7 +233,7 @@ export default function ReportsPage() {
                         {/* Action */}
                         <td className="px-5 py-4">
                           <Link
-                            href="/dashboard/reports/demo-report"
+                            href={`/dashboard/reports/${getReportByCandidateId(a.candidate_id)?.report_id ?? "rpt-001"}`}
                             className="flex items-center gap-1 text-xs font-semibold text-indigo-400 transition-colors hover:text-indigo-300"
                           >
                             Open report

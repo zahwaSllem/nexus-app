@@ -39,6 +39,17 @@ export default function CandidateResultsPage() {
   const completionPct = Math.round(result.completion_ratio * 100);
   const totalDomains  = result.domain_scores.length;
 
+  const allVisibleDims = result.domain_scores
+    .flatMap((d) => d.dimensions)
+    .filter((d) => d.display_state === "visible" || d.display_state === "visible_with_caution")
+    .sort((a, b) => b.standardized_score - a.standardized_score);
+
+  const topDims = allVisibleDims.slice(0, 3);
+
+  const downgradedDims = result.domain_scores
+    .flatMap((d) => d.dimensions)
+    .filter((d) => d.display_state === "downgraded");
+
   function scoreBand(score: number) {
     if (score >= 75) return t.results.strong;
     if (score >= 65) return t.results.good;
@@ -191,6 +202,75 @@ export default function CandidateResultsPage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        {/* Capability Highlights — Critical Success Factors */}
+        {topDims.length > 0 && (
+          <div className="mb-7">
+            <h2 className="mb-4 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500">
+              Capability Highlights
+            </h2>
+            <div className="grid grid-cols-3 gap-3">
+              {topDims.map((dim) => {
+                const dc = scoreColor(dim.standardized_score);
+                return (
+                  <div
+                    key={dim.dimension_id}
+                    className="rounded-xl border border-slate-200 bg-white px-3 py-4 text-center dark:border-slate-700 dark:bg-slate-800"
+                  >
+                    <p className={`text-2xl font-bold tabular-nums ${dc.text}`}>
+                      {dim.standardized_score}
+                    </p>
+                    <p className="mt-1 text-xs font-medium leading-tight text-slate-700 dark:text-slate-200">
+                      {dim.dimension_name}
+                    </p>
+                    <p className="mt-0.5 font-mono text-[10px] text-slate-400 dark:text-slate-600">
+                      {dim.domain_id}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Assessment Coverage Note — Downgraded Dimensions */}
+        {downgradedDims.length > 0 && (
+          <div className="mb-7 rounded-xl border border-slate-200/60 bg-slate-100/60 p-5 dark:border-slate-700/40 dark:bg-slate-800/50">
+            <p className="mb-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              Assessment Coverage Note
+            </p>
+            {downgradedDims.map((dim) => (
+              <p key={dim.dimension_id} className="text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+                <span className="font-medium text-slate-500 dark:text-slate-400">
+                  {dim.dimension_name}
+                </span>{" "}
+                could not be scored with sufficient reliability in this session. This reflects data
+                quality, not capability level, and may be revisited in a future assessment.
+              </p>
+            ))}
+          </div>
+        )}
+
+        {/* Role Fit — V1 blocked notice */}
+        <div className="mb-7 flex items-start gap-3 rounded-xl border border-slate-200/60 bg-white px-4 py-4 dark:border-slate-700/40 dark:bg-slate-800/50">
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 dark:text-slate-600"
+          >
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+          </svg>
+          <div>
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+              Role Fit Analysis
+            </p>
+            <p className="mt-0.5 text-xs leading-relaxed text-slate-400 dark:text-slate-600">
+              A personalised Role Fit analysis — showing how your capability profile compares to the
+              specific requirements of this role — will be available in a future report version. This
+              requires the Nexus Domain 6 engine, currently in development.
+            </p>
           </div>
         </div>
 

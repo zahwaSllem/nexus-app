@@ -5,8 +5,9 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/#about", label: "About Nexus" },
+  { href: "/#what", label: "Platform" },
+  { href: "/#domains", label: "Domains" },
+  { href: "/#architecture", label: "Architecture" },
 ];
 
 export function Navbar() {

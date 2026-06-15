@@ -407,7 +407,7 @@ export default function LoginPage() {
             )}
 
             {/* Submit */}
-            <Button type="submit" variant="primary" size="lg" className="mt-1 w-full">
+            <Button type="submit" variant="default" size="lg" className="mt-1 w-full">
               {role === "candidate" ? t.login.signInButtonCandidate : t.login.signInButtonAdmin}
             </Button>
           </form>

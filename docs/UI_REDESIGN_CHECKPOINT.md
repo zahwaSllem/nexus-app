@@ -5,7 +5,7 @@
 
 **Last updated:** 2026-06-15  
 **Design system:** UI UX Pro Max — Enterprise SaaS / Indigo-Violet  
-**Current status:** Candidate Portal Redesign complete ✅ — awaiting approval before Phase 5
+**Current status:** Homepage Redesign complete ✅ — awaiting approval before Phase 5
 
 ---
 
@@ -641,3 +641,62 @@ will-change: transform — GPU composited, zero layout/paint triggers
 ### Build & lint (Candidate Portal Redesign)
 - `✔ No ESLint warnings or errors`
 - `23 routes compiled · exit 0`
+
+---
+
+## Homepage Redesign ✅
+**Date:** 2026-06-15
+
+**Scope:** Full public landing page redesign — premium dark-first product storytelling page. 9 sections, Nexus visual system applied throughout, all existing routes/auth/logic preserved. No functional changes.
+
+### Files changed
+
+| File | Change |
+|---|---|
+| `src/app/page.tsx` | Full rewrite — 9-section premium dark landing page |
+| `src/components/layout/Navbar.tsx` | Nav links updated from Home/About Nexus → Platform/#what · Domains/#domains · Architecture/#architecture |
+| `src/app/globals.css` | Added smooth scroll (PRM-guarded); extended `prefers-reduced-motion` guard to cover entrance animations + bounce + pulse |
+| `src/app/layout.tsx` | Removed Geist Google Font import (added by shadcn init, unsupported in Next.js 14 — was breaking the build) |
+| `src/app/login/page.tsx` | Fixed `variant="primary"` → `variant="default"` on shadcn Button (pre-existing shadcn init conflict) |
+| `src/app/candidate/report/[id]/page.tsx` | Changed `function scoreColor` → `const scoreColor` (pre-existing TS2393 duplicate function implementation error) |
+
+### Sections implemented
+
+1. **Hero** — full-viewport dark with `PageAmbient variant="rich"`, gradient headline "Measure What Matters.", sub-headline, gradient Sign In CTA + glass Request Demo CTA, domain chip row (D1–D6), animated scroll cue, bottom gradient blend
+2. **What Nexus Does** (`#what`) — three glass pillar cards: Measure (indigo) / Score (violet) / Govern (emerald); hover lift animation; micro-badges per pillar
+3. **Assessment Journey** — 5-step horizontal flow with connecting line, indigo→emerald step node color progression, responsive (vertical on mobile)
+4. **Six Domains** (`#domains`) — 3×2 card grid with domain code chips, status badges (dark-appropriate: emerald/indigo/violet/slate), hover accent line animation
+5. **Seven-Layer Architecture** (`#architecture`) — numbered pipeline 01–07, three-phase color progression (indigo: 01–02, violet: 03–05, emerald: 06–07), hover card elevation
+6. **Two Roles, One Platform** — Admin card (indigo top bar) + Candidate card (violet top bar), each with role chip + 6 bullet points + portal link
+7. **Final CTA** — second `PageAmbient variant="rich"`, gradient headline, dual CTAs
+8. **Footer** — minimal: gradient N logo mark + "Nexus" + V1 badge + copyright
+
+### Visual improvements
+
+- **Dark-first consistently**: entire page uses `dark` class forcing dark mode — `slate-950` base, `slate-900` section alternates, glass card surfaces `bg-slate-800/40–60` — no abrupt dark/light switching
+- **Removed all `bg-blue-*`**: replaced with `indigo-`/`violet-` brand tokens throughout
+- **Gradient headline**: `from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent`
+- **Section rhythm**: slate-950 → slate-950 → slate-900 → gradient(900→950) → slate-950 → gradient(950→900) → slate-900 → slate-950 — visual breathing without white sections
+- **Glass card surfaces**: `bg-slate-800/40 backdrop-blur-sm border border-slate-700/60` throughout
+
+### Animations added
+
+- Hero entrance: `animate-fade-in-up` with staggered delays (0.1s–0.55s) on eyebrow/headline/subtext/CTAs/chips
+- Scroll indicator: `animate-bounce opacity-40` 
+- Card hover: `hover:-translate-y-1 duration-300` on pillar cards + domain cards
+- Hero gradient CTA: `hover:-translate-y-0.5 hover:shadow-brand-lg` + `group-hover:translate-x-0.5` arrow
+- Layer rows: `hover:border-indigo-500/30 hover:bg-slate-800/70` transition
+- `PageAmbient variant="rich"` in hero AND final CTA — three animated ambient blobs each
+- Eyebrow badge: `animate-pulse` dot
+- `prefers-reduced-motion` extended to cover all entrance + ambient animations
+
+### Shadcn conflicts found and fixed
+
+shadcn init (run between sessions) introduced two build-breaking changes:
+1. `layout.tsx`: Added `import { Geist } from "next/font/google"` — Geist is only in `next/font/google` from Next.js 15; using Next.js 14.2.35 → `Unknown font 'Geist'` error → removed, Plus Jakarta Sans already loaded via fontsource
+2. `login/page.tsx`: `<Button variant="primary">` — shadcn Button doesn't have a `primary` variant (only `default`, `secondary`, `outline`, `ghost`, `destructive`) → changed to `variant="default"`
+
+### Build & lint (Homepage Redesign)
+- `✔ No ESLint warnings or errors`
+- `23 routes compiled · exit 0`
+- Homepage route `/` → 991 B (Static)

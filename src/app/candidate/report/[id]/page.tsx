@@ -3,14 +3,12 @@ import { REPORT_1 } from "@/lib/mock-data/reports";
 import type { DomainScore, DimensionScore, BehavioralDescriptor, BlockedSectionReason } from "@/lib/types/nexus";
 import { PageAmbient } from "@/components/layout/PageAmbient";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function scoreColor(score: number) {
-  if (score >= 75) return { bar: "bg-emerald-500",  text: "text-emerald-400" };
-  if (score >= 65) return { bar: "bg-indigo-500",   text: "text-indigo-400"  };
-  if (score >= 50) return { bar: "bg-amber-500",    text: "text-amber-400"   };
-  return               { bar: "bg-slate-500",    text: "text-slate-400"   };
-}
+const scoreColor = (score: number) => {
+  if (score >= 75) return { bar: "bg-emerald-500", text: "text-emerald-400" };
+  if (score >= 65) return { bar: "bg-indigo-500",  text: "text-indigo-400"  };
+  if (score >= 50) return { bar: "bg-amber-500",   text: "text-amber-400"   };
+  return               { bar: "bg-slate-500",   text: "text-slate-400"   };
+};
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
@@ -20,6 +18,16 @@ export default function CandidateReportPage() {
   const descriptorMap = new Map<string, string>(
     cv.behavioral_descriptors.map((d: BehavioralDescriptor) => [d.dimension_id, d.text]),
   );
+
+  const dimScoreMap = new Map<string, number>(
+    cv.domain_scores
+      .flatMap((d: DomainScore) => d.dimensions)
+      .map((dim: DimensionScore) => [dim.dimension_id, dim.standardized_score]),
+  );
+
+  const topDescriptors = [...cv.behavioral_descriptors]
+    .sort((a, b) => (dimScoreMap.get(b.dimension_id) ?? 0) - (dimScoreMap.get(a.dimension_id) ?? 0))
+    .slice(0, 3);
 
   return (
     <div className="relative min-h-full bg-slate-50 dark:bg-slate-900">
@@ -61,6 +69,39 @@ export default function CandidateReportPage() {
             </p>
           </div>
         </div>
+
+        {/* Your Strengths */}
+        {topDescriptors.length > 0 && (
+          <div className="mb-7">
+            <h2 className="mb-4 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500">
+              Your Strengths
+            </h2>
+            <div className="space-y-3">
+              {topDescriptors.map((desc: BehavioralDescriptor) => {
+                const score = dimScoreMap.get(desc.dimension_id) ?? 0;
+                const dc = scoreColor(score);
+                return (
+                  <div
+                    key={desc.dimension_id}
+                    className="flex items-start gap-4 rounded-xl border border-emerald-500/15 bg-emerald-500/5 px-5 py-4 dark:border-emerald-500/10 dark:bg-emerald-500/[0.04]"
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/60 dark:bg-slate-800/60">
+                      <span className={`text-sm font-bold tabular-nums ${dc.text}`}>{score}</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                        {desc.dimension_name}
+                      </p>
+                      <p className="mt-0.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                        {desc.text}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Domain sections */}
         <div className="mb-7">
@@ -131,9 +172,9 @@ export default function CandidateReportPage() {
           </div>
         </div>
 
-        {/* Development suggestions */}
+        {/* Learning Recommendations */}
         <div className="mb-7 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
-          <h2 className="mb-1 text-sm font-semibold text-slate-900 dark:text-white">Development Suggestions</h2>
+          <h2 className="mb-1 text-sm font-semibold text-slate-900 dark:text-white">Learning Recommendations</h2>
           <p className="mb-4 text-xs text-slate-400 dark:text-slate-500">
             These suggestions are based on your assessment profile and are designed to support your growth.
           </p>
@@ -147,6 +188,25 @@ export default function CandidateReportPage() {
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Role Fit Explanation */}
+        <div className="mb-7 rounded-xl border border-slate-200/60 bg-slate-50 px-5 py-5 dark:border-slate-700/40 dark:bg-slate-800/50">
+          <h2 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+            Role Fit
+          </h2>
+          <p className="text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+            Role Fit reflects how your capability profile — across personality, cognition, and
+            interpersonal functioning — aligns with the specific demands of your assessed role.
+            This analysis requires the Nexus Domain 6 engine, which compares your scores against
+            a validated role context profile. It will be available in a future version of this report.
+          </p>
+          <div className="mt-3 flex items-center gap-2">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 shrink-0 text-slate-500">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+            </svg>
+            <p className="text-[10px] text-slate-500 dark:text-slate-600">Coming in Phase 2</p>
+          </div>
         </div>
 
         {/* Sections not yet available */}
