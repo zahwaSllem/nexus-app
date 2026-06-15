@@ -43,7 +43,7 @@ function MonitorIcon() {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 interface HeaderBarProps {
-  role?: "dashboard" | "admin";
+  role?: "dashboard" | "admin" | "candidate";
 }
 
 export function HeaderBar({ role = "dashboard" }: HeaderBarProps) {
@@ -66,7 +66,7 @@ export function HeaderBar({ role = "dashboard" }: HeaderBarProps) {
     >
       {/* Left: workspace label */}
       <span className="hidden text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400/80 dark:text-slate-600 sm:block">
-        {role === "admin" ? t.nav.administration : t.nav.workspace}
+        {role === "admin" ? t.nav.administration : role === "candidate" ? "Portal" : t.nav.workspace}
       </span>
 
       {/* Right: premium control cluster */}
@@ -86,10 +86,10 @@ export function HeaderBar({ role = "dashboard" }: HeaderBarProps) {
               "text-[9px] font-bold leading-none text-white",
             )}
           >
-            {role === "admin" ? "A" : "U"}
+            {role === "admin" ? "A" : role === "candidate" ? "C" : "U"}
           </div>
           <span className="hidden text-xs font-semibold text-slate-700 dark:text-slate-200 sm:block">
-            {role === "admin" ? "Platform Admin" : t.nav.workspace}
+            {role === "admin" ? "Platform Admin" : role === "candidate" ? "Candidate" : t.nav.workspace}
           </span>
           <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" aria-hidden />
         </div>

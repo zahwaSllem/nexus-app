@@ -5,9 +5,7 @@ import { SCORED_RESULT_1 } from "@/lib/mock-data/scored-results";
 import { REPORT_1 } from "@/lib/mock-data/reports";
 import type { DomainScore, DimensionScore } from "@/lib/types/nexus";
 import { useLanguage } from "@/lib/providers/language-provider";
-import { useTheme } from "@/lib/providers/theme-provider";
-import type { Theme } from "@/lib/providers/theme-provider";
-import { cn } from "@/lib/utils";
+import { PageAmbient } from "@/components/layout/PageAmbient";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -16,28 +14,6 @@ function scoreColor(score: number) {
   if (score >= 65) return { bar: "bg-indigo-500",   text: "text-indigo-400",   ring: "border-indigo-500/30" };
   if (score >= 50) return { bar: "bg-amber-500",    text: "text-amber-400",    ring: "border-amber-500/30" };
   return               { bar: "bg-slate-500",    text: "text-slate-400",    ring: "border-slate-300 dark:border-slate-600" };
-}
-
-function SunIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-      <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
-    </svg>
-  );
-}
-function MoonIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-    </svg>
-  );
-}
-function MonitorIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-      <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
-    </svg>
-  );
 }
 
 const CONFIDENCE_DOT: Record<string, string> = {
@@ -55,15 +31,8 @@ function candidateVisibleDimensions(dims: DimensionScore[]) {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function CandidateResultsPage() {
-  const { t, lang, setLang } = useLanguage();
-  const { theme, setTheme } = useTheme();
+  const { t } = useLanguage();
   const result   = SCORED_RESULT_1;
-
-  const themeOpts: { value: Theme; icon: React.ReactNode }[] = [
-    { value: "light",  icon: <SunIcon /> },
-    { value: "dark",   icon: <MoonIcon /> },
-    { value: "system", icon: <MonitorIcon /> },
-  ];
   const report   = REPORT_1;
   const cv       = report.candidate_view;
 
@@ -78,81 +47,19 @@ export default function CandidateResultsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="relative min-h-full bg-slate-50 dark:bg-slate-900">
+      <PageAmbient />
 
-      {/* Top bar */}
-      <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-950/80">
-        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-6">
-          <Link href="/candidate/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_2px_8px_0_rgba(99,102,241,0.35)]">
-              N
-            </div>
-            <span className="text-base font-semibold text-slate-900 dark:text-white">
-              {t.common.nexus}
-            </span>
-          </Link>
+      {/* ── Hero strip ─────────────────────────────────────────────── */}
+      <div className="relative overflow-hidden border-b border-slate-200/60 dark:border-slate-800/70">
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-indigo-50/70 via-white to-violet-50/40 dark:from-slate-800/50 dark:via-slate-900 dark:to-slate-900" />
+        <div aria-hidden className="pointer-events-none absolute -right-8 -top-8 h-40 w-56 rounded-full bg-indigo-400/10 blur-3xl dark:bg-indigo-500/8" />
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/candidate/dashboard"
-              className="hidden items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-indigo-500 dark:hover:text-indigo-400 sm:flex"
-            >
-              <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-                <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
-              </svg>
-              {t.results.backToDashboard}
-            </Link>
-
-            {/* Control cluster */}
-            <div className="flex items-center gap-0.5 rounded-full border border-slate-200/80 bg-slate-100/90 px-1 py-1 shadow-sm backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/50">
-              {(["en", "ar"] as const).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLang(l)}
-                  title={l === "en" ? t.language.en : t.language.ar}
-                  className={cn(
-                    "rounded-full px-2.5 py-1 text-[11px] font-bold tracking-wide transition-all duration-150",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
-                    lang === l
-                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300",
-                  )}
-                >
-                  {l.toUpperCase()}
-                </button>
-              ))}
-              <div className="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700/80" aria-hidden />
-              {themeOpts.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setTheme(opt.value)}
-                  title={t.theme[opt.value]}
-                  className={cn(
-                    "flex items-center justify-center rounded-full p-1.5 transition-all duration-150",
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
-                    theme === opt.value
-                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300",
-                  )}
-                >
-                  {opt.icon}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-3xl px-6 py-10">
-
-        {/* Page title */}
-        <div className="mb-8">
-          <p className="text-xs font-medium uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
+        <div className="relative px-8 py-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-indigo-500 dark:text-indigo-400">
             {t.results.assessmentResults}
           </p>
-          <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">
+          <h1 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
             Junior Software Engineer — Capability Assessment
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
@@ -160,18 +67,22 @@ export default function CandidateResultsPage() {
             {new Date("2026-06-08T10:15:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
           </p>
         </div>
+      </div>
+
+      {/* ── Content ────────────────────────────────────────────────── */}
+      <div className="px-8 py-7">
 
         {/* Summary strip */}
-        <div className="mb-8 grid grid-cols-3 gap-3">
-          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center dark:border-slate-700 dark:bg-slate-800">
+        <div className="mb-7 grid grid-cols-3 gap-4">
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-4 text-center dark:border-slate-700 dark:bg-slate-800">
             <p className="text-2xl font-bold text-slate-900 dark:text-white">{completionPct}%</p>
             <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{t.results.completedLabel}</p>
           </div>
-          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-center dark:border-slate-700 dark:bg-slate-800">
+          <div className="rounded-xl border border-slate-200 bg-white px-4 py-4 text-center dark:border-slate-700 dark:bg-slate-800">
             <p className="text-2xl font-bold text-slate-900 dark:text-white">{totalDomains}</p>
             <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">{t.results.domainsScored}</p>
           </div>
-          <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-3 text-center">
+          <div className="rounded-xl border border-amber-500/25 bg-amber-500/5 px-4 py-4 text-center">
             <p className="text-xs font-medium text-amber-500 dark:text-amber-400">
               {result.release_state}
             </p>
@@ -180,7 +91,7 @@ export default function CandidateResultsPage() {
         </div>
 
         {/* Provisional notice */}
-        <div className="mb-8 flex items-start gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-4 py-3">
+        <div className="mb-7 flex items-start gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-4 py-3">
           <svg viewBox="0 0 20 20" fill="currentColor" className="mt-0.5 h-4 w-4 shrink-0 text-indigo-500 dark:text-indigo-400">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
           </svg>
@@ -190,99 +101,101 @@ export default function CandidateResultsPage() {
         </div>
 
         {/* Domain score cards */}
-        <div className="mb-8 space-y-4">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+        <div className="mb-7">
+          <h2 className="mb-4 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500">
             {t.results.domainScores}
           </h2>
 
-          {cv.domain_scores.map((domain: DomainScore) => {
-            const visibleDims = candidateVisibleDimensions(domain.dimensions);
-            if (visibleDims.length === 0) return null;
+          <div className="grid gap-4 xl:grid-cols-2">
+            {cv.domain_scores.map((domain: DomainScore) => {
+              const visibleDims = candidateVisibleDimensions(domain.dimensions);
+              if (visibleDims.length === 0) return null;
 
-            const dc   = scoreColor(domain.standardized_score);
-            const band = scoreBand(domain.standardized_score);
+              const dc   = scoreColor(domain.standardized_score);
+              const band = scoreBand(domain.standardized_score);
 
-            return (
-              <div key={domain.domain_id} className={`overflow-hidden rounded-xl border bg-white dark:bg-slate-800 ${dc.ring}`}>
-                {/* Domain header */}
-                <div className="flex items-center justify-between border-b border-slate-200/60 px-5 py-4 dark:border-slate-700/60">
-                  <div className="flex items-center gap-3">
-                    <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
-                      {domain.domain_id}
-                    </span>
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                      {domain.domain_name}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`flex items-center gap-1.5 text-xs ${
-                      domain.confidence === "HIGH" ? "text-emerald-500 dark:text-emerald-400" : "text-amber-500 dark:text-amber-400"
-                    }`}>
-                      <span className={`h-1.5 w-1.5 rounded-full ${CONFIDENCE_DOT[domain.confidence]}`} />
-                      {domain.confidence === "HIGH" ? t.results.highConfidence : t.results.provisional}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-5">
-                  {/* Composite */}
-                  <div className="mb-4 flex items-end gap-3">
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-slate-500">
-                        {t.results.overallScore}
-                      </p>
-                      <div className="flex items-baseline gap-1.5">
-                        <span className={`text-3xl font-bold tabular-nums ${dc.text}`}>
-                          {domain.standardized_score}
-                        </span>
-                        <span className="text-slate-400 dark:text-slate-600">/100</span>
-                      </div>
+              return (
+                <div key={domain.domain_id} className={`overflow-hidden rounded-xl border bg-white dark:bg-slate-800 ${dc.ring}`}>
+                  {/* Domain header */}
+                  <div className="flex items-center justify-between border-b border-slate-200/60 px-5 py-4 dark:border-slate-700/60">
+                    <div className="flex items-center gap-3">
+                      <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                        {domain.domain_id}
+                      </span>
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white">
+                        {domain.domain_name}
+                      </span>
                     </div>
-                    <span className={`mb-1 rounded-full px-2 py-0.5 text-xs font-medium ${dc.text} bg-slate-100 dark:bg-slate-700/50`}>
-                      {band}
-                    </span>
-                  </div>
-                  <div className="mb-5 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                    <div className={`h-1.5 rounded-full ${dc.bar}`} style={{ width: `${domain.standardized_score}%` }} />
+                    <div className="flex items-center gap-2">
+                      <span className={`flex items-center gap-1.5 text-xs ${
+                        domain.confidence === "HIGH" ? "text-emerald-500 dark:text-emerald-400" : "text-amber-500 dark:text-amber-400"
+                      }`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${CONFIDENCE_DOT[domain.confidence]}`} aria-hidden />
+                        {domain.confidence === "HIGH" ? t.results.highConfidence : t.results.provisional}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Dimensions */}
-                  <div className="space-y-3">
-                    {visibleDims.map((dim: DimensionScore) => {
-                      const ddc = scoreColor(dim.standardized_score);
-                      const isCaution = dim.display_state === "visible_with_caution";
-                      return (
-                        <div key={dim.dimension_id}>
-                          <div className="mb-1 flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-slate-600 dark:text-slate-300">
-                                {dim.dimension_name}
-                              </span>
-                              {isCaution && (
-                                <span className="rounded-full bg-amber-500/10 px-1.5 py-0.5 text-xs text-amber-500">
-                                  {t.results.provisional}
-                                </span>
-                              )}
-                            </div>
-                            <span className={`font-mono text-xs font-bold ${ddc.text}`}>
-                              {dim.standardized_score}
-                            </span>
-                          </div>
-                          <div className="h-1 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                            <div className={`h-1 rounded-full ${ddc.bar}`} style={{ width: `${dim.standardized_score}%` }} />
-                          </div>
+                  <div className="p-5">
+                    {/* Composite score */}
+                    <div className="mb-4 flex items-end gap-3">
+                      <div>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">
+                          {t.results.overallScore}
+                        </p>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className={`text-3xl font-bold tabular-nums ${dc.text}`}>
+                            {domain.standardized_score}
+                          </span>
+                          <span className="text-slate-400 dark:text-slate-600">/100</span>
                         </div>
-                      );
-                    })}
+                      </div>
+                      <span className={`mb-1 rounded-full px-2 py-0.5 text-xs font-medium ${dc.text} bg-slate-100 dark:bg-slate-700/50`}>
+                        {band}
+                      </span>
+                    </div>
+                    <div className="mb-5 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                      <div className={`h-1.5 rounded-full ${dc.bar}`} style={{ width: `${domain.standardized_score}%` }} />
+                    </div>
+
+                    {/* Dimensions */}
+                    <div className="space-y-3">
+                      {visibleDims.map((dim: DimensionScore) => {
+                        const ddc = scoreColor(dim.standardized_score);
+                        const isCaution = dim.display_state === "visible_with_caution";
+                        return (
+                          <div key={dim.dimension_id}>
+                            <div className="mb-1 flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-slate-600 dark:text-slate-300">
+                                  {dim.dimension_name}
+                                </span>
+                                {isCaution && (
+                                  <span className="rounded-full bg-amber-500/10 px-1.5 py-0.5 text-xs text-amber-500">
+                                    {t.results.provisional}
+                                  </span>
+                                )}
+                              </div>
+                              <span className={`font-mono text-xs font-bold ${ddc.text}`}>
+                                {dim.standardized_score}
+                              </span>
+                            </div>
+                            <div className="h-1 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                              <div className={`h-1 rounded-full ${ddc.bar}`} style={{ width: `${dim.standardized_score}%` }} />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
 
         {/* Development suggestions */}
-        <div className="mb-8 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
+        <div className="mb-7 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
           <h2 className="mb-4 text-sm font-semibold text-slate-900 dark:text-white">
             {t.results.developmentSuggestions}
           </h2>

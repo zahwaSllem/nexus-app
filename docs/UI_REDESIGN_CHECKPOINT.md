@@ -5,7 +5,7 @@
 
 **Last updated:** 2026-06-15  
 **Design system:** UI UX Pro Max — Enterprise SaaS / Indigo-Violet  
-**Current status:** Ambient Visibility Tuning complete ✅ — awaiting approval before Phase 5
+**Current status:** Candidate Portal Redesign complete ✅ — awaiting approval before Phase 5
 
 ---
 
@@ -577,5 +577,67 @@ will-change: transform — GPU composited, zero layout/paint triggers
 **Why the previous values were invisible:** `blur-3xl` applies a 48px Gaussian blur across elements that are 50–65% of the viewport in each dimension. The blur heavily diffuses the color, meaning only the tail of the gradient reaches the content area. At 7–10% opacity with heavy blur, the perceived colour in the workspace was near-zero. The new 22–35% values for the rich variant and 11–22% for subtle produce a clearly visible atmospheric tint while remaining professional.
 
 ### Build & lint (Ambient Visibility Tuning)
+- `✔ No ESLint warnings or errors`
+- `23 routes compiled · exit 0`
+
+---
+
+## Candidate Portal Redesign ✅
+**Date:** 2026-06-15
+
+**Scope:** Full candidate/user layout redesign — portal shell with sidebar + HeaderBar, `PageAmbient` ambient system on all candidate pages, full-screen content layout, premium hero strips, visual parity with admin. No routes, mock data, business logic, auth, assessment, or scoring logic changed.
+
+### New files
+
+| File | Description |
+|---|---|
+| `src/components/layout/CandidateSidebar.tsx` | Candidate portal sidebar — same glass+gradient pattern as admin Sidebar; nav items: My Dashboard · My Assessment · My Results · My Report; footer: Back to Home + Sign Out; mobile hamburger drawer |
+| `src/app/candidate/layout.tsx` | Candidate layout shell — `flex h-screen` with `CandidateSidebar` + `HeaderBar role="candidate"` + scrollable `<main>` |
+
+### Modified files
+
+| File | Change |
+|---|---|
+| `src/components/layout/HeaderBar.tsx` | Added `"candidate"` to role type; "C" avatar initial + "Candidate" chip label + "Portal" workspace label |
+| `src/app/candidate/dashboard/page.tsx` | Removed inline page header; added `PageAmbient`; hero strip with gradient backdrop + status chips; full-width `px-8 py-7` content grid (was `max-w-4xl mx-auto`); improved assessment cards with top accent bar + hover lift; removed `useTheme` / theme icons (layout handles it) |
+| `src/app/candidate/results/[id]/page.tsx` | Removed inline page header; added `PageAmbient`; hero strip; widened content to `px-8 py-7`; domain score cards now in `xl:grid-cols-2` two-column grid; removed `useTheme` / theme icons |
+| `src/app/candidate/report/[id]/page.tsx` | Removed inline page header; added `PageAmbient` import + render; hero strip; widened content to `px-8 py-7`; all section headings → `text-[10px] font-bold uppercase tracking-[0.12em]` micro-label style |
+
+### What changed visually
+
+**Layout shell:**
+- Candidate pages now have the same `flex h-screen` layout as admin — sidebar on left, header on top, content scrolls
+- `CandidateSidebar` (w-60) has a "CANDIDATE" sub-label under the Nexus logo, matching the admin sidebar structure
+- `HeaderBar role="candidate"` shows "PORTAL" workspace label + "C" chip + EN/AR + theme toggles — identical control cluster pattern as admin
+- Mobile hamburger drawer matches admin pattern (slide-in from left)
+
+**Dashboard:**
+- No more narrow `max-w-4xl mx-auto` centering — content uses full available width with `px-8` padding
+- Hero strip at top mirrors admin page headers: gradient backdrop, ambient blur nodes, portal label, h1 with candidate name, status summary chips in top-right
+- Assessment cards: added top gradient accent bar (indigo for pending, emerald for completed) + `hover:-translate-y-0.5 hover:shadow-md` lift
+- Right panel: top accent bar, improved spacing
+
+**Results page:**
+- Inline header removed (layout provides navigation)
+- Hero strip with indigo gradient backdrop replaces the old logo+nav bar
+- Domain score cards now in a responsive 2-column grid on xl screens
+- `PageAmbient` animated blobs visible behind all content
+
+**Report page:**
+- Inline header removed (layout provides navigation)
+- Hero strip replaces old logo+nav bar (server component, no hooks needed)
+- `PageAmbient` animated blobs visible
+- All section headings use micro-label style
+
+**Ambient:**
+- `PageAmbient` (`variant="subtle"`) applied to all three candidate pages
+- Animated indigo + violet blobs + dot grid — same system as admin pages
+
+**Light + dark:**
+- Hero strips dual-themed: `from-indigo-50/70 via-white to-violet-50/40` light / `from-slate-800/50 via-slate-900 to-slate-900` dark
+- All card surfaces: `bg-white dark:bg-slate-800` / borders: `border-slate-200 dark:border-slate-700`
+- Status chips: dual-theme amber/emerald variants
+
+### Build & lint (Candidate Portal Redesign)
 - `✔ No ESLint warnings or errors`
 - `23 routes compiled · exit 0`
