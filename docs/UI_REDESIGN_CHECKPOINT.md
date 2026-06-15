@@ -3,9 +3,9 @@
 **Context:** This file tracks the separate UI/UX redesign stream.  
 **Do not confuse with:** The functional implementation phases in `CURRENT_PHASE.md` and `IMPLEMENTATION_ROADMAP.md`, which track data layer and feature builds. Both streams run in parallel on the same codebase.
 
-**Last updated:** 2026-06-14  
+**Last updated:** 2026-06-15  
 **Design system:** UI UX Pro Max — Enterprise SaaS / Indigo-Violet  
-**Current status:** Phase 4 Correction Pass complete ✅ — awaiting approval before Phase 5
+**Current status:** Agent Page Visual Composition Redesign complete ✅ — awaiting approval before Phase 5
 
 ---
 
@@ -139,8 +139,34 @@ These were set by the user and must be respected in every phase:
 | `src/app/dashboard/assessments/page.tsx` | Same elevation pattern: gradient header; 3 KPI cards; gradient CTA button; table with hover left accent; domain colors D1→indigo; indigo links throughout |
 | `src/app/dashboard/blueprints/page.tsx` | Gradient header; 3 KPI cards; filter pills: gradient active state; search: indigo focus ring; blueprint cards: top gradient accent bar + circular BQ score conic-gradient ring + hover elevation + gradient "Assign Assessment" button; D1→indigo domain colors; `validated` status→indigo; empty state improved |
 
-### Unchanged (out of scope through Phase 4 Correction)
-- All `src/app/**/page.tsx` files — not yet touched
+### Agent Page Consistency Correction files
+| File | Change |
+|---|---|
+| `src/app/globals.css` | Added `--bq-ring-track` CSS variable (E2E8F0 light / 334155 dark) for theme-adaptive conic gradient ring |
+| `src/app/dashboard/agent/page.tsx` | Fixed "Step X of 5" label: `dark:text-slate-500→dark:text-slate-400`; fixed bottom nav step counter: `dark:text-slate-600→dark:text-slate-400` |
+| `src/components/agent/AgentStepIndicator.tsx` | Step descriptions: `dark:text-slate-600→dark:text-slate-400` (was nearly invisible in dark mode) |
+| `src/components/agent/AgentChatBubble.tsx` | Timestamps: `text-slate-700→text-slate-500` (was too dark on dark terminal background) |
+| `src/components/agent/AgentChatInterface.tsx` | "Enter to send" + char count hints: `text-slate-700→text-slate-500` (was too dark on dark terminal background) |
+| `src/components/agent/RoleBlueprintReview.tsx` | **Full dual-theme rewrite**: White card surfaces in light mode (`bg-white dark:bg-slate-800`), proper `shadow-sm` in light mode; all `text-white/slate-200/300/400` converted to `text-slate-900/800/700/600 dark:text-*` equivalents; `DOMAIN_COLORS` updated with light-mode `-100/-700/-200` chip variants; `bqColor`/`bqQualityClass` updated with `-600 dark:-400` status text; BQ ring uses `var(--bq-ring-track)` for theme-adaptive empty arc; all progress bar tracks `bg-slate-200 dark:bg-slate-700`; inner cutout `bg-white dark:bg-slate-800` |
+| `src/components/agent/AssessmentBlueprintPreview.tsx` | **Full dual-theme rewrite**: White card surfaces; `DOMAIN_COLORS` light variants; domain separator `from-slate-200 dark:from-slate-700/80`; method mix pills `bg-slate-100/50 dark:bg-slate-700/30`; agent rationale `border-indigo-200 bg-indigo-50/80 dark:...`; all hardcoded dark text classes converted |
+| `src/components/agent/GovernanceReviewPanel.tsx` | **Full dual-theme rewrite**: `SEVERITY_CONFIG` border/bg/badge classes all dual-themed (`-50/-200/-700` light vs `/5/-500/30/-400` dark); summary header white card; blocking banner light variant; warning code badges `text-slate-600 dark:text-slate-400`; warning messages `text-slate-700 dark:text-slate-300`; affected item tags `bg-slate-100 dark:bg-slate-700`; completion state `border-emerald-200 bg-emerald-50 dark:...` |
+| `src/components/agent/ApprovalChecklist.tsx` | **Full dual-theme rewrite**: All card surfaces `bg-white dark:bg-slate-800`; "Final approval" heading `text-slate-900 dark:text-white`; description `text-slate-600 dark:text-slate-400`; blueprint ID `text-slate-700 dark:text-slate-300`; unchecked items `border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800`; checked items `border-emerald-200 bg-emerald-50 dark:...`; "View in Blueprint Library" link fully dual-themed; approval record values `text-slate-700 dark:text-slate-300`; "Blueprint Approved" heading `text-slate-900 dark:text-white` |
+| `src/components/agent/ItemContextCard.tsx` | **Full dual-theme rewrite**: Card `bg-white dark:bg-slate-800`; item ID badge `bg-slate-100 dark:bg-slate-700`; facet name/dot separator `dark:text-slate-400/slate-600`; display order `text-slate-400 dark:text-slate-500`; `reverse-scored` badge light variant; question text `text-slate-900 dark:text-white`; separator line `bg-slate-200 dark:bg-slate-700/60`; rationale `text-slate-500 dark:text-slate-400` |
+| `src/components/agent/OriginalTextToggle.tsx` | Toggle button: `text-slate-500 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300`; ring-offset theme-adaptive; expanded box `border-slate-200/80 bg-slate-50 dark:border-slate-700/60 dark:bg-slate-900/50`; label `text-slate-500 dark:text-slate-400` |
+| `src/components/ui/MethodBadge.tsx` | All variants: `-500/15 text-*-400` (dark-only) → `*-50 text-*-700 border-*-200 dark:bg-*-500/15 dark:text-*-400 dark:border-*-500/30` (dual-theme; improves contrast in light mode from ~2:1 to ~5:1 AA) |
+| `src/components/ui/GovernanceBadge.tsx` | All variants dual-themed: `-50/-700/-200` light vs `/15/-400/-500/30` dark; "research" fallback: `bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400` |
+
+**What was inconsistent before:**
+- Steps 2-5 review panels (`RoleBlueprintReview`, `AssessmentBlueprintPreview`, `GovernanceReviewPanel`, `ApprovalChecklist`, `ItemContextCard`, `OriginalTextToggle`) used **zero light-theme support** — all `bg-slate-800`, `text-white`, `text-slate-200/300` hardcoded — dark cards with near-invisible text on a light page background
+- `MethodBadge` and `GovernanceBadge` used `text-*-400` on white, giving contrast ratios as low as ~2:1 (failing WCAG AA)
+- Dark mode readability: timestamps `text-slate-700` (~1.6:1 on dark terminal), step descriptions `dark:text-slate-600` (~2.5:1), nav step counter `dark:text-slate-600`, bottom nav step label `dark:text-slate-500` — all below AA on dark backgrounds
+- BQ conic gradient ring used hardcoded slate-700 grey for empty arc — invisible on light backgrounds
+- The chat terminal (Step 1) was intentionally always-dark — this was correct and remains unchanged
+
+**Lint/build:** `✔ No ESLint warnings or errors` · 23 routes compiled · exit 0
+
+### Unchanged (out of scope through Agent Page Correction)
+- All `src/app/**/page.tsx` files — not yet touched (except agent/page.tsx minor text color fixes)
 - `src/components/layout/Navbar.tsx` — landing page nav, not admin shell
 - `src/lib/**` — all data, types, scoring, i18n, providers untouched
 - `src/middleware.ts` — untouched
@@ -359,3 +385,113 @@ Card raised:     bg-white + shadow-card
 9. **Do not add dependencies** (npm packages) without reporting the reason and getting approval first. The exception: `@fontsource-variable/plus-jakarta-sans` is already installed and approved.
 
 10. **Stop at the end of each phase** and wait for explicit approval. Do not cascade into the next phase.
+
+---
+
+## Header Controls Redesign ✅
+**Date:** 2026-06-15
+
+**Scope:** Premium header control cluster, sidebar cleanup, candidate role visual parity, blue→indigo sweep across all remaining pages.
+
+### Files changed
+
+| File | Change |
+|---|---|
+| `src/components/layout/HeaderBar.tsx` | **NEW** — premium sticky top bar with role chip + EN/AR toggle + sun/moon/system theme toggle, all in one glass pill container |
+| `src/app/dashboard/layout.tsx` | Added `<HeaderBar role="dashboard" />` between sidebar and main; wrapped in flex-col div |
+| `src/app/admin/layout.tsx` | Added `<HeaderBar role="admin" />` with same pattern |
+| `src/components/layout/Sidebar.tsx` | Removed `ThemeToggle` + `LangToggle` functions + all 3 icon stubs; removed controls section from bottom zone; bottom zone is now clean footer-links-only |
+| `src/app/candidate/dashboard/page.tsx` | Full header redesign — glass sticky header, premium control cluster (candidate chip + EN/AR + theme + sign out), `D1` bg-blue→bg-indigo, portal label + CTA buttons + result links → indigo |
+| `src/app/candidate/results/[id]/page.tsx` | Added `useTheme`, `type { Theme }`, 3 icon functions; redesigned header with glass surface + mini control cluster (EN/AR + theme); all blue→indigo (scoreColor, notice, bullets, CTA) |
+| `src/app/candidate/report/[id]/page.tsx` | Header: glass surface + gradient logo; report label, score colors, bullets, CTA → indigo |
+| `src/components/layout/Navbar.tsx` | Glass surface + dark mode support; logo `bg-blue-700`→gradient; nav active `text-blue-700`→indigo; Sign In button→gradient |
+
+### What changed visually
+
+**HeaderBar (admin/dashboard):**
+- New `h-14` sticky top bar replaces the old sidebar bottom-zone controls
+- Left: workspace label (`WORKSPACE` / `ADMINISTRATION`) in small-caps
+- Right: one pill container containing: gradient avatar chip ("A"/"U" with role label + green status dot) → `EN`/`AR` pills with gradient active state → `☀️`/`🌙`/`💻` buttons with gradient active state
+- Glass surface: `bg-white/90 backdrop-blur-xl` light / `bg-slate-950/80` dark
+
+**Sidebar:**
+- Bottom zone simplified to Back to Home + Sign Out only — no more labeled segmented controls
+- Cleaner, less cluttered visual hierarchy
+
+**Candidate experience (dashboard, results, report):**
+- All three pages get the same premium glass sticky header treatment
+- Candidate dashboard: full control cluster with initials chip, name chip, lang, theme, sign out
+- Results page: mini cluster (lang + theme) alongside back link
+- Report page: glass header + gradient logo (server component — no interactive controls added)
+- All `bg-blue-600 / bg-blue-700 / text-blue-600` → indigo/violet throughout
+
+**Navbar (public):**
+- Glass backdrop + dark mode support
+- Logo gradient + indigo active link
+- Sign In button: gradient with brand shadow
+
+### Build & lint
+- `✔ No ESLint warnings or errors`
+- `23 routes compiled · exit 0`
+
+---
+
+## Agent Page Visual Composition Redesign ✅
+**Date:** 2026-06-15
+
+**Scope:** Full visual composition overhaul of the Agent page and step rail. No functionality, routing, mock data, or scoring logic changed.
+
+### Files changed
+
+| File | Change |
+|---|---|
+| `src/app/dashboard/agent/page.tsx` | Full rewrite: layered background, stronger hero, cockpit frame around chat terminal, step context banner for steps 2-5, stronger step rail container |
+| `src/components/agent/AgentStepIndicator.tsx` | Pending step opacity `0.30→0.45`, complete step opacity `0.55→0.70`, connector height `h-3→h-5` |
+
+### What changed visually
+
+**Page background (light mode fix):**
+- Base changed from `bg-slate-50` to `bg-white`
+- Primary radial glow strengthened: `rgba(99,102,241,0.07)→0.14` (light), `0.13→0.22` (dark); ellipse expanded `70%→80%`
+- New secondary ambient node added (light mode only, `dark:hidden`): violet glow in bottom-left quadrant — `rgba(139,92,246,0.09)`
+- No more large flat empty grey area
+
+**Hero header (light mode + hierarchy):**
+- Border changed to `border-indigo-200/50` in light mode (was `border-slate-200/80` — invisible tinted line vs flat grey)
+- Hero gradient mesh: `from-white via-indigo-50/30` → `from-indigo-50/80 via-white to-violet-50/40` — vivid indigo wash at top-left in light mode
+- Blur nodes: `bg-indigo-400/8→/15`, `bg-violet-400/6→/12`, new third blob at bottom-left `bg-indigo-600/8`
+- Dot grid: `opacity-[0.025]→[0.05]` light, `0.04→0.07` dark — grid actually visible now
+- Progress pills: `h-1.5` → `h-2`; active pill `w-10→w-12`, complete `w-8→w-9`
+- "Step X of 5" label: `text-xs font-medium` → `text-xs font-bold`
+
+**Step rail (stronger visual weight):**
+- Container: `bg-white/70 shadow-sm backdrop-blur-sm` → `bg-white shadow-lg shadow-slate-200/60 border-slate-200` (solid opaque, elevated)
+- Width: `md:w-48 lg:w-52` → `md:w-56 lg:w-60`
+- New panel header section: `"Workflow"` micro-label with bottom border — creates structural frame
+- `animate-scale-in` entrance animation on page load
+- Pending step labels: `opacity-30→0.45`, complete: `0.55→0.70`
+- Connector lines: `h-3→h-5` (taller, more visual weight between steps)
+
+**Chat terminal — cockpit integration (the key fix):**
+- Wrapped in a premium "bezel frame" div:
+  - Light: `bg-gradient-to-b from-indigo-100/80 via-slate-100/40 to-white/60 p-[3px] shadow-[0_8px_48px_0_rgba(99,102,241,0.18)] ring-1 ring-indigo-200/50`
+  - Dark: `dark:from-slate-700/50 dark:to-slate-800/30 dark:shadow-[0_0_70px_0_rgba(0,0,0,0.70)] dark:ring-slate-700/40`
+- The dark terminal (`bg-slate-950`) now sits inside an indigo-gradient bezel in light mode — looks like a premium display, not a dark box dropped on white
+- Changed entrance from `animate-fade-in-up` → `animate-scale-in`
+
+**Step context banner (new, steps 2–5):**
+- Appears above each review panel (step 2-5)
+- Contains: step number chip (gradient, with glow shadow), step title, subtitle, and a mini 5-segment progress bar on the right
+- `key={step}` forces remount and re-animates (`animate-fade-in-up`) on every step change
+- Light: `border-indigo-200/60 bg-gradient-to-r from-indigo-50/80 to-white`
+- Dark: `dark:border-indigo-500/20 dark:from-indigo-500/10 dark:to-transparent`
+- Creates clear workspace flow: each step has an identity header before its content
+
+### Animations added / changed
+- Step rail entrance: `animate-scale-in` (fires on page load)
+- Chat terminal: changed from `animate-fade-in-up` → `animate-scale-in`
+- Step context banner: `animate-fade-in-up`, re-fires on each step advance
+
+### Build & lint
+- `✔ No ESLint warnings or errors`
+- `23 routes compiled · exit 0`

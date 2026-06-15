@@ -74,7 +74,7 @@ export function AgentStepIndicator({ currentStep }: AgentStepIndicatorProps) {
               <div
                 className={cn(
                   "min-w-0 flex-1 transition-opacity duration-300",
-                  isActive ? "opacity-100" : isComplete ? "opacity-55" : "opacity-30",
+                  isActive ? "opacity-100" : isComplete ? "opacity-70" : "opacity-45",
                 )}
               >
                 <p
@@ -87,7 +87,7 @@ export function AgentStepIndicator({ currentStep }: AgentStepIndicatorProps) {
                 >
                   {step.label}
                 </p>
-                <p className="mt-0.5 text-[11px] leading-snug text-slate-500 dark:text-slate-600">
+                <p className="mt-0.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
                   {STEP_DESCRIPTIONS[step.n]}
                 </p>
               </div>
@@ -97,7 +97,7 @@ export function AgentStepIndicator({ currentStep }: AgentStepIndicatorProps) {
             {!isLast && (
               <div
                 className={cn(
-                  "ml-[27px] h-3 w-0.5 transition-colors duration-500",
+                  "ml-[27px] h-5 w-0.5 transition-colors duration-500",
                   isComplete
                     ? "bg-emerald-500/60 dark:bg-emerald-500/50"
                     : "bg-slate-200 dark:bg-slate-700",

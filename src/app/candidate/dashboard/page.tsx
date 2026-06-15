@@ -34,7 +34,7 @@ const ASSESSMENTS = [
 ];
 
 const DOMAIN_COLORS: Record<string, string> = {
-  D1: "bg-blue-600",
+  D1: "bg-indigo-500",
   D2: "bg-amber-500",
   D4: "bg-violet-500",
 };
@@ -89,11 +89,11 @@ export default function CandidateDashboardPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
 
       {/* Top bar */}
-      <header className="border-b border-slate-200 bg-white/80 px-6 py-4 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80">
-        <div className="mx-auto flex max-w-4xl items-center justify-between">
+      <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-950/80">
+        <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-6">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_2px_8px_0_rgba(99,102,241,0.35)]">
               N
             </div>
             <span className="text-base font-semibold text-slate-900 dark:text-white">
@@ -101,64 +101,78 @@ export default function CandidateDashboardPage() {
             </span>
           </Link>
 
-          {/* Right side controls */}
-          <div className="flex items-center gap-3">
-            {/* Theme toggle */}
-            <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800">
-              {themeOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => setTheme(opt.value)}
-                  title={t.theme[opt.value]}
-                  className={cn(
-                    "flex items-center justify-center rounded-md px-2 py-1.5 transition-all",
-                    theme === opt.value
-                      ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
-                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
-                  )}
-                >
-                  {opt.icon}
-                </button>
-              ))}
+          {/* Right: premium control cluster */}
+          <div className="flex items-center gap-0.5 rounded-full border border-slate-200/80 bg-slate-100/90 px-1 py-1 shadow-sm backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/50">
+
+            {/* Candidate chip */}
+            <div className="flex items-center gap-1.5 rounded-full bg-white px-2.5 py-1 shadow-sm dark:bg-slate-900/80">
+              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-[9px] font-bold leading-none text-white">
+                {CANDIDATE.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
+              </div>
+              <span className="hidden text-xs font-semibold text-slate-700 dark:text-slate-200 sm:block">
+                {CANDIDATE.name.split(" ")[0]}
+              </span>
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" aria-hidden />
             </div>
+
+            {/* Divider */}
+            <div className="mx-1.5 h-4 w-px bg-slate-200 dark:bg-slate-700/80" aria-hidden />
 
             {/* Language toggle */}
-            <div className="flex rounded-lg border border-slate-200 bg-slate-100 p-0.5 dark:border-slate-700 dark:bg-slate-800">
-              {(["en", "ar"] as const).map((l) => (
-                <button
-                  key={l}
-                  type="button"
-                  onClick={() => setLang(l)}
-                  className={cn(
-                    "rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
-                    lang === l
-                      ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
-                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
-                  )}
-                >
-                  {l.toUpperCase()}
-                </button>
-              ))}
-            </div>
-
-            {/* User info + sign out */}
-            <div className="hidden items-center gap-3 sm:flex">
-              <div className="text-right">
-                <p className="text-sm font-medium text-slate-900 dark:text-slate-200">
-                  {CANDIDATE.name}
-                </p>
-                <p className="font-mono text-xs text-slate-400 dark:text-slate-500">
-                  {CANDIDATE.id}
-                </p>
-              </div>
-              <Link
-                href="/logout"
-                className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-200"
+            {(["en", "ar"] as const).map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => setLang(l)}
+                title={l === "en" ? t.language.en : t.language.ar}
+                className={cn(
+                  "rounded-full px-2.5 py-1 text-[11px] font-bold tracking-wide transition-all duration-150",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
+                  lang === l
+                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                    : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300",
+                )}
               >
-                {t.candidate.signOut}
-              </Link>
-            </div>
+                {l.toUpperCase()}
+              </button>
+            ))}
+
+            {/* Divider */}
+            <div className="mx-1.5 h-4 w-px bg-slate-200 dark:bg-slate-700/80" aria-hidden />
+
+            {/* Theme toggle */}
+            {themeOptions.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setTheme(opt.value)}
+                title={t.theme[opt.value]}
+                className={cn(
+                  "flex items-center justify-center rounded-full p-1.5 transition-all duration-150",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
+                  theme === opt.value
+                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                    : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300",
+                )}
+              >
+                {opt.icon}
+              </button>
+            ))}
+
+            {/* Divider */}
+            <div className="mx-1.5 h-4 w-px bg-slate-200 dark:bg-slate-700/80" aria-hidden />
+
+            {/* Sign out */}
+            <Link
+              href="/logout"
+              className={cn(
+                "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
+                "text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
+              )}
+            >
+              {t.candidate.signOut}
+            </Link>
           </div>
         </div>
       </header>
@@ -168,7 +182,7 @@ export default function CandidateDashboardPage() {
 
         {/* Welcome */}
         <div className="mb-8">
-          <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400">
+          <p className="text-xs font-medium uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
             {t.candidate.portalLabel}
           </p>
           <h1 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
@@ -265,7 +279,7 @@ export default function CandidateDashboardPage() {
                     className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
                       isCompleted
                         ? "bg-emerald-600 text-white hover:bg-emerald-500"
-                        : "bg-blue-700 text-white hover:bg-blue-600"
+                        : "bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-700 hover:to-violet-700"
                     }`}
                   >
                     {actionType === "start" ? t.candidate.startAssessment : t.candidate.viewResultsLink}
@@ -314,7 +328,7 @@ export default function CandidateDashboardPage() {
               <div className="mt-4 space-y-2">
                 <Link
                   href="/candidate/results/demo"
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-700 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-600"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 py-2 text-xs font-semibold text-white transition-all hover:from-indigo-700 hover:to-violet-700"
                 >
                   {t.candidate.viewResults}
                   <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">

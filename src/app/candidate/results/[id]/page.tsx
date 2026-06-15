@@ -5,14 +5,39 @@ import { SCORED_RESULT_1 } from "@/lib/mock-data/scored-results";
 import { REPORT_1 } from "@/lib/mock-data/reports";
 import type { DomainScore, DimensionScore } from "@/lib/types/nexus";
 import { useLanguage } from "@/lib/providers/language-provider";
+import { useTheme } from "@/lib/providers/theme-provider";
+import type { Theme } from "@/lib/providers/theme-provider";
+import { cn } from "@/lib/utils";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function scoreColor(score: number) {
-  if (score >= 75) return { bar: "bg-emerald-500", text: "text-emerald-400", ring: "border-emerald-500/30" };
-  if (score >= 65) return { bar: "bg-blue-500",    text: "text-blue-400",    ring: "border-blue-500/30" };
-  if (score >= 50) return { bar: "bg-amber-500",   text: "text-amber-400",   ring: "border-amber-500/30" };
-  return               { bar: "bg-slate-500",   text: "text-slate-400",   ring: "border-slate-300 dark:border-slate-600" };
+  if (score >= 75) return { bar: "bg-emerald-500",  text: "text-emerald-400",  ring: "border-emerald-500/30" };
+  if (score >= 65) return { bar: "bg-indigo-500",   text: "text-indigo-400",   ring: "border-indigo-500/30" };
+  if (score >= 50) return { bar: "bg-amber-500",    text: "text-amber-400",    ring: "border-amber-500/30" };
+  return               { bar: "bg-slate-500",    text: "text-slate-400",    ring: "border-slate-300 dark:border-slate-600" };
+}
+
+function SunIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+      <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+    </svg>
+  );
+}
+function MoonIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+    </svg>
+  );
+}
+function MonitorIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+      <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z" clipRule="evenodd" />
+    </svg>
+  );
 }
 
 const CONFIDENCE_DOT: Record<string, string> = {
@@ -30,8 +55,15 @@ function candidateVisibleDimensions(dims: DimensionScore[]) {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function CandidateResultsPage() {
-  const { t } = useLanguage();
+  const { t, lang, setLang } = useLanguage();
+  const { theme, setTheme } = useTheme();
   const result   = SCORED_RESULT_1;
+
+  const themeOpts: { value: Theme; icon: React.ReactNode }[] = [
+    { value: "light",  icon: <SunIcon /> },
+    { value: "dark",   icon: <MoonIcon /> },
+    { value: "system", icon: <MonitorIcon /> },
+  ];
   const report   = REPORT_1;
   const cv       = report.candidate_view;
 
@@ -49,25 +81,67 @@ export default function CandidateResultsPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
 
       {/* Top bar */}
-      <header className="border-b border-slate-200 bg-white/80 px-6 py-4 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80">
-        <div className="mx-auto flex max-w-3xl items-center justify-between">
+      <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-950/80">
+        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-6">
           <Link href="/candidate/dashboard" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_2px_8px_0_rgba(99,102,241,0.35)]">
               N
             </div>
             <span className="text-base font-semibold text-slate-900 dark:text-white">
               {t.common.nexus}
             </span>
           </Link>
-          <Link
-            href="/candidate/dashboard"
-            className="flex items-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-              <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
-            </svg>
-            {t.results.backToDashboard}
-          </Link>
+
+          <div className="flex items-center gap-3">
+            <Link
+              href="/candidate/dashboard"
+              className="hidden items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-indigo-500 dark:hover:text-indigo-400 sm:flex"
+            >
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+              </svg>
+              {t.results.backToDashboard}
+            </Link>
+
+            {/* Control cluster */}
+            <div className="flex items-center gap-0.5 rounded-full border border-slate-200/80 bg-slate-100/90 px-1 py-1 shadow-sm backdrop-blur-sm dark:border-slate-700/50 dark:bg-slate-800/50">
+              {(["en", "ar"] as const).map((l) => (
+                <button
+                  key={l}
+                  type="button"
+                  onClick={() => setLang(l)}
+                  title={l === "en" ? t.language.en : t.language.ar}
+                  className={cn(
+                    "rounded-full px-2.5 py-1 text-[11px] font-bold tracking-wide transition-all duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
+                    lang === l
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300",
+                  )}
+                >
+                  {l.toUpperCase()}
+                </button>
+              ))}
+              <div className="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700/80" aria-hidden />
+              {themeOpts.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setTheme(opt.value)}
+                  title={t.theme[opt.value]}
+                  className={cn(
+                    "flex items-center justify-center rounded-full p-1.5 transition-all duration-150",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
+                    theme === opt.value
+                      ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300",
+                  )}
+                >
+                  {opt.icon}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </header>
 
@@ -75,7 +149,7 @@ export default function CandidateResultsPage() {
 
         {/* Page title */}
         <div className="mb-8">
-          <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400">
+          <p className="text-xs font-medium uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
             {t.results.assessmentResults}
           </p>
           <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">
@@ -106,11 +180,11 @@ export default function CandidateResultsPage() {
         </div>
 
         {/* Provisional notice */}
-        <div className="mb-8 flex items-start gap-3 rounded-xl border border-blue-500/20 bg-blue-500/5 px-4 py-3">
-          <svg viewBox="0 0 20 20" fill="currentColor" className="mt-0.5 h-4 w-4 shrink-0 text-blue-500 dark:text-blue-400">
+        <div className="mb-8 flex items-start gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 px-4 py-3">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="mt-0.5 h-4 w-4 shrink-0 text-indigo-500 dark:text-indigo-400">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
           </svg>
-          <p className="text-xs leading-relaxed text-blue-600 dark:text-blue-300/80">
+          <p className="text-xs leading-relaxed text-indigo-600 dark:text-indigo-300/80">
             {t.results.provisionalNotice}
           </p>
         </div>
@@ -215,7 +289,7 @@ export default function CandidateResultsPage() {
           <ul className="space-y-3">
             {cv.development_suggestions.map((suggestion, i) => (
               <li key={i} className="flex items-start gap-3">
-                <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-xs font-bold text-blue-600 dark:text-blue-400">
+                <div className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-bold text-indigo-600 dark:text-indigo-400">
                   {i + 1}
                 </div>
                 <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
@@ -230,7 +304,7 @@ export default function CandidateResultsPage() {
         <div className="flex flex-col gap-3 sm:flex-row">
           <Link
             href="/candidate/report/demo"
-            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
+            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:from-indigo-700 hover:to-violet-700"
           >
             {t.results.viewFullReport}
             <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">

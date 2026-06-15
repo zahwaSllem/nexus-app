@@ -151,9 +151,9 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
               </button>
             </div>
             <div className="flex items-center justify-between px-0.5">
-              <span className="text-[10px] text-slate-700">Enter to send</span>
+              <span className="text-[10px] text-slate-500">Enter to send</span>
               {adminInput.length > 0 && (
-                <span className="text-[10px] text-slate-700">{adminInput.length} chars</span>
+                <span className="text-[10px] text-slate-500">{adminInput.length} chars</span>
               )}
             </div>
           </form>

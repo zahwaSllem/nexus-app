@@ -5,10 +5,10 @@ import type { DomainScore, DimensionScore, BehavioralDescriptor, BlockedSectionR
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function scoreColor(score: number) {
-  if (score >= 75) return { bar: "bg-emerald-500", text: "text-emerald-400" };
-  if (score >= 65) return { bar: "bg-blue-500",    text: "text-blue-400"    };
-  if (score >= 50) return { bar: "bg-amber-500",   text: "text-amber-400"   };
-  return               { bar: "bg-slate-500",   text: "text-slate-400"   };
+  if (score >= 75) return { bar: "bg-emerald-500",  text: "text-emerald-400" };
+  if (score >= 65) return { bar: "bg-indigo-500",   text: "text-indigo-400"  };
+  if (score >= 50) return { bar: "bg-amber-500",    text: "text-amber-400"   };
+  return               { bar: "bg-slate-500",    text: "text-slate-400"   };
 }
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
@@ -24,10 +24,10 @@ export default function CandidateReportPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
 
       {/* Top bar */}
-      <header className="border-b border-slate-200 bg-white/80 px-6 py-4 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/80">
-        <div className="mx-auto flex max-w-3xl items-center justify-between">
+      <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/90 backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-950/80">
+        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_2px_8px_0_rgba(99,102,241,0.35)]">
               N
             </div>
             <span className="text-base font-semibold text-slate-900 dark:text-white">Nexus</span>
@@ -35,7 +35,7 @@ export default function CandidateReportPage() {
           <div className="flex items-center gap-4">
             <Link
               href="/candidate/results/demo"
-              className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-slate-600 dark:hover:text-slate-200"
+              className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-indigo-500 dark:hover:text-indigo-400"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
                 <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -44,7 +44,7 @@ export default function CandidateReportPage() {
             </Link>
             <Link
               href="/logout"
-              className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-200"
+              className="rounded-full border border-slate-200/80 bg-slate-100/90 px-3 py-1.5 text-xs text-slate-500 transition-colors hover:border-slate-300 hover:text-red-500 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-400 dark:hover:text-red-400"
             >
               Sign out
             </Link>
@@ -56,7 +56,7 @@ export default function CandidateReportPage() {
 
         {/* Report header */}
         <div className="mb-8">
-          <p className="text-xs font-medium uppercase tracking-widest text-blue-600 dark:text-blue-400">
+          <p className="text-xs font-medium uppercase tracking-widest text-indigo-500 dark:text-indigo-400">
             Developmental Feedback Report
           </p>
           <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">
@@ -160,7 +160,7 @@ export default function CandidateReportPage() {
           <ul className="space-y-3">
             {cv.development_suggestions.map((suggestion, i) => (
               <li key={i} className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500/15 text-xs font-bold text-blue-600 dark:text-blue-400">
+                <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/15 text-xs font-bold text-indigo-600 dark:text-indigo-400">
                   {i + 1}
                 </div>
                 <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{suggestion}</p>
@@ -214,7 +214,7 @@ export default function CandidateReportPage() {
           </Link>
           <Link
             href="/candidate/dashboard"
-            className="flex flex-1 items-center justify-center rounded-lg bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-blue-600"
+            className="flex flex-1 items-center justify-center rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:from-indigo-700 hover:to-violet-700"
           >
             Return to Dashboard
           </Link>

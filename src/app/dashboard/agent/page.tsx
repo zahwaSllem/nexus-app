@@ -41,32 +41,45 @@ export default function AgentPage() {
   const { title, subtitle } = STEP_TITLES[step];
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50 dark:bg-slate-900">
+    <div className="flex min-h-full flex-col bg-white dark:bg-slate-900">
 
-      {/* Ambient radial glow — fixed behind everything */}
+      {/* ── Fixed ambient layers ─────────────────────────────────────────────── */}
+
+      {/* Primary radial glow — top-right, both modes */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_70%_40%_at_85%_0%,rgba(99,102,241,0.07)_0%,transparent_100%)] dark:bg-[radial-gradient(ellipse_70%_40%_at_85%_0%,rgba(99,102,241,0.13)_0%,transparent_100%)]"
+        className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_50%_at_90%_0%,rgba(99,102,241,0.14)_0%,transparent_70%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_90%_0%,rgba(99,102,241,0.22)_0%,transparent_70%)]"
+      />
+
+      {/* Secondary ambient node — bottom-left, light mode only */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 dark:hidden"
+        style={{
+          background:
+            "radial-gradient(ellipse 55% 55% at 5% 95%, rgba(139,92,246,0.09) 0%, transparent 70%)",
+        }}
       />
 
       {/* ── Hero header ─────────────────────────────────────────────────────── */}
-      <header className="relative z-10 overflow-hidden border-b border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
-        {/* Layered gradient mesh */}
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-white via-indigo-50/30 to-violet-50/15 dark:from-slate-950 dark:via-indigo-950/30 dark:to-slate-900" />
-        <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-indigo-400/8 blur-3xl dark:bg-indigo-500/15" />
-        <div aria-hidden className="pointer-events-none absolute bottom-0 left-1/4 h-48 w-48 rounded-full bg-violet-400/6 blur-2xl dark:bg-violet-500/12" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-indigo-600/4 blur-2xl dark:bg-indigo-400/8" />
-        {/* Dot grid overlay */}
+      <header className="relative z-10 overflow-hidden border-b border-indigo-200/50 bg-white dark:border-slate-800/60 dark:bg-slate-900">
+        {/* Layered gradient mesh — vivid in light mode */}
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-indigo-50/80 via-white to-violet-50/40 dark:from-slate-950 dark:via-indigo-950/30 dark:to-slate-900" />
+        <div aria-hidden className="pointer-events-none absolute -right-16 -top-16 h-80 w-80 rounded-full bg-indigo-400/15 blur-3xl dark:bg-indigo-500/20" />
+        <div aria-hidden className="pointer-events-none absolute bottom-0 left-1/4 h-48 w-48 rounded-full bg-violet-400/12 blur-2xl dark:bg-violet-500/15" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-8 -left-8 h-40 w-40 rounded-full bg-indigo-600/8 blur-2xl dark:bg-indigo-400/10" />
+
+        {/* Dot grid overlay — more visible */}
         <div
           aria-hidden
-          className="absolute inset-0 opacity-[0.025] dark:opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.05] dark:opacity-[0.07]"
           style={{
             backgroundImage: "radial-gradient(circle at 1px 1px, rgb(99 102 241) 1px, transparent 0)",
             backgroundSize: "28px 28px",
           }}
         />
 
-        <div className="relative px-6 py-5 sm:px-8">
+        <div className="relative px-6 py-6 sm:px-8">
           <div className="mx-auto max-w-5xl">
             <div className="flex flex-wrap items-start justify-between gap-4">
 
@@ -96,10 +109,10 @@ export default function AgentPage() {
               </div>
 
               {/* Right: progress summary + context chip */}
-              <div className="flex shrink-0 flex-col items-end gap-2.5">
+              <div className="flex shrink-0 flex-col items-end gap-3">
                 {/* Step progress bar */}
                 <div className="flex flex-col items-end gap-1.5">
-                  <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
                     Step {step} of 5
                   </span>
                   <div className="flex items-center gap-1">
@@ -107,11 +120,11 @@ export default function AgentPage() {
                       <div
                         key={n}
                         className={cn(
-                          "h-1.5 rounded-full transition-all duration-500",
+                          "h-2 rounded-full transition-all duration-500",
                           n < step
-                            ? "w-8 bg-emerald-500"
+                            ? "w-9 bg-emerald-500"
                             : n === step
-                            ? "w-10 bg-gradient-to-r from-indigo-500 to-violet-500"
+                            ? "w-12 bg-gradient-to-r from-indigo-500 to-violet-500"
                             : "w-6 bg-slate-200 dark:bg-slate-700",
                         )}
                       />
@@ -120,7 +133,7 @@ export default function AgentPage() {
                 </div>
 
                 {/* Blueprint context chip */}
-                <div className="flex items-center gap-2 rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 py-1.5 dark:border-slate-700/60 dark:bg-slate-800/60">
+                <div className="flex items-center gap-2 rounded-lg border border-slate-200/80 bg-white/80 px-2.5 py-1.5 shadow-sm dark:border-slate-700/60 dark:bg-slate-800/60">
                   <span className="font-mono text-xs text-slate-400 dark:text-slate-500">bp-001</span>
                   <span className="text-slate-300 dark:text-slate-700">·</span>
                   <span className="text-xs text-slate-500">Junior Software Engineer</span>
@@ -143,10 +156,18 @@ export default function AgentPage() {
           {/* Two-zone layout: step rail + content */}
           <div className="flex items-start gap-6 lg:gap-8">
 
-            {/* Step rail — desktop only, sticky glass panel */}
-            <div className="hidden shrink-0 md:block md:w-48 lg:w-52">
-              <div className="sticky top-6 overflow-hidden rounded-2xl border border-slate-200/60 bg-white/70 p-3 shadow-sm backdrop-blur-sm dark:border-slate-700/40 dark:bg-slate-800/30 dark:backdrop-blur-md">
-                <AgentStepIndicator currentStep={step} />
+            {/* Step rail — desktop only */}
+            <div className="hidden shrink-0 md:block md:w-56 lg:w-60">
+              <div className="animate-scale-in sticky top-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60 dark:border-slate-700/40 dark:bg-slate-800/60 dark:shadow-none">
+                {/* Rail header */}
+                <div className="border-b border-slate-100 px-4 py-2.5 dark:border-slate-700/50">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400 dark:text-slate-600">
+                    Workflow
+                  </p>
+                </div>
+                <div className="p-2.5">
+                  <AgentStepIndicator currentStep={step} />
+                </div>
               </div>
             </div>
 
@@ -155,32 +176,65 @@ export default function AgentPage() {
 
               {/* Step 1: AI chat workspace */}
               {step === 1 && (
-                <div className="animate-fade-in-up overflow-hidden rounded-2xl border border-slate-800/60 bg-slate-950 shadow-[0_0_50px_0_rgba(0,0,0,0.30)] dark:border-slate-700/40 dark:shadow-[0_0_50px_0_rgba(0,0,0,0.50)]">
-                  {/* AI identity bar */}
-                  <div className="flex items-center gap-3 border-b border-slate-800/60 bg-slate-900/70 px-5 py-3">
-                    <div className="relative shrink-0">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-xs font-bold text-white shadow-[0_0_16px_0_rgba(99,102,241,0.50)]">
-                        N
+                <div className="animate-scale-in rounded-[22px] bg-gradient-to-b from-indigo-100/80 via-slate-100/40 to-white/60 p-[3px] shadow-[0_8px_48px_0_rgba(99,102,241,0.18)] ring-1 ring-indigo-200/50 dark:bg-gradient-to-b dark:from-slate-700/50 dark:to-slate-800/30 dark:shadow-[0_0_70px_0_rgba(0,0,0,0.70)] dark:ring-slate-700/40">
+                  <div className="overflow-hidden rounded-[19px] border border-slate-800/60 bg-slate-950 dark:border-slate-700/40">
+                    {/* AI identity bar */}
+                    <div className="flex items-center gap-3 border-b border-slate-800/60 bg-slate-900/70 px-5 py-3">
+                      <div className="relative shrink-0">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-xs font-bold text-white shadow-[0_0_16px_0_rgba(99,102,241,0.50)]">
+                          N
+                        </div>
+                        <span
+                          className="absolute -bottom-0.5 -right-0.5 block h-2.5 w-2.5 rounded-full border-2 border-slate-950 bg-emerald-400"
+                          aria-hidden
+                        />
                       </div>
-                      <span
-                        className="absolute -bottom-0.5 -right-0.5 block h-2.5 w-2.5 rounded-full border-2 border-slate-950 bg-emerald-400"
-                        aria-hidden
-                      />
+                      <div>
+                        <p className="text-xs font-semibold text-white">Nexus Agent</p>
+                        <p className="text-[10px] text-slate-500">Active · Role Interview</p>
+                      </div>
+                      <div className="ml-auto">
+                        <span className="rounded border border-slate-800 bg-slate-800/50 px-2 py-0.5 font-mono text-[10px] text-slate-600">
+                          SESSION-001
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-white">Nexus Agent</p>
-                      <p className="text-[10px] text-slate-500">Active · Role Interview</p>
-                    </div>
-                    <div className="ml-auto">
-                      <span className="rounded border border-slate-800 bg-slate-800/50 px-2 py-0.5 font-mono text-[10px] text-slate-600">
-                        SESSION-001
-                      </span>
+
+                    {/* Chat interface */}
+                    <div className="flex h-[540px] flex-col p-5 sm:h-[580px]">
+                      <AgentChatInterface transcript={TRANSCRIPT_A} onComplete={advance} />
                     </div>
                   </div>
+                </div>
+              )}
 
-                  {/* Chat interface */}
-                  <div className="flex h-[540px] flex-col p-5 sm:h-[580px]">
-                    <AgentChatInterface transcript={TRANSCRIPT_A} onComplete={advance} />
+              {/* Step context banner — steps 2–5, re-animates on each step change */}
+              {step >= 2 && (
+                <div
+                  key={step}
+                  className="mb-6 flex animate-fade-in-up items-center gap-4 overflow-hidden rounded-2xl border border-indigo-200/60 bg-gradient-to-r from-indigo-50/80 to-white px-5 py-4 shadow-sm dark:border-indigo-500/20 dark:from-indigo-500/10 dark:to-transparent"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-bold text-white shadow-[0_0_20px_0_rgba(99,102,241,0.40)]">
+                    {step}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{title}</p>
+                    <p className="mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>
+                  </div>
+                  <div className="hidden shrink-0 items-center gap-1 sm:flex">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <div
+                        key={n}
+                        className={cn(
+                          "h-1 rounded-full transition-all duration-500",
+                          n < step
+                            ? "w-5 bg-emerald-500"
+                            : n === step
+                            ? "w-7 bg-gradient-to-r from-indigo-500 to-violet-500"
+                            : "w-3 bg-slate-200 dark:bg-slate-700",
+                        )}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
@@ -226,7 +280,7 @@ export default function AgentPage() {
 
       {/* ── Bottom navigation — steps 2–4 ───────────────────────────────────── */}
       {step >= 2 && step <= 4 && (
-        <div className="sticky bottom-0 z-10 border-t border-slate-200/80 bg-white/90 px-6 py-4 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/90 sm:px-8">
+        <div className="sticky bottom-0 z-10 border-t border-slate-200/80 bg-white/95 px-6 py-4 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/90 sm:px-8">
           <div className="mx-auto flex max-w-5xl items-center gap-4">
             {/* Back */}
             <button
@@ -242,7 +296,7 @@ export default function AgentPage() {
 
             {/* Center: step counter */}
             <div className="flex-1 text-center">
-              <span className="text-xs text-slate-400 dark:text-slate-600">
+              <span className="text-xs text-slate-500 dark:text-slate-400">
                 {t.agent.stepOf.replace("{step}", String(step))}
               </span>
             </div>

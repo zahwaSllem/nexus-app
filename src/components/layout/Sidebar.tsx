@@ -4,43 +4,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/lib/providers/theme-provider";
 import { useLanguage } from "@/lib/providers/language-provider";
-import type { Theme } from "@/lib/providers/theme-provider";
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
-
-function SunIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-      <path
-        fillRule="evenodd"
-        d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function MoonIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-    </svg>
-  );
-}
-
-function MonitorIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-      <path
-        fillRule="evenodd"
-        d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm5.771 7H5V5h10v7H8.771z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
 
 function HamburgerIcon() {
   return (
@@ -63,78 +29,6 @@ function XIcon() {
         clipRule="evenodd"
       />
     </svg>
-  );
-}
-
-// ── Theme Toggle ───────────────────────────────────────────────────────────────
-
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const { t } = useLanguage();
-
-  const options: { value: Theme; icon: React.ReactNode; label: string }[] = [
-    { value: "light",  icon: <SunIcon />,     label: t.theme.light  },
-    { value: "dark",   icon: <MoonIcon />,    label: t.theme.dark   },
-    { value: "system", icon: <MonitorIcon />, label: t.theme.system },
-  ];
-
-  return (
-    <div>
-      <p className="mb-1.5 px-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600">
-        {t.theme.label}
-      </p>
-      <div className="flex rounded-lg border border-slate-200/70 bg-slate-100/80 p-0.5 dark:border-slate-800/60 dark:bg-slate-900/70">
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => setTheme(opt.value)}
-            title={opt.label}
-            className={cn(
-              "flex flex-1 items-center justify-center rounded-md py-1.5 text-xs font-medium transition-all duration-150",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
-              theme === opt.value
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white"
-                : "text-slate-400 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400",
-            )}
-          >
-            {opt.icon}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── Language Toggle ────────────────────────────────────────────────────────────
-
-function LangToggle() {
-  const { lang, setLang, t } = useLanguage();
-
-  return (
-    <div>
-      <p className="mb-1.5 px-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600">
-        {t.language.label}
-      </p>
-      <div className="flex rounded-lg border border-slate-200/70 bg-slate-100/80 p-0.5 dark:border-slate-800/60 dark:bg-slate-900/70">
-        {(["en", "ar"] as const).map((l) => (
-          <button
-            key={l}
-            type="button"
-            onClick={() => setLang(l)}
-            className={cn(
-              "flex-1 rounded-md py-1.5 text-xs font-medium transition-all duration-150",
-              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 dark:focus-visible:ring-offset-slate-950",
-              lang === l
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-white"
-                : "text-slate-400 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400",
-            )}
-          >
-            {l === "en" ? t.language.en : t.language.ar}
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -332,16 +226,9 @@ function SidebarNavContents({
         </ul>
       </nav>
 
-      {/* ── Unified bottom zone: controls + footer ─────────────────── */}
+      {/* ── Bottom zone: footer links ──────────────────────────────── */}
       <div className="border-t border-slate-200/60 px-3 pb-3 pt-3 dark:border-slate-800/60">
-        {/* Theme + Language toggles */}
-        <div className="space-y-2.5">
-          <ThemeToggle />
-          <LangToggle />
-        </div>
-
-        {/* Footer links */}
-        <div className="mt-3 space-y-0.5 border-t border-slate-200/50 pt-3 dark:border-slate-800/50">
+        <div className="space-y-0.5">
           <Link
             href="/"
             onClick={onNavigate}

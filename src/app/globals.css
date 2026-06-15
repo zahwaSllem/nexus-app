@@ -74,6 +74,9 @@
   /* ── Focus ring ─────────────────────────────────────────────── */
   --ring-color:        rgba(79, 70, 229, 0.40);
   --ring-offset-color: #F8FAFC;
+
+  /* ── BQ ring track (conic-gradient empty arc) ───────────────── */
+  --bq-ring-track: #E2E8F0;
 }
 
 /* ── Dark theme ────────────────────────────────────────────────── */
@@ -119,6 +122,9 @@
   /* ── Focus ring ─────────────────────────────────────────────── */
   --ring-color:        rgba(99, 102, 241, 0.50);
   --ring-offset-color: #0F172A;
+
+  /* ── BQ ring track (conic-gradient empty arc) ───────────────── */
+  --bq-ring-track: #334155;
 }
 
 body {

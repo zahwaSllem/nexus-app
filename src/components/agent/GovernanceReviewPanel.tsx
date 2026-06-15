@@ -12,10 +12,10 @@ const SEVERITY_CONFIG: Record<GovernanceSeverity, {
   icon: React.ReactNode;
 }> = {
   blocking: {
-    border: "border-red-500/40",
-    bg: "bg-red-500/5",
-    iconColor: "text-red-400",
-    badgeClass: "bg-red-500/15 text-red-400 border border-red-500/30",
+    border: "border-red-300 dark:border-red-500/40",
+    bg: "bg-red-50 dark:bg-red-500/5",
+    iconColor: "text-red-600 dark:text-red-400",
+    badgeClass: "bg-red-100 text-red-700 border border-red-200 dark:bg-red-500/15 dark:text-red-400 dark:border-red-500/30",
     label: "Blocking",
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -24,10 +24,10 @@ const SEVERITY_CONFIG: Record<GovernanceSeverity, {
     ),
   },
   caution: {
-    border: "border-amber-500/30",
-    bg: "bg-amber-500/5",
-    iconColor: "text-amber-400",
-    badgeClass: "bg-amber-500/15 text-amber-400 border border-amber-500/30",
+    border: "border-amber-300 dark:border-amber-500/30",
+    bg: "bg-amber-50 dark:bg-amber-500/5",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    badgeClass: "bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/30",
     label: "Caution",
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -36,10 +36,10 @@ const SEVERITY_CONFIG: Record<GovernanceSeverity, {
     ),
   },
   info: {
-    border: "border-indigo-500/25",
-    bg: "bg-indigo-500/5",
-    iconColor: "text-indigo-400",
-    badgeClass: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/30",
+    border: "border-indigo-200 dark:border-indigo-500/25",
+    bg: "bg-indigo-50/60 dark:bg-indigo-500/5",
+    iconColor: "text-indigo-600 dark:text-indigo-400",
+    badgeClass: "bg-indigo-100 text-indigo-700 border border-indigo-200 dark:bg-indigo-500/15 dark:text-indigo-400 dark:border-indigo-500/30",
     label: "Info",
     icon: (
       <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -87,28 +87,28 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
     <div className="space-y-5">
 
       {/* Summary header */}
-      <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
-        <h3 className="mb-1 text-sm font-semibold text-white">Governance Review</h3>
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:shadow-none">
+        <h3 className="mb-1 text-sm font-semibold text-slate-900 dark:text-white">Governance Review</h3>
         <p className="mb-4 text-xs text-slate-500">
           These warnings were automatically generated from the selected items&apos; governance metadata.
           Acknowledge all caution and info items to enable approval.
         </p>
         <div className="flex flex-wrap gap-3">
           {blockingCount > 0 && (
-            <span className="flex items-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-medium text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-red-500 dark:bg-red-400" />
               {blockingCount} blocking
             </span>
           )}
           {cautionCount > 0 && (
-            <span className="flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 dark:bg-amber-400" />
               {cautionCount} caution
             </span>
           )}
           {infoCount > 0 && (
-            <span className="flex items-center gap-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-400">
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400" />
+            <span className="flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 dark:border-indigo-500/30 dark:bg-indigo-500/10 dark:text-indigo-400">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400" />
               {infoCount} info
             </span>
           )}
@@ -117,11 +117,11 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
 
       {/* Blocking banner */}
       {blockingCount > 0 && (
-        <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-4">
-          <svg viewBox="0 0 20 20" fill="currentColor" className="mt-0.5 h-4 w-4 shrink-0 text-red-400">
+        <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 dark:border-red-500/30 dark:bg-red-500/10">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="mt-0.5 h-4 w-4 shrink-0 text-red-600 dark:text-red-400">
             <path fillRule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clipRule="evenodd" />
           </svg>
-          <p className="text-sm font-medium text-red-400">
+          <p className="text-sm font-medium text-red-700 dark:text-red-400">
             Cannot approve — {blockingCount} blocking issue{blockingCount !== 1 ? "s" : ""} must be resolved before this blueprint can be approved.
           </p>
         </div>
@@ -137,7 +137,7 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
           return (
             <div
               key={warning.code}
-              className={`rounded-xl border p-5 transition-all duration-200 ${cfg.border} ${cfg.bg} ${isAcknowledged ? "opacity-60" : "hover:-translate-y-0.5 hover:shadow-md"}`}
+              className={`rounded-xl border p-5 transition-all duration-200 ${cfg.border} ${cfg.bg} ${isAcknowledged ? "opacity-60" : "hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-none"}`}
             >
               <div className="flex items-start gap-3">
                 {/* Severity icon */}
@@ -149,16 +149,16 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cfg.badgeClass}`}>
                       {cfg.label}
                     </span>
-                    <span className="font-mono text-xs font-bold text-slate-400">{warning.code}</span>
+                    <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-400">{warning.code}</span>
                   </div>
 
                   {/* Message */}
-                  <p className="text-sm leading-relaxed text-slate-300">{warning.message}</p>
+                  <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{warning.message}</p>
 
                   {/* Nexus rule */}
                   {warning.nexus_rule && (
-                    <p className="text-xs text-slate-600">
-                      Rule: <span className="font-mono text-slate-500">{warning.nexus_rule}</span>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Rule: <span className="font-mono">{warning.nexus_rule}</span>
                     </p>
                   )}
 
@@ -166,7 +166,7 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
                   {warning.affected_dimension_ids && warning.affected_dimension_ids.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {warning.affected_dimension_ids.map((d) => (
-                        <span key={d} className="rounded bg-slate-700 px-1.5 py-0.5 font-mono text-xs text-slate-400">
+                        <span key={d} className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-400">
                           {d}
                         </span>
                       ))}
@@ -175,7 +175,7 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
                   {warning.affected_item_ids && warning.affected_item_ids.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {warning.affected_item_ids.map((id) => (
-                        <span key={id} className="rounded bg-slate-700 px-1.5 py-0.5 font-mono text-xs text-slate-400">
+                        <span key={id} className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-400">
                           {id}
                         </span>
                       ))}
@@ -191,12 +191,12 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
                         type="checkbox"
                         checked={isAcknowledged}
                         onChange={() => toggle(warning.code)}
-                        className="h-4 w-4 rounded border-slate-600 bg-slate-700 accent-indigo-600"
+                        className="h-4 w-4 rounded border-slate-300 bg-white accent-indigo-600 dark:border-slate-600 dark:bg-slate-700"
                       />
                       <span className="text-xs text-slate-500">Acknowledge</span>
                     </label>
                   ) : (
-                    <span className="rounded-full border border-red-500/30 bg-red-500/10 px-2 py-0.5 text-xs text-red-400">
+                    <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-xs text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400">
                       Resolve first
                     </span>
                   )}
@@ -209,11 +209,11 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
 
       {/* Completion state */}
       {allAcknowledged && (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-5 py-4">
-          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-emerald-400">
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 dark:border-emerald-500/25 dark:bg-emerald-500/5">
+          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400">
             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
-          <p className="text-sm font-medium text-emerald-400">All governance items acknowledged — ready to approve.</p>
+          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">All governance items acknowledged — ready to approve.</p>
         </div>
       )}
     </div>

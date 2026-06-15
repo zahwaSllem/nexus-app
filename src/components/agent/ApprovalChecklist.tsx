@@ -50,21 +50,21 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
     return (
       <div className="mx-auto max-w-lg space-y-6 py-8 text-center">
         {/* Success mark */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 ring-1 ring-emerald-500/30">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="h-8 w-8 text-emerald-400">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-200 dark:bg-emerald-500/15 dark:ring-emerald-500/30">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="h-8 w-8 text-emerald-600 dark:text-emerald-400">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
           </svg>
         </div>
 
         <div>
-          <h2 className="text-xl font-bold text-white">Blueprint Approved</h2>
-          <p className="mt-2 text-sm text-slate-400">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Blueprint Approved</h2>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
             This blueprint is now available for candidate assignment.
           </p>
         </div>
 
         {/* Approval details */}
-        <div className="rounded-xl border border-slate-700 bg-slate-800 p-5 text-left">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:shadow-none">
           <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">Approval Record</p>
           <div className="space-y-2.5">
             {[
@@ -77,7 +77,7 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
             ].map((row) => (
               <div key={row.label} className="flex items-center justify-between gap-4">
                 <span className="text-xs text-slate-500">{row.label}</span>
-                <span className="font-mono text-xs font-medium text-slate-300">{row.value}</span>
+                <span className="font-mono text-xs font-medium text-slate-700 dark:text-slate-300">{row.value}</span>
               </div>
             ))}
           </div>
@@ -96,7 +96,7 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
           </Link>
           <Link
             href="/dashboard/blueprints"
-            className="flex items-center justify-center gap-2 rounded-lg border border-slate-700 px-6 py-3 text-sm font-medium text-slate-300 transition-colors hover:border-slate-600 hover:bg-slate-800 hover:text-white"
+            className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-6 py-3 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:hover:text-white"
           >
             View in Blueprint Library
           </Link>
@@ -108,16 +108,16 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
   return (
     <div className="mx-auto max-w-xl space-y-6">
       {/* Preamble */}
-      <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
+      <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:shadow-none">
         <div className="flex items-start gap-3">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-sm font-bold text-white shadow-sm">
             N
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">Final approval confirmation</p>
-            <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Final approval confirmation</p>
+            <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
               By approving this blueprint, you confirm that it is ready for operational use under the stated use case.
-              Blueprint ID: <span className="font-mono text-slate-300">{blueprintId}</span>
+              Blueprint ID: <span className="font-mono text-slate-700 dark:text-slate-300">{blueprintId}</span>
             </p>
           </div>
         </div>
@@ -135,8 +135,8 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
               key={item.id}
               className={`flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-all duration-200 ${
                 isChecked
-                  ? "border-emerald-500/30 bg-emerald-500/5"
-                  : "border-slate-700 bg-slate-800 hover:-translate-y-0.5 hover:border-slate-600 hover:shadow-md"
+                  ? "border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/5"
+                  : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600 dark:hover:shadow-none"
               }`}
             >
               <div className="mt-0.5 shrink-0">
@@ -144,10 +144,10 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
                   type="checkbox"
                   checked={isChecked}
                   onChange={() => toggle(item.id)}
-                  className="h-4 w-4 rounded border-slate-600 bg-slate-700 accent-emerald-500"
+                  className="h-4 w-4 rounded border-slate-300 bg-white accent-emerald-500 dark:border-slate-600 dark:bg-slate-700"
                 />
               </div>
-              <p className={`text-sm leading-relaxed ${isChecked ? "text-slate-200" : "text-slate-400"}`}>
+              <p className={`text-sm leading-relaxed ${isChecked ? "text-slate-700 dark:text-slate-200" : "text-slate-600 dark:text-slate-400"}`}>
                 {item.text}
               </p>
             </label>
@@ -156,9 +156,9 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
       </div>
 
       {/* Progress indicator */}
-      <div className="flex items-center justify-between text-xs text-slate-600">
+      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
         <span>{checked.size} of {CHECKLIST_ITEMS.length} confirmed</span>
-        {allChecked && <span className="text-emerald-400">All items confirmed</span>}
+        {allChecked && <span className="text-emerald-600 dark:text-emerald-400">All items confirmed</span>}
       </div>
 
       {/* Approve button */}
@@ -171,7 +171,7 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
         Approve Blueprint
       </button>
 
-      <p className="text-center text-xs text-slate-700">
+      <p className="text-center text-xs text-slate-500 dark:text-slate-500">
         This action moves the blueprint status to <span className="font-mono">approved</span>.
         The blueprint will be available for candidate assignment.
       </p>

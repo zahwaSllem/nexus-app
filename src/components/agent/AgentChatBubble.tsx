@@ -70,7 +70,7 @@ export function AgentChatBubble({ turn }: AgentChatBubbleProps) {
         <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-2">
             <span className="text-xs font-semibold text-indigo-400">Nexus Agent</span>
-            {time && <span className="text-[10px] text-slate-700">{time}</span>}
+            {time && <span className="text-[10px] text-slate-500">{time}</span>}
           </div>
           <div className="max-w-[85%] rounded-xl rounded-tl-sm border border-slate-700/60 border-l-2 border-l-indigo-500/50 bg-slate-800/80 px-4 py-3">
             <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-200">
@@ -86,7 +86,7 @@ export function AgentChatBubble({ turn }: AgentChatBubbleProps) {
   return (
     <div className="flex flex-col items-end gap-1 animate-slide-up">
       <div className="mb-1 flex items-center gap-2">
-        {time && <span className="text-[10px] text-slate-700">{time}</span>}
+        {time && <span className="text-[10px] text-slate-500">{time}</span>}
         <span className="text-xs font-semibold text-slate-500">You</span>
       </div>
       <div className="max-w-[75%] overflow-hidden rounded-xl rounded-tr-sm bg-gradient-to-br from-indigo-600 to-violet-600/90 px-4 py-3 shadow-[0_0_18px_0_rgba(99,102,241,0.20)]">
