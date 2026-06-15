@@ -759,3 +759,92 @@ Each node has: `id`, `title`, `description`, `phase`, `energy` (0–100), `relat
 - `23 routes compiled · exit 0`
 - Homepage route `/` → 4 kB (Static) — increase from 991 B reflects component JS bundled into page
 - Build note: stale `.next` cache caused intermittent `PageNotFoundError` failures on earlier runs; cleared with `Remove-Item -Recurse -Force .next` → clean build passes consistently
+
+---
+
+## Page Transition System ✅
+**Date:** 2026-06-15
+
+**Scope:** Added a subtle, consistent page-entrance transition system across all Nexus route segments. No functionality, routes, mock data, auth, or business logic changed.
+
+### Files changed
+
+| File | Type | Change |
+|---|---|---|
+| `src/components/layout/PageTransition.tsx` | **NEW** | Reusable `"use client"` wrapper — applies `animate-page-enter` CSS class |
+| `src/app/dashboard/template.tsx` | **NEW** | Next.js template for all `/dashboard/*` pages |
+| `src/app/admin/template.tsx` | **NEW** | Next.js template for all `/admin/*` pages |
+| `src/app/candidate/template.tsx` | **NEW** | Next.js template for all `/candidate/*` pages |
+| `src/app/assessment/template.tsx` | **NEW** | Next.js template for all `/assessment/*` pages |
+| `src/app/login/template.tsx` | **NEW** | Next.js template for the login page |
+| `src/app/logout/template.tsx` | **NEW** | Next.js template for the logout page |
+| `src/app/globals.css` | EDITED | Added `@keyframes pageEnter`, `.animate-page-enter` utility, PRM guard |
+
+### How it works
+
+**Next.js `template.tsx`** re-mounts on every navigation within its segment (unlike `layout.tsx` which persists). Placing `PageTransition` inside a template means the entrance animation fires on every route change within that segment.
+
+**Rendering tree (e.g. `/dashboard/agent`):**
+```
+app/layout.tsx             — persists (root HTML shell)
+  app/dashboard/layout.tsx — persists (Sidebar + HeaderBar stay static)
+    app/dashboard/template.tsx — RE-MOUNTS on every /dashboard/* navigation
+      PageTransition (animate-page-enter)
+        page content
+```
+
+The sidebar and HeaderBar live in `layout.tsx` and never re-mount, so they stay visually stable while only the main content area transitions.
+
+**Animation:**
+```css
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-page-enter {
+  animation: pageEnter 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+```
+- Duration: 220ms (within the 200–350ms target)
+- Easing: `cubic-bezier(0.16, 1, 0.3, 1)` — spring-like ease-out, snappy start, smooth finish
+- Motion: 6px upward slide + fade-in (subtle, not attention-seeking)
+- `animation-fill-mode: both` — content starts at opacity: 0, no flash
+
+### Coverage
+
+| Page group | Covered by | Behavior |
+|---|---|---|
+| `/dashboard/*` | `dashboard/template.tsx` | Page content fades in; sidebar + HeaderBar stay put |
+| `/admin/*` | `admin/template.tsx` | Page content fades in; sidebar + HeaderBar stay put |
+| `/candidate/*` | `candidate/template.tsx` | Page content fades in; sidebar + HeaderBar stay put |
+| `/assessment/*` | `assessment/template.tsx` | Full assessment area fades in |
+| `/login` | `login/template.tsx` | Login page fades in on every navigation to it |
+| `/logout` | `logout/template.tsx` | Logout page fades in |
+| `/` (home) | Existing hero `animate-fade-in-up` | Hero elements stagger in on mount (pre-existing, sufficient) |
+
+### Why no root `template.tsx`
+
+A root `app/template.tsx` re-mounts on EVERY navigation, including intra-dashboard navigations. Since the dashboard layout's Sidebar lives inside the root template's `{children}`, it would animate (fade + shift) on every `/dashboard/*` navigation — breaking the "persistent sidebar stays put" contract. Segment-level templates avoid this by wrapping only the content INSIDE the stable layout.
+
+### Reduced motion
+
+`animate-page-enter` is listed in the `prefers-reduced-motion: reduce` guard in `globals.css`:
+```css
+@media (prefers-reduced-motion: reduce) {
+  /* ... existing ... */
+  .animate-page-enter { animation: none; }
+}
+```
+Users with reduced-motion preference see instant page loads with no animation at all.
+
+### No layout shift
+
+- `animation-fill-mode: both` ensures content starts invisible (`opacity: 0`) — no flash of unstyled content
+- `translateY(6px)` → `translateY(0)` — vertical shift is 6px, well below the threshold that causes perceived layout shift
+- The wrapper `<div>` from `PageTransition` has no explicit height/width, so it participates naturally in layout flow
+- The `<main>` element in each layout has `flex-1 overflow-y-auto` — the transition wrapper inherits this correctly
+
+### Build & lint (Page Transitions)
+- `✔ No ESLint warnings or errors`
+- `23 routes compiled · exit 0`
+- No bundle size change on any route (the single `PageTransition` component is negligible — 0 extra kB visible in build output)
