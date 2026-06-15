@@ -102,8 +102,9 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
       </div>
 
       {/* Input area */}
-      <div className="mt-4 border-t border-slate-800/80 pt-4">
+      <div className="mt-4 border-t border-slate-800/60 pt-4">
         {interviewComplete ? (
+          /* Interview complete CTA */
           <div className="flex flex-col items-center gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-5 py-5">
             <div className="flex items-center gap-2 text-sm font-medium text-emerald-400">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -126,26 +127,35 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex gap-3">
-            <input
-              ref={inputRef}
-              type="text"
-              value={adminInput}
-              onChange={(e) => setAdminInput(e.target.value)}
-              disabled={isTyping}
-              placeholder={isTyping ? "Agent is responding…" : "Type your response…"}
-              className="flex-1 rounded-lg border border-slate-700 bg-slate-800/80 px-4 py-2.5 text-sm text-white placeholder-slate-600 outline-none transition-all duration-150 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
-            />
-            <button
-              type="submit"
-              disabled={!adminInput.trim() || isTyping}
-              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-brand transition-all duration-200 hover:from-indigo-700 hover:to-violet-700 hover:shadow-brand-lg disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Send
-              <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
-                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-              </svg>
-            </button>
+          /* Message composer */
+          <form onSubmit={handleSubmit} className="space-y-2">
+            <div className="relative">
+              <input
+                ref={inputRef}
+                type="text"
+                value={adminInput}
+                onChange={(e) => setAdminInput(e.target.value)}
+                disabled={isTyping}
+                placeholder={isTyping ? "Agent is responding…" : "Type your response…"}
+                className="w-full rounded-xl border border-slate-700/60 bg-slate-800/60 px-4 py-3 pr-[88px] text-sm text-white placeholder-slate-600 outline-none transition-all duration-150 focus:border-indigo-500/60 focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                disabled={!adminInput.trim() || isTyping}
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:from-indigo-700 hover:to-violet-700 hover:shadow-brand disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Send
+                <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                </svg>
+              </button>
+            </div>
+            <div className="flex items-center justify-between px-0.5">
+              <span className="text-[10px] text-slate-700">Enter to send</span>
+              {adminInput.length > 0 && (
+                <span className="text-[10px] text-slate-700">{adminInput.length} chars</span>
+              )}
+            </div>
           </form>
         )}
       </div>

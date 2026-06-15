@@ -137,7 +137,7 @@ export function GovernanceReviewPanel({ warnings, onAllAcknowledged }: Governanc
           return (
             <div
               key={warning.code}
-              className={`rounded-xl border p-5 transition-all ${cfg.border} ${cfg.bg} ${isAcknowledged ? "opacity-60" : ""}`}
+              className={`rounded-xl border p-5 transition-all duration-200 ${cfg.border} ${cfg.bg} ${isAcknowledged ? "opacity-60" : "hover:-translate-y-0.5 hover:shadow-md"}`}
             >
               <div className="flex items-start gap-3">
                 {/* Severity icon */}

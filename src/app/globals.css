@@ -158,11 +158,35 @@ body {
   30% { transform: translateY(-4px); }
 }
 
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(200%); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 @layer utilities {
   .animate-fade-in-up {
     animation: fadeInUp 0.45s ease-out both;
   }
   .animate-dot-bounce {
     animation: dotBounce 1.2s ease-in-out infinite;
+  }
+  .animate-shimmer {
+    animation: shimmer 2.2s ease-in-out infinite;
+  }
+  .animate-slide-up {
+    animation: slideUp 0.30s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-scale-in {
+    animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }

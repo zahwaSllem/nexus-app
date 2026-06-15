@@ -106,7 +106,7 @@ export function AssessmentBlueprintPreview({ blueprint, bankItems }: AssessmentB
               {domainId}
             </span>
             <span className="text-sm font-semibold text-white">{domainGroup.domain_name}</span>
-            <div className="h-px flex-1 bg-slate-800" />
+            <div className="h-px flex-1 bg-gradient-to-r from-slate-700/80 to-transparent" />
           </div>
 
           {/* Dimensions */}

@@ -3,6 +3,12 @@ import { MethodBadge } from "@/components/ui/MethodBadge";
 import { GovernanceBadge } from "@/components/ui/GovernanceBadge";
 import { OriginalTextToggle } from "./OriginalTextToggle";
 
+const DOMAIN_ACCENT_COLOR: Record<string, string> = {
+  D1: "#6366F1",
+  D2: "#F59E0B",
+  D4: "#8B5CF6",
+};
+
 interface ItemContextCardProps {
   item: ContextualizedItem;
   bankItem: BankItem;
@@ -10,7 +16,13 @@ interface ItemContextCardProps {
 
 export function ItemContextCard({ item, bankItem }: ItemContextCardProps) {
   return (
-    <div className="rounded-xl border border-slate-700 bg-slate-800 p-4">
+    <div
+      className="rounded-xl border border-slate-700 bg-slate-800 p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_30px_0_rgba(0,0,0,0.4)]"
+      style={{
+        borderLeftColor: DOMAIN_ACCENT_COLOR[bankItem.domain_id] ?? "#475569",
+        borderLeftWidth: "2px",
+      }}
+    >
       {/* Header row */}
       <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -34,9 +46,12 @@ export function ItemContextCard({ item, bankItem }: ItemContextCardProps) {
       </div>
 
       {/* Contextualized text — prominent */}
-      <p className="text-sm font-medium leading-relaxed text-white">
+      <p className="text-[15px] font-medium leading-snug text-white">
         {item.contextualized_text}
       </p>
+
+      {/* Separator */}
+      <div className="my-3 h-px bg-slate-700/60" />
 
       {/* Original text toggle */}
       <OriginalTextToggle originalText={item.original_text} />

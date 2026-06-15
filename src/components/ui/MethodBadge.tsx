@@ -3,7 +3,7 @@ import type { MethodFamily } from "@/lib/types/nexus";
 const CONFIG: Record<MethodFamily, { label: string; className: string }> = {
   likert: {
     label: "Likert",
-    className: "bg-blue-500/15 text-blue-400 border border-blue-500/30",
+    className: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/30",
   },
   contextual_self_report: {
     label: "Contextual",

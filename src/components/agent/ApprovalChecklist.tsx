@@ -133,10 +133,10 @@ export function ApprovalChecklist({ blueprintId, useCaseLabel, onApprove }: Appr
           return (
             <label
               key={item.id}
-              className={`flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-all ${
+              className={`flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-all duration-200 ${
                 isChecked
                   ? "border-emerald-500/30 bg-emerald-500/5"
-                  : "border-slate-700 bg-slate-800 hover:border-slate-600"
+                  : "border-slate-700 bg-slate-800 hover:-translate-y-0.5 hover:border-slate-600 hover:shadow-md"
               }`}
             >
               <div className="mt-0.5 shrink-0">

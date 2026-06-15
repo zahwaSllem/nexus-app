@@ -14,7 +14,7 @@ export function OriginalTextToggle({ originalText }: OriginalTextToggleProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 text-xs text-slate-600 transition-colors hover:text-slate-400"
+        className="flex items-center gap-1.5 text-xs text-slate-600 transition-colors hover:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-800"
       >
         <svg
           viewBox="0 0 20 20"
