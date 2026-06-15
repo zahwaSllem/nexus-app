@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { useStore } from "@/lib/providers/store-provider";
 import type { AssignmentStatus } from "@/lib/types/nexus";
+import { PageAmbient } from "@/components/layout/PageAmbient";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -24,7 +25,8 @@ export default function CandidatesPage() {
   const { candidates } = useStore();
 
   return (
-    <div className="p-8">
+    <div className="relative min-h-full bg-white p-8 dark:bg-slate-900">
+      <PageAmbient />
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Candidates</h1>

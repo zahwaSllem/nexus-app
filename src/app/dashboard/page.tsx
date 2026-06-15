@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/providers/language-provider";
+import { PageAmbient } from "@/components/layout/PageAmbient";
 
 // ─── Mock data ─────────────────────────────────────────────────────────────────
 
@@ -115,7 +116,8 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-full bg-slate-50 p-6 dark:bg-slate-900 sm:p-8">
+    <div className="relative min-h-full bg-slate-50 p-6 dark:bg-slate-900 sm:p-8">
+      <PageAmbient />
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4 animate-fade-in-up">

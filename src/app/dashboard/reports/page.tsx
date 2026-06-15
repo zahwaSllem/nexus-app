@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
 import { useStore } from "@/lib/providers/store-provider";
+import { PageAmbient } from "@/components/layout/PageAmbient";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -35,7 +36,8 @@ export default function ReportsPage() {
   const pending = assignments.filter((a) => a.status === "not_started" || a.status === "in_progress").length;
 
   return (
-    <div className="min-h-full bg-slate-900">
+    <div className="relative min-h-full bg-slate-900">
+      <PageAmbient />
 
       {/* ── Page header ──────────────────────────────────────────── */}
       <div className="relative overflow-hidden border-b border-slate-800/70">

@@ -5,7 +5,7 @@
 
 **Last updated:** 2026-06-15  
 **Design system:** UI UX Pro Max — Enterprise SaaS / Indigo-Violet  
-**Current status:** Agent Page Visual Composition Redesign complete ✅ — awaiting approval before Phase 5
+**Current status:** Ambient Visibility Tuning complete ✅ — awaiting approval before Phase 5
 
 ---
 
@@ -492,6 +492,90 @@ Card raised:     bg-white + shadow-card
 - Chat terminal: changed from `animate-fade-in-up` → `animate-scale-in`
 - Step context banner: `animate-fade-in-up`, re-fires on each step advance
 
-### Build & lint
+### Build & lint (Agent Visual Composition)
+- `✔ No ESLint warnings or errors`
+- `23 routes compiled · exit 0`
+
+---
+
+## Full-Page Ambient System ✅
+**Date:** 2026-06-15
+
+**Scope:** Extended ambient visual system from Agent page header to the full workspace, and applied a consistent ambient canvas across all 6 main admin pages. No functionality, routes, mock data, or business logic changed.
+
+### New file
+
+| File | Description |
+|---|---|
+| `src/components/layout/PageAmbient.tsx` | Reusable ambient background canvas — `absolute inset-0 overflow-hidden`, two animated blur blobs + dot-grid. Variants: `"subtle"` (content pages) and `"rich"` (agent workspace). |
+
+### CSS additions (`globals.css`)
+
+```
+ambientDrift1 — 28s ease-in-out (top-right blob)
+ambientDrift2 — 35s ease-in-out (bottom-left blob, counter-phase)
+ambientDrift3 — 22s ease-in-out (centre accent, rich only)
+will-change: transform — GPU composited, zero layout/paint triggers
+@media (prefers-reduced-motion: reduce) — animation: none
+```
+
+### Pages updated
+
+| Page | Change |
+|---|---|
+| `src/app/dashboard/agent/page.tsx` | Added `relative` to wrapper; `<PageAmbient variant="rich" />` covering full page (hero + workspace). Three animations active. |
+| `src/app/dashboard/page.tsx` | Added `relative`; `<PageAmbient />` (subtle). |
+| `src/app/dashboard/blueprints/page.tsx` | Added `relative`; `<PageAmbient />`. |
+| `src/app/dashboard/assessments/page.tsx` | Added `relative`; `<PageAmbient />`. |
+| `src/app/dashboard/reports/page.tsx` | Added `relative`; `<PageAmbient />`. |
+| `src/app/dashboard/candidates/page.tsx` | Added `relative min-h-full bg-white dark:bg-slate-900` (was bare `p-8`); `<PageAmbient />`. |
+
+### Light vs dark
+
+| | Light | Dark |
+|---|---|---|
+| Blob 1 (top-right) | `bg-indigo-400/7` | `dark:bg-indigo-500/11` |
+| Blob 2 (bottom-left) | `bg-violet-400/5` | `dark:bg-violet-500/8` |
+| Dot grid | `opacity-[0.025]` | `dark:opacity-[0.042]` |
+| Rich blob 3 (agent) | `bg-indigo-600/5` | `dark:bg-indigo-400/8` |
+
+### Build & lint (Full-Page Ambient System)
+- `✔ No ESLint warnings or errors`
+- `23 routes compiled · exit 0`
+
+---
+
+## Ambient Visibility Tuning ✅
+**Date:** 2026-06-15
+
+**Scope:** Opacity and size increase on `PageAmbient.tsx` only. No structure, routes, logic, or other files changed.
+
+### Exact changes (`src/components/layout/PageAmbient.tsx`)
+
+| Property | Before | After |
+|---|---|---|
+| **Rich blob 1** size | `h-[65vh] w-[55vw]` | `h-[70vh] w-[62vw]` |
+| **Rich blob 1** light | `bg-indigo-400/10` | `bg-indigo-400/22` |
+| **Rich blob 1** dark | `dark:bg-indigo-500/15` | `dark:bg-indigo-500/35` |
+| **Rich blob 2** size | `h-[55vh] w-[50vw]` | `h-[62vh] w-[56vw]` |
+| **Rich blob 2** light | `bg-violet-400/8` | `bg-violet-400/18` |
+| **Rich blob 2** dark | `dark:bg-violet-500/12` | `dark:bg-violet-500/28` |
+| **Rich centre** size | `h-72 w-96` | `h-80 w-[28rem]` |
+| **Rich centre** light | `bg-indigo-600/5` | `bg-indigo-600/12` |
+| **Rich centre** dark | `dark:bg-indigo-400/8` | `dark:bg-indigo-400/20` |
+| **Rich dot grid** light | `opacity-[0.035]` | `opacity-[0.07]` |
+| **Rich dot grid** dark | `dark:opacity-[0.055]` | `dark:opacity-[0.12]` |
+| **Subtle blob 1** size | `h-[48vh] w-[46vw]` | `h-[52vh] w-[50vw]` |
+| **Subtle blob 1** light | `bg-indigo-400/7` | `bg-indigo-400/14` |
+| **Subtle blob 1** dark | `dark:bg-indigo-500/11` | `dark:bg-indigo-500/22` |
+| **Subtle blob 2** size | `h-[40vh] w-[40vw]` | `h-[44vh] w-[44vw]` |
+| **Subtle blob 2** light | `bg-violet-400/5` | `bg-violet-400/11` |
+| **Subtle blob 2** dark | `dark:bg-violet-500/8` | `dark:bg-violet-500/17` |
+| **Subtle dot grid** light | `opacity-[0.025]` | `opacity-[0.05]` |
+| **Subtle dot grid** dark | `dark:opacity-[0.042]` | `dark:opacity-[0.08]` |
+
+**Why the previous values were invisible:** `blur-3xl` applies a 48px Gaussian blur across elements that are 50–65% of the viewport in each dimension. The blur heavily diffuses the color, meaning only the tail of the gradient reaches the content area. At 7–10% opacity with heavy blur, the perceived colour in the workspace was near-zero. The new 22–35% values for the rich variant and 11–22% for subtle produce a clearly visible atmospheric tint while remaining professional.
+
+### Build & lint (Ambient Visibility Tuning)
 - `✔ No ESLint warnings or errors`
 - `23 routes compiled · exit 0`

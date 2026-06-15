@@ -196,3 +196,35 @@ body {
     animation: scaleIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
+
+/* ── Ambient background drift ────────────────────────────────────────────────
+   CSS-only transform animations — GPU composited, no layout/paint triggers.
+   Very long durations (22–35 s) make motion feel atmospheric, not animated. */
+
+@keyframes ambientDrift1 {
+  0%,  100% { transform: translate(0px,   0px) scale(1);    }
+  33%        { transform: translate(18px,  14px) scale(1.03); }
+  66%        { transform: translate(-12px, 20px) scale(0.97); }
+}
+@keyframes ambientDrift2 {
+  0%,  100% { transform: translate(0px,   0px) scale(1);    }
+  40%        { transform: translate(-22px,-18px) scale(1.03); }
+  70%        { transform: translate(14px, -24px) scale(0.97); }
+}
+@keyframes ambientDrift3 {
+  0%,  100% { transform: translate(0px,  0px) scale(1);    }
+  25%        { transform: translate(24px,-16px) scale(1.04); }
+  75%        { transform: translate(-18px, 8px) scale(0.96); }
+}
+
+@layer utilities {
+  .animate-ambient-1 { animation: ambientDrift1 28s ease-in-out infinite; will-change: transform; }
+  .animate-ambient-2 { animation: ambientDrift2 35s ease-in-out infinite; will-change: transform; }
+  .animate-ambient-3 { animation: ambientDrift3 22s ease-in-out infinite; will-change: transform; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ambient-1,
+  .animate-ambient-2,
+  .animate-ambient-3 { animation: none; }
+}

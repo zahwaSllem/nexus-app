@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
 import { getAssessmentBlueprintByRoleBlueprint } from "@/lib/mock-data/assessment-blueprints";
 import type { RoleBlueprint, BlueprintApprovalStatus } from "@/lib/types/nexus";
+import { PageAmbient } from "@/components/layout/PageAmbient";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -194,7 +195,8 @@ export default function BlueprintsPage() {
   const totalDraft    = BLUEPRINTS.filter((b) => b.approval_status === "draft").length;
 
   return (
-    <div className="min-h-full bg-slate-900">
+    <div className="relative min-h-full bg-slate-900">
+      <PageAmbient />
 
       {/* ── Page header ──────────────────────────────────────────── */}
       <div className="relative overflow-hidden border-b border-slate-800/70">

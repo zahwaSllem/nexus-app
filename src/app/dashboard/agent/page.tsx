@@ -13,6 +13,7 @@ import { AssessmentBlueprintPreview } from "@/components/agent/AssessmentBluepri
 import { GovernanceReviewPanel } from "@/components/agent/GovernanceReviewPanel";
 import { ApprovalChecklist } from "@/components/agent/ApprovalChecklist";
 import { useLanguage } from "@/lib/providers/language-provider";
+import { PageAmbient } from "@/components/layout/PageAmbient";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -41,7 +42,7 @@ export default function AgentPage() {
   const { title, subtitle } = STEP_TITLES[step];
 
   return (
-    <div className="flex min-h-full flex-col bg-white dark:bg-slate-900">
+    <div className="relative flex min-h-full flex-col bg-white dark:bg-slate-900">
 
       {/* ── Fixed ambient layers ─────────────────────────────────────────────── */}
 
@@ -60,6 +61,11 @@ export default function AgentPage() {
             "radial-gradient(ellipse 55% 55% at 5% 95%, rgba(139,92,246,0.09) 0%, transparent 70%)",
         }}
       />
+
+      {/* ── Page-level ambient canvas ─────────────────────────────────────────
+          Extends the indigo/violet atmosphere across the full page — hero and
+          workspace share the same background environment. */}
+      <PageAmbient variant="rich" />
 
       {/* ── Hero header ─────────────────────────────────────────────────────── */}
       <header className="relative z-10 overflow-hidden border-b border-indigo-200/50 bg-white dark:border-slate-800/60 dark:bg-slate-900">
