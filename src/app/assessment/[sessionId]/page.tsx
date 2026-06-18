@@ -207,10 +207,10 @@ export default function AssessmentSessionPage() {
         />
       )}
 
-      <div className="flex min-h-screen flex-col bg-slate-900">
+      <div className="flex min-h-screen flex-col bg-slate-50 dark:bg-slate-900">
 
         {/* ── Header ───────────────────────────────────────────────── */}
-        <header className="border-b border-slate-800 bg-slate-900 px-6 py-4">
+        <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 px-6 py-4">
           <div className="mx-auto max-w-2xl">
 
             {/* Top row: logo + module name | save placeholder + exit + counter */}
@@ -226,7 +226,7 @@ export default function AssessmentSessionPage() {
                 >
                   N
                 </button>
-                <span className="text-xs font-medium text-slate-400">{question.module}</span>
+                <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{question.module}</span>
               </div>
 
               {/* Right: save placeholder + exit button + counter */}
@@ -236,7 +236,7 @@ export default function AssessmentSessionPage() {
                   type="button"
                   disabled
                   title="Progress saving is not yet available"
-                  className="flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-slate-800 px-2.5 py-1.5 text-xs text-slate-700 opacity-50"
+                  className="flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 text-xs text-slate-400 dark:text-slate-700 opacity-50"
                 >
                   <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
                     <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
@@ -248,7 +248,7 @@ export default function AssessmentSessionPage() {
                 <button
                   type="button"
                   onClick={() => setShowExitDialog(true)}
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-700 px-2.5 py-1.5 text-xs text-slate-400 transition-colors hover:border-slate-600 hover:text-slate-200"
+                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 text-xs text-slate-600 dark:text-slate-400 transition-colors hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-900 dark:hover:text-slate-200"
                 >
                   <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
                     <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
@@ -257,7 +257,7 @@ export default function AssessmentSessionPage() {
                 </button>
 
                 {/* Counter */}
-                <div className="flex items-center gap-2 text-xs text-slate-500">
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
                   <span>{currentIndex + 1} of {total}</span>
                   <span className="font-mono font-semibold text-blue-400">{progressPct}%</span>
                 </div>
@@ -265,7 +265,7 @@ export default function AssessmentSessionPage() {
             </div>
 
             {/* Progress bar */}
-            <div className="h-1 w-full overflow-hidden rounded-full bg-slate-800">
+            <div className="h-1 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
               <div
                 className="h-1 rounded-full bg-blue-600 transition-all duration-500 ease-out"
                 style={{ width: `${progressPct}%` }}
@@ -282,18 +282,18 @@ export default function AssessmentSessionPage() {
                         ? "bg-blue-500"
                         : i === moduleIndex
                         ? "bg-blue-400"
-                        : "bg-slate-700"
+                        : "bg-slate-300 dark:bg-slate-700"
                     }`}
                   />
                   <span
                     className={`text-xs transition-colors ${
-                      i === moduleIndex ? "text-slate-400" : "text-slate-600"
+                      i === moduleIndex ? "text-slate-600 dark:text-slate-400" : "text-slate-400 dark:text-slate-600"
                     }`}
                   >
                     {mod}
                   </span>
                   {i < MODULES.length - 1 && (
-                    <span className="text-slate-700">›</span>
+                    <span className="text-slate-400 dark:text-slate-700">›</span>
                   )}
                 </div>
               ))}
@@ -310,21 +310,21 @@ export default function AssessmentSessionPage() {
               <span className="rounded bg-blue-500/10 px-2 py-0.5 font-mono text-xs font-bold text-blue-300">
                 {question.domainCode}
               </span>
-              <span className="text-xs text-slate-500">{question.domain}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-500">{question.domain}</span>
             </div>
 
             {/* Position within module */}
-            <p className="mb-6 text-xs text-slate-600">
+            <p className="mb-6 text-xs text-slate-600 dark:text-slate-600">
               Question {currentIndex + 1} of {total}
               {moduleQuestions.length > 1 && (
-                <span className="text-slate-700">
+                <span className="text-slate-400 dark:text-slate-700">
                   {" "}· {posInModule} of {moduleQuestions.length} in this module
                 </span>
               )}
             </p>
 
             {/* Question text */}
-            <h2 className="mb-10 text-xl font-semibold leading-relaxed text-white">
+            <h2 className="mb-10 text-xl font-semibold leading-relaxed text-slate-900 dark:text-white">
               {question.text}
             </h2>
 
@@ -340,26 +340,26 @@ export default function AssessmentSessionPage() {
                     className={`flex w-full items-center gap-4 rounded-xl border px-5 py-4 text-left transition-all duration-150 ${
                       isSelected
                         ? "border-blue-500 bg-blue-600/10 ring-1 ring-blue-500/40"
-                        : "border-slate-700 bg-slate-800/50 hover:border-slate-600 hover:bg-slate-800"
+                        : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 dark:hover:border-slate-600 dark:hover:bg-slate-800"
                     }`}
                   >
                     <div
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
-                        isSelected ? "border-blue-500 bg-blue-500" : "border-slate-600"
+                        isSelected ? "border-blue-500 bg-blue-500" : "border-slate-300 dark:border-slate-600"
                       }`}
                     >
                       {isSelected && <div className="h-2 w-2 rounded-full bg-white" />}
                     </div>
                     <span
                       className={`w-4 shrink-0 font-mono text-sm font-bold ${
-                        isSelected ? "text-blue-300" : "text-slate-500"
+                        isSelected ? "text-blue-300" : "text-slate-500 dark:text-slate-500"
                       }`}
                     >
                       {option.value}
                     </span>
                     <span
                       className={`text-sm font-medium ${
-                        isSelected ? "text-white" : "text-slate-300"
+                        isSelected ? "text-white" : "text-slate-700 dark:text-slate-300"
                       }`}
                     >
                       {option.label}
@@ -371,14 +371,14 @@ export default function AssessmentSessionPage() {
 
             {/* Scale endpoints legend */}
             <div className="mt-4 flex justify-between px-1">
-              <span className="text-xs text-slate-600">1 — Strongly Disagree</span>
-              <span className="text-xs text-slate-600">5 — Strongly Agree</span>
+              <span className="text-xs text-slate-600 dark:text-slate-600">1 — Strongly Disagree</span>
+              <span className="text-xs text-slate-600 dark:text-slate-600">5 — Strongly Agree</span>
             </div>
           </div>
         </main>
 
         {/* ── Footer navigation ─────────────────────────────────────── */}
-        <footer className="border-t border-slate-800 bg-slate-900 px-6 py-4">
+        <footer className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 px-6 py-4">
           <div className="mx-auto flex max-w-2xl items-center justify-between">
 
             {/* Previous */}
@@ -386,7 +386,7 @@ export default function AssessmentSessionPage() {
               type="button"
               onClick={handlePrevious}
               disabled={isFirst}
-              className="flex items-center gap-2 rounded-lg border border-slate-700 px-5 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:border-slate-600 hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-25"
+              className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 px-5 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-900 dark:hover:text-slate-200 disabled:cursor-not-allowed disabled:opacity-25"
             >
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
                 <path fillRule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -404,7 +404,7 @@ export default function AssessmentSessionPage() {
                       ? "h-1.5 w-1.5 bg-blue-500"
                       : i === currentIndex
                       ? "h-2 w-2 bg-blue-400"
-                      : "h-1.5 w-1.5 bg-slate-700"
+                      : "h-1.5 w-1.5 bg-slate-300 dark:bg-slate-700"
                   }`}
                 />
               ))}

@@ -104,7 +104,7 @@ export default function BlueprintDetailPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-full bg-slate-900 p-8">
+    <div className="min-h-full bg-slate-50 p-8 dark:bg-slate-900">
 
       {/* Breadcrumb */}
       <div className="mb-6">
@@ -158,7 +158,7 @@ export default function BlueprintDetailPage({ params }: PageProps) {
 
         {/* ── 1. Role Context ─────────────────────────────────────── */}
         <Section title="Role Context">
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
             <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 { label: "Job Family",          value: bp.role_context.job_family },
@@ -223,7 +223,7 @@ export default function BlueprintDetailPage({ params }: PageProps) {
         <Section title={`Selected Domains & Dimensions (${bp.selected_dimensions.length})`}>
           <div className="space-y-4">
             {Object.entries(byDomain).map(([domainId, dims]) => (
-              <div key={domainId} className="rounded-xl border border-slate-700 bg-slate-800 overflow-hidden">
+              <div key={domainId} className="rounded-xl border border-slate-200 bg-white overflow-hidden dark:border-slate-700 dark:bg-slate-800">
                 <div className="flex items-center gap-3 border-b border-slate-700/60 px-5 py-3">
                   <span className={`rounded-full px-2.5 py-0.5 font-mono text-xs font-bold ${DOMAIN_COLORS[domainId] ?? "bg-slate-700 text-slate-400"}`}>
                     {domainId}
@@ -249,7 +249,7 @@ export default function BlueprintDetailPage({ params }: PageProps) {
 
         {/* ── 4. Context Profile ────────────────────────────────────── */}
         <Section title="Context Profile — 17 Fields">
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
             <p className="mb-4 text-xs text-slate-500">
               These values define the role environment for Domain 6 contextual alignment scoring (deferred to Phase 2).
             </p>
@@ -289,7 +289,7 @@ export default function BlueprintDetailPage({ params }: PageProps) {
 
         {/* ── 5. Blueprint Quality Score ────────────────────────────── */}
         <Section title="Blueprint Quality Score">
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-500">BQ Formula: 0.30E + 0.25C + 0.20S + 0.15W + 0.10R</p>

@@ -8,9 +8,9 @@ const users = [
 ];
 
 const roleClasses: Record<string, string> = {
-  "Platform Admin": "bg-violet-50 text-violet-700 border border-violet-200",
-  "Hiring Manager": "bg-blue-50 text-blue-700 border border-blue-200",
-  "Report Reviewer": "bg-slate-100 text-slate-600",
+  "Platform Admin": "bg-violet-50 text-violet-700 border border-violet-200 dark:bg-violet-500/15 dark:text-violet-300 dark:border-violet-500/30",
+  "Hiring Manager": "bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30",
+  "Report Reviewer": "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300",
 };
 
 export default function UsersPage() {
@@ -18,7 +18,7 @@ export default function UsersPage() {
     <div className="p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Users</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Users</h1>
           <p className="mt-1 text-sm text-slate-500">Enterprise users and role assignments.</p>
         </div>
         <button
@@ -36,7 +36,7 @@ export default function UsersPage() {
               {["User", "Email", "Role", "Status"].map((h) => (
                 <th
                   key={h}
-                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400"
+                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400"
                 >
                   {h}
                 </th>
@@ -45,8 +45,8 @@ export default function UsersPage() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {users.map((u) => (
-              <tr key={u.id} className="transition-colors hover:bg-slate-50">
-                <td className="px-6 py-4 text-sm font-medium text-slate-900">{u.name}</td>
+              <tr key={u.id} className="transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{u.name}</td>
                 <td className="px-6 py-4 text-sm text-slate-500">{u.email}</td>
                 <td className="px-6 py-4">
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${roleClasses[u.role]}`}>

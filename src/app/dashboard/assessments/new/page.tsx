@@ -140,7 +140,7 @@ function ConfirmationView({ assignmentId, candidateEmail }: { assignmentId: stri
       </p>
 
       {/* Assignment record */}
-      <div className="mt-6 rounded-xl border border-slate-700 bg-slate-800 p-5 text-left">
+      <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5 text-left dark:border-slate-700 dark:bg-slate-800">
         <p className="mb-3 text-xs font-medium uppercase tracking-wider text-slate-500">Assignment Record</p>
         <div className="space-y-2.5">
           <div className="flex items-center justify-between">
@@ -249,7 +249,7 @@ export default function NewAssessmentPage() {
   // ── Confirmation view ────────────────────────────────────────────
   if (confirmed) {
     return (
-      <div className="min-h-full bg-slate-900 p-8">
+      <div className="min-h-full bg-slate-50 p-8 dark:bg-slate-900">
         <div className="mb-6">
           <Link
             href="/dashboard/assessments"
@@ -326,7 +326,7 @@ export default function NewAssessmentPage() {
               </div>
               <h2 className="text-sm font-semibold text-white">Candidate Details</h2>
             </div>
-            <div className="space-y-4 rounded-xl border border-slate-700 bg-slate-800 p-5">
+            <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
               <div>
                 <label htmlFor="candidate-name" className="mb-1.5 block text-xs font-medium text-slate-400">
                   Candidate Name <span className="text-red-400">*</span>
@@ -371,7 +371,7 @@ export default function NewAssessmentPage() {
               </div>
               <h2 className="text-sm font-semibold text-white">Assignment Settings</h2>
             </div>
-            <div className="space-y-4 rounded-xl border border-slate-700 bg-slate-800 p-5">
+            <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
 
               {/* Deadline */}
               <div>
@@ -414,7 +414,7 @@ export default function NewAssessmentPage() {
             Assignment Preview
           </h2>
 
-          <div className={`rounded-xl border bg-slate-800 p-5 transition-all ${formValid ? "border-blue-500/30" : "border-slate-700"}`}>
+          <div className={`rounded-xl border bg-white p-5 transition-all dark:bg-slate-800 ${formValid ? "border-blue-200 dark:border-blue-500/30" : "border-slate-200 dark:border-slate-700"}`}>
 
             {!formValid ? (
               <div className="space-y-3 text-center">

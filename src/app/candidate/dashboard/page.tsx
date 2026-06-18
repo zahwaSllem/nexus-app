@@ -260,7 +260,7 @@ export default function CandidateDashboardPage() {
               <p className="mb-1.5 text-xs font-medium text-slate-500 dark:text-slate-400">
                 {t.candidate.aboutResults}
               </p>
-              <p className="text-xs leading-relaxed text-slate-400 dark:text-slate-600">
+              <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400">
                 {t.candidate.provisionalNote}
               </p>
             </div>

@@ -102,7 +102,7 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
       </div>
 
       {/* Input area */}
-      <div className="mt-4 border-t border-slate-800/60 pt-4">
+      <div className="mt-4 border-t border-slate-200 dark:border-slate-800/60 pt-4">
         {interviewComplete ? (
           /* Interview complete CTA */
           <div className="flex flex-col items-center gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/5 px-5 py-5">
@@ -137,7 +137,7 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
                 onChange={(e) => setAdminInput(e.target.value)}
                 disabled={isTyping}
                 placeholder={isTyping ? "Agent is responding…" : "Type your response…"}
-                className="w-full rounded-xl border border-slate-700/60 bg-slate-800/60 px-4 py-3 pr-[88px] text-sm text-white placeholder-slate-600 outline-none transition-all duration-150 focus:border-indigo-500/60 focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
+                className="w-full rounded-xl border border-slate-700/60 bg-white dark:bg-slate-800/60 px-4 py-3 pr-[88px] text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none transition-all duration-150 focus:border-indigo-500/60 focus:bg-slate-800 focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50"
               />
               <button
                 type="submit"
@@ -151,7 +151,7 @@ export function AgentChatInterface({ transcript, onComplete }: AgentChatInterfac
               </button>
             </div>
             <div className="flex items-center justify-between px-0.5">
-              <span className="text-[10px] text-slate-500">Enter to send</span>
+              <span className="text-[10px] text-slate-600 dark:text-slate-500">Enter to send</span>
               {adminInput.length > 0 && (
                 <span className="text-[10px] text-slate-500">{adminInput.length} chars</span>
               )}

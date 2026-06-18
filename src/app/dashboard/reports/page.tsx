@@ -37,7 +37,7 @@ export default function ReportsPage() {
   const pending = assignments.filter((a) => a.status === "not_started" || a.status === "in_progress").length;
 
   return (
-    <div className="relative min-h-full bg-slate-900">
+    <div className="relative min-h-full bg-slate-50 dark:bg-slate-900">
       <PageAmbient />
 
       {/* ── Page header ──────────────────────────────────────────── */}
@@ -128,7 +128,7 @@ export default function ReportsPage() {
         {/* Reports table / empty state */}
         {completed.length === 0 ? (
 
-          <div className="animate-scale-in overflow-hidden rounded-xl border border-slate-800/60 bg-slate-800/40">
+          <div className="animate-scale-in overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800/60 dark:bg-slate-800/40">
             <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
               <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-700/60 bg-slate-800">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="h-7 w-7 text-slate-500">
@@ -153,7 +153,7 @@ export default function ReportsPage() {
 
         ) : (
 
-          <div className="animate-scale-in overflow-hidden rounded-xl border border-slate-800/60 bg-slate-800/40">
+          <div className="animate-scale-in overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800/60 dark:bg-slate-800/40">
             {/* Table header */}
             <div className="border-b border-slate-800/80 bg-slate-800/60 px-5 py-3">
               <div className="flex items-center justify-between">

@@ -14,7 +14,7 @@ const STATUS_CONFIG: Record<BlueprintApprovalStatus, {
   dot: string;
   badge: string;
 }> = {
-  draft:     { label: "Draft",     dot: "bg-slate-500",   badge: "bg-slate-700/80 text-slate-400 border border-slate-700" },
+  draft:     { label: "Draft",     dot: "bg-slate-500",   badge: "bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-700/80 dark:text-slate-400 dark:border-slate-700" },
   reviewed:  { label: "Reviewed",  dot: "bg-amber-500",   badge: "bg-amber-500/15 text-amber-400 border border-amber-500/30" },
   approved:  { label: "Approved",  dot: "bg-emerald-500", badge: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" },
   validated: { label: "Validated", dot: "bg-indigo-400",  badge: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/30" },
@@ -58,7 +58,7 @@ function BlueprintCard({ bp }: { bp: RoleBlueprint }) {
   const isApproved = bp.approval_status === "approved" || bp.approval_status === "validated";
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-800/60 bg-slate-800/50 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-700/80 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.45)]">
+    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800/60 dark:bg-slate-800/50 transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-700/80 hover:shadow-[0_8px_32px_0_rgba(0,0,0,0.45)]">
       {/* Top gradient accent bar */}
       <div className="h-0.5 w-full bg-gradient-to-r from-indigo-600 via-violet-500 to-transparent" />
 
@@ -195,7 +195,7 @@ export default function BlueprintsPage() {
   const totalDraft    = BLUEPRINTS.filter((b) => b.approval_status === "draft").length;
 
   return (
-    <div className="relative min-h-full bg-slate-900">
+    <div className="relative min-h-full bg-slate-50 dark:bg-slate-900">
       <PageAmbient />
 
       {/* ── Page header ──────────────────────────────────────────── */}

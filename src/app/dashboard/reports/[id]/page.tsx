@@ -54,7 +54,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
   const rc = RELEASE_CONFIG[report.release_state] ?? RELEASE_CONFIG["Released with Caution"];
 
   return (
-    <div className="min-h-full bg-slate-900 p-8">
+    <div className="min-h-full bg-slate-50 p-8 dark:bg-slate-900">
 
       {/* Breadcrumb */}
       <div className="mb-6">
@@ -121,7 +121,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
         <div className="order-first flex flex-col gap-5 xl:order-last">
 
           {/* Candidate summary */}
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
             <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">Candidate</p>
             <div className="space-y-2.5">
               {(
@@ -144,7 +144,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Response Quality & QC */}
-          <div className="rounded-xl border border-slate-700 bg-slate-800 p-5">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800">
             <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
               Response Quality
             </p>
@@ -185,7 +185,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Blocked & downgraded */}
-          <div className="rounded-xl border border-slate-700/50 bg-slate-800/60 p-5">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700/50 dark:bg-slate-800/60">
             <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-600">
               Not Available / Blocked
             </p>
@@ -219,7 +219,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Version tags */}
-          <div className="rounded-xl border border-slate-700/30 bg-slate-800/30 p-4">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700/30 dark:bg-slate-800/30">
             <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-600">
               Version Tags
             </p>
@@ -247,7 +247,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
         <div className="flex flex-col gap-6 xl:col-span-2">
 
           {/* Confidence Summary */}
-          <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-5">
+          <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-5 dark:border-indigo-500/20 dark:bg-indigo-500/5">
             <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-indigo-400">
               Confidence Summary
             </p>
@@ -255,7 +255,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Critical Success Factors */}
-          <div className="overflow-hidden rounded-xl border border-emerald-500/25 bg-slate-800">
+          <div className="overflow-hidden rounded-xl border border-emerald-200 bg-white dark:border-emerald-500/25 dark:bg-slate-800">
             <div className="flex flex-wrap items-center gap-3 border-b border-slate-700/60 bg-emerald-500/5 px-5 py-4">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-emerald-400">
                 <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -287,7 +287,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Risk Indicators & Disqualifying Traits */}
-          <div className="overflow-hidden rounded-xl border border-amber-500/25 bg-slate-800">
+          <div className="overflow-hidden rounded-xl border border-amber-200 bg-white dark:border-amber-500/25 dark:bg-slate-800">
             <div className="flex flex-wrap items-center gap-3 border-b border-slate-700/60 bg-amber-500/5 px-5 py-4">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-amber-400">
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -342,7 +342,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
                 return (
                   <div
                     key={domain.domain_id}
-                    className={`overflow-hidden rounded-xl border bg-slate-800 ${sc.border}`}
+                    className={`overflow-hidden rounded-xl border bg-white dark:bg-slate-800 ${sc.border}`}
                   >
                     <div className="flex items-center justify-between border-b border-slate-700/60 px-5 py-4">
                       <div className="flex items-center gap-3">
@@ -426,7 +426,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
               })}
 
               {/* D5 blocked */}
-              <div className="overflow-hidden rounded-xl border border-violet-500/20 bg-slate-800">
+              <div className="overflow-hidden rounded-xl border border-violet-200 bg-white dark:border-violet-500/20 dark:bg-slate-800">
                 <div className="flex items-center justify-between border-b border-slate-700/60 px-5 py-4">
                   <div className="flex items-center gap-3">
                     <span className="rounded bg-violet-500/10 px-2 py-0.5 font-mono text-xs font-bold text-violet-300">
@@ -451,7 +451,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Role Fit */}
-          <div className="overflow-hidden rounded-xl border border-slate-700/40 bg-slate-800/60 p-5">
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700/40 dark:bg-slate-800/60">
             <div className="mb-3 flex items-center gap-3">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-slate-600">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
@@ -474,7 +474,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Hiring Recommendation */}
-          <div className="overflow-hidden rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+          <div className="overflow-hidden rounded-xl border border-amber-200 bg-amber-50 p-5 dark:border-amber-500/20 dark:bg-amber-500/5">
             <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.12em] text-amber-400">
               Hiring Recommendation
             </p>
@@ -498,7 +498,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Governance Notes */}
-          <div className="overflow-hidden rounded-xl border border-violet-500/20 bg-violet-500/5 p-5">
+          <div className="overflow-hidden rounded-xl border border-violet-200 bg-violet-50 p-5 dark:border-violet-500/20 dark:bg-violet-500/5">
             <div className="mb-4 flex items-center gap-2">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0 text-violet-400">
                 <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
@@ -518,7 +518,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           </div>
 
           {/* Footer */}
-          <div className="rounded-xl border border-slate-700/30 bg-slate-800/30 px-5 py-4">
+          <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 dark:border-slate-700/30 dark:bg-slate-800/30">
             <p className="text-xs leading-relaxed text-slate-600">
               Nexus V1 · Report {report.report_id} · Generated {fmtDate(report.generated_at)} ·
               Blueprint {report.blueprint_id} · Assessment {report.assessment_blueprint_id} ·

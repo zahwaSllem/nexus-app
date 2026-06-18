@@ -37,13 +37,13 @@ export function AgentChatBubble({ turn }: AgentChatBubbleProps) {
         </div>
         <div>
           <p className="mb-1 text-xs font-semibold text-indigo-400">Nexus Agent</p>
-          <div className="relative max-w-[75%] overflow-hidden rounded-xl rounded-tl-sm border border-indigo-500/20 bg-slate-800/80 px-4 py-3.5">
+          <div className="relative max-w-[75%] overflow-hidden rounded-xl rounded-tl-sm border border-indigo-200 bg-indigo-50 dark:border-indigo-500/20 dark:bg-slate-800/80 px-4 py-3.5">
             {/* Shimmer sweep */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-xl" aria-hidden>
               <div className="absolute inset-y-0 w-1/3 animate-shimmer bg-gradient-to-r from-transparent via-indigo-400/8 to-transparent" />
             </div>
             <div className="relative flex items-center gap-2.5">
-              <span className="text-xs font-medium text-indigo-300">Generating blueprint</span>
+              <span className="text-xs font-medium text-indigo-600 dark:text-indigo-300">Generating blueprint</span>
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
                   <span
@@ -72,8 +72,8 @@ export function AgentChatBubble({ turn }: AgentChatBubbleProps) {
             <span className="text-xs font-semibold text-indigo-400">Nexus Agent</span>
             {time && <span className="text-[10px] text-slate-500">{time}</span>}
           </div>
-          <div className="max-w-[85%] rounded-xl rounded-tl-sm border border-slate-700/60 border-l-2 border-l-indigo-500/50 bg-slate-800/80 px-4 py-3">
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-200">
+          <div className="max-w-[85%] rounded-xl rounded-tl-sm border border-slate-200 dark:border-slate-700/60 border-l-2 border-l-indigo-500/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800 dark:text-slate-200">
               {turn.content}
             </p>
           </div>
@@ -114,9 +114,9 @@ export function AgentTypingBubble() {
       </div>
       <div>
         <p className="mb-1 text-xs font-semibold text-indigo-400">Nexus Agent</p>
-        <div className="rounded-xl rounded-tl-sm border border-slate-700/60 border-l-2 border-l-indigo-500/50 bg-slate-800/80 px-4 py-3">
+        <div className="rounded-xl rounded-tl-sm border border-slate-200 dark:border-slate-700/60 border-l-2 border-l-indigo-500/50 bg-slate-50 dark:bg-slate-800/80 px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500">Thinking</span>
+            <span className="text-xs text-slate-600 dark:text-slate-500">Thinking</span>
             <div className="flex gap-1">
               {[0, 1, 2].map((i) => (
                 <span

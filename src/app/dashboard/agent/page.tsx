@@ -183,9 +183,9 @@ export default function AgentPage() {
               {/* Step 1: AI chat workspace */}
               {step === 1 && (
                 <div className="animate-scale-in rounded-[22px] bg-gradient-to-b from-indigo-100/80 via-slate-100/40 to-white/60 p-[3px] shadow-[0_8px_48px_0_rgba(99,102,241,0.18)] ring-1 ring-indigo-200/50 dark:bg-gradient-to-b dark:from-slate-700/50 dark:to-slate-800/30 dark:shadow-[0_0_70px_0_rgba(0,0,0,0.70)] dark:ring-slate-700/40">
-                  <div className="overflow-hidden rounded-[19px] border border-slate-800/60 bg-slate-950 dark:border-slate-700/40">
+                  <div className="overflow-hidden rounded-[19px] border border-slate-200 bg-white dark:border-slate-800/60 dark:bg-slate-950 dark:border-slate-700/40">
                     {/* AI identity bar */}
-                    <div className="flex items-center gap-3 border-b border-slate-800/60 bg-slate-900/70 px-5 py-3">
+                    <div className="flex items-center gap-3 border-b border-slate-200 bg-white dark:border-slate-800/60 dark:bg-slate-900/70 px-5 py-3">
                       <div className="relative shrink-0">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-violet-600 text-xs font-bold text-white shadow-[0_0_16px_0_rgba(99,102,241,0.50)]">
                           N
@@ -200,7 +200,7 @@ export default function AgentPage() {
                         <p className="text-[10px] text-slate-500">Active · Role Interview</p>
                       </div>
                       <div className="ml-auto">
-                        <span className="rounded border border-slate-800 bg-slate-800/50 px-2 py-0.5 font-mono text-[10px] text-slate-600">
+                        <span className="rounded border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-800/50 px-2 py-0.5 font-mono text-[10px] text-slate-600">
                           SESSION-001
                         </span>
                       </div>

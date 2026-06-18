@@ -49,7 +49,7 @@ export default function AssessmentsPage() {
   const completed = assignments.filter((a) => a.status === "completed").length;
 
   return (
-    <div className="relative min-h-full bg-slate-900">
+    <div className="relative min-h-full bg-slate-50 dark:bg-slate-900">
       <PageAmbient />
 
       {/* ── Page header ──────────────────────────────────────────── */}
@@ -141,7 +141,7 @@ export default function AssessmentsPage() {
         </div>
 
         {/* Table */}
-        <div className="animate-scale-in overflow-hidden rounded-xl border border-slate-800/60 bg-slate-800/40">
+        <div className="animate-scale-in overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800/60 dark:bg-slate-800/40">
           {/* Table toolbar */}
           <div className="border-b border-slate-800/80 bg-slate-800/60 px-5 py-3">
             <p className="text-xs font-semibold text-slate-400">

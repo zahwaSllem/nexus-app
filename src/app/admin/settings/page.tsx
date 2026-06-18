@@ -32,7 +32,7 @@ export default function SettingsPage() {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Platform Settings</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Platform Settings</h1>
         <p className="mt-1 text-sm text-slate-500">
           Read-only V1 configuration governed by the platform specification.
         </p>
@@ -48,11 +48,11 @@ export default function SettingsPage() {
               {group.items.map((item) => (
                 <div key={item.key} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
                   <div>
-                    <p className="text-sm font-medium text-slate-700">{item.label}</p>
-                    <p className="mt-0.5 font-mono text-xs text-slate-400">{item.key}</p>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{item.label}</p>
+                    <p className="mt-0.5 font-mono text-xs text-slate-500 dark:text-slate-400">{item.key}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-slate-600">{item.value}</span>
+                    <span className="text-sm text-slate-600 dark:text-slate-300">{item.value}</span>
                     <Badge variant="default">Read-only</Badge>
                   </div>
                 </div>
