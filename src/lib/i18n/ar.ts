@@ -72,6 +72,7 @@ export const ar: Translations = {
     colDate: "التاريخ",
     quickActions: "إجراءات سريعة",
     actionNewAssessment: "تقييم جديد",
+    actionBulkAssign: "تكليف جماعي",
     actionViewReports: "عرض التقارير",
     actionAllCandidates: "جميع المرشحين",
     actionAdminPanel: "لوحة الإدارة",

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { REPORT_1 } from "@/lib/mock-data/reports";
 import type { DomainScore, DimensionScore, BehavioralDescriptor, BlockedSectionReason } from "@/lib/types/nexus";
 import { PageAmbient } from "@/components/layout/PageAmbient";
+import { ReportExportButton, type ReportExportData } from "@/components/report/ReportExportButton";
 
 const scoreColor = (score: number) => {
   if (score >= 75) return { bar: "bg-emerald-500", text: "text-emerald-400" };
@@ -9,6 +10,9 @@ const scoreColor = (score: number) => {
   if (score >= 50) return { bar: "bg-amber-500",   text: "text-amber-400"   };
   return               { bar: "bg-slate-500",   text: "text-slate-400"   };
 };
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
@@ -29,6 +33,37 @@ export default function CandidateReportPage() {
     .sort((a, b) => (dimScoreMap.get(b.dimension_id) ?? 0) - (dimScoreMap.get(a.dimension_id) ?? 0))
     .slice(0, 3);
 
+  const exportData: ReportExportData = {
+    candidateName: REPORT_1.admin_view.candidate_name,
+    reportType: "Developmental Feedback Report",
+    releaseState: REPORT_1.release_state,
+    generatedAt: fmtDate(REPORT_1.generated_at),
+    domainScores: cv.domain_scores
+      .map((d: DomainScore) => ({
+        domain_id: d.domain_id,
+        domain_name: d.domain_name,
+        standardized_score: d.standardized_score,
+        confidence: d.confidence,
+        dimensions: d.dimensions
+          .filter(
+            (dim) => dim.display_state === "visible" || dim.display_state === "visible_with_caution",
+          )
+          .map((dim) => ({
+            dimension_name: dim.dimension_name,
+            standardized_score: dim.standardized_score,
+            confidence: dim.confidence,
+          })),
+      }))
+      .filter((d) => d.dimensions.length > 0),
+    strengths: topDescriptors.map((desc) => ({
+      title: desc.dimension_name,
+      score: dimScoreMap.get(desc.dimension_id),
+      detail: desc.text,
+    })),
+    recommendations: cv.development_suggestions,
+    // governanceNotes intentionally omitted — candidate report excludes governance.
+  };
+
   return (
     <div className="relative min-h-full bg-slate-50 dark:bg-slate-900">
       <PageAmbient />
@@ -38,17 +73,20 @@ export default function CandidateReportPage() {
         <div aria-hidden className="absolute inset-0 bg-gradient-to-br from-indigo-50/70 via-white to-violet-50/40 dark:from-slate-800/50 dark:via-slate-900 dark:to-slate-900" />
         <div aria-hidden className="pointer-events-none absolute -right-8 -top-8 h-40 w-56 rounded-full bg-indigo-400/10 blur-3xl dark:bg-indigo-500/8" />
 
-        <div className="relative px-8 py-6">
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-indigo-500 dark:text-indigo-400">
-            Developmental Feedback Report
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
-            Junior Software Engineer — Capability Assessment
-          </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Completed 8 June 2026 · Release state:{" "}
-            <span className="text-amber-500 dark:text-amber-400">{REPORT_1.release_state}</span>
-          </p>
+        <div className="relative flex flex-wrap items-start justify-between gap-4 px-8 py-6">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-indigo-500 dark:text-indigo-400">
+              Developmental Feedback Report
+            </p>
+            <h1 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+              Junior Software Engineer — Capability Assessment
+            </h1>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              Completed 8 June 2026 · Release state:{" "}
+              <span className="text-amber-500 dark:text-amber-400">{REPORT_1.release_state}</span>
+            </p>
+          </div>
+          <ReportExportButton data={exportData} />
         </div>
       </div>
 

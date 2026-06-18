@@ -70,6 +70,7 @@ export const en = {
     colDate: "Date",
     quickActions: "Quick Actions",
     actionNewAssessment: "New Assessment",
+    actionBulkAssign: "Bulk Assign",
     actionViewReports: "View Reports",
     actionAllCandidates: "All Candidates",
     actionAdminPanel: "Admin Panel",

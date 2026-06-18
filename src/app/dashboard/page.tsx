@@ -99,6 +99,7 @@ export default function DashboardPage() {
 
   const quickActions = [
     { href: "/dashboard/agent", label: t.dashboard.actionNewAssessment, symbol: "+" },
+    { href: "/dashboard/assessments/bulk", label: t.dashboard.actionBulkAssign, symbol: "+" },
     { href: "/dashboard/reports", label: t.dashboard.actionViewReports, symbol: "→" },
     { href: "/dashboard/candidates", label: t.dashboard.actionAllCandidates, symbol: "→" },
     { href: "/admin", label: t.dashboard.actionAdminPanel, symbol: "→" },

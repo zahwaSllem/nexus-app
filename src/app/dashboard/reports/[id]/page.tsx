@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { ReportExportButton, type ReportExportData } from "@/components/report/ReportExportButton";
 import { REPORT_1 } from "@/lib/mock-data/reports";
 import { SCORED_RESULT_1 } from "@/lib/mock-data/scored-results";
 import type {
@@ -53,6 +54,34 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
   const av = report.admin_view;
   const rc = RELEASE_CONFIG[report.release_state] ?? RELEASE_CONFIG["Released with Caution"];
 
+  const exportData: ReportExportData = {
+    candidateName: av.candidate_name,
+    reportType: "Admin Assessment Report",
+    releaseState: report.release_state,
+    generatedAt: fmtDate(report.generated_at),
+    reportId: report.report_id,
+    domainScores: av.domain_scores.map((d) => ({
+      domain_id: d.domain_id,
+      domain_name: d.domain_name,
+      standardized_score: d.standardized_score,
+      confidence: d.confidence,
+      dimensions: d.dimensions
+        .filter((dim) => dim.display_state !== "hidden" && dim.display_state !== "blocked")
+        .map((dim) => ({
+          dimension_name: dim.dimension_name,
+          standardized_score: dim.standardized_score,
+          confidence: dim.confidence,
+        })),
+    })),
+    strengths: av.strengths.map((s) => ({
+      title: `${s.dimension_name} (${s.dimension_id})`,
+      score: s.score,
+      detail: s.label,
+    })),
+    recommendations: av.watch_points.map((w) => `${w.dimension_name} (${w.score}): ${w.note}`),
+    governanceNotes: av.governance_notes,
+  };
+
   return (
     <div className="min-h-full bg-slate-50 p-8 dark:bg-slate-900">
 
@@ -103,14 +132,17 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
             {av.job_title} · {av.job_level} · {av.organization}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-[10px] uppercase tracking-wider text-slate-600">Use Case</p>
-          <p className="mt-0.5 text-xs font-semibold text-slate-300">
-            {av.use_case === "hiring_support_validated_blueprint"
-              ? "Hiring Support — Validated Blueprint"
-              : "Developmental"}
-          </p>
-          <p className="mt-1 text-xs text-slate-600">Generated {fmtDate(report.generated_at)}</p>
+        <div className="flex flex-col items-end gap-3">
+          <div className="text-right">
+            <p className="text-[10px] uppercase tracking-wider text-slate-600">Use Case</p>
+            <p className="mt-0.5 text-xs font-semibold text-slate-300">
+              {av.use_case === "hiring_support_validated_blueprint"
+                ? "Hiring Support — Validated Blueprint"
+                : "Developmental"}
+            </p>
+            <p className="mt-1 text-xs text-slate-600">Generated {fmtDate(report.generated_at)}</p>
+          </div>
+          <ReportExportButton data={exportData} />
         </div>
       </div>
 

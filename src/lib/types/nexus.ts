@@ -238,6 +238,9 @@ export type AssignmentStatus =
   | "completed"
   | "expired";
 
+// Mock invitation lifecycle (no email backend — tracked in-memory only)
+export type InvitationStatus = "not_sent" | "sent" | "opened";
+
 export type AssessmentAssignment = {
   assignment_id: string;
   blueprint_id: string;
@@ -245,6 +248,7 @@ export type AssessmentAssignment = {
   candidate_id: string;
   candidate_name: string;
   candidate_email: string;
+  job_title?: string;
   use_case: "developmental" | "hiring_support_validated_blueprint";
   status: AssignmentStatus;
   consent_confirmed: boolean;
@@ -254,6 +258,8 @@ export type AssessmentAssignment = {
   assigned_by: string;
   session_id?: string;
   completed_at?: string;
+  invitation_link?: string;
+  invitation_status?: InvitationStatus;
 };
 
 // ─── Item responses ────────────────────────────────────────────────────────────
