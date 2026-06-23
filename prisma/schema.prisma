@@ -1,0 +1,508 @@
+// Nexus — Prisma schema
+// ─────────────────────────────────────────────────────────────────────────────
+// PLAN/DRAFT ONLY. This schema is not yet wired to a running backend.
+// It mirrors src/lib/types/nexus.ts 1:1 so the existing mock data can be seeded
+// directly and the frontend can later swap the mock store for real APIs with no
+// shape changes. See docs/BACKEND_ARCHITECTURE.md §2 and docs/API_CONTRACT.md.
+//
+// Governance invariants encoded here (enforced in engine code, documented here):
+//   • Two roles only: admin, candidate (enum Role).
+//   • Question bank metadata is IMMUTABLE. The agent may write contextualized_text
+//     but never mutates a QuestionBankItem row. ContextualizedItem keeps an
+//     immutable original_text copy + a link to the untouched bank item.
+//   • Domain 6 is DERIVED, not a questionnaire domain — there are no D6 bank items
+//     and no D6 model here. The 17-field context form lives as JSON on RoleBlueprint.
+//   • Reports are audience-partitioned: admin_view (detailed) and candidate_view
+//     (candidate-safe). The candidate_view must never carry admin-only governance.
+//   • AuditEvent is append-only. A failed audit write must fail the operation (SEV-1).
+// ─────────────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums (mirror nexus.ts string unions; @map preserves exact wire values) ───
+
+enum Role {
+  admin
+  candidate
+}
+
+enum MethodFamily {
+  likert
+  contextual_self_report
+  forced_choice
+  cognitive_multiple_choice
+  sjt
+}
+
+enum ResponseScale {
+  agreement_1_5    @map("1-5 Agreement")
+  frequency_1_5    @map("1-5 Frequency")
+  forced_choice_binary
+  cognitive_mcq
+  sjt_single_best
+}
+
+enum BankState {
+  production
+  pilot
+  research
+}
+
+enum UseStatus {
+  operational_allowed
+  operational_allowed_with_restrictions
+  operational_allowed_restricted_by_level
+  operational_blocked
+}
+
+enum JobLevelOverlay {
+  all_levels
+  professional_plus
+  manager_plus
+  senior_plus
+}
+
+enum LoadingType {
+  direct
+  adjacent
+  synthesized
+}
+
+enum JobLevel {
+  IC
+  Professional
+  Manager
+  Senior_Manager @map("Senior Manager")
+  Director
+  Executive
+}
+
+enum JobFamily {
+  Strategy
+  Operations
+  Sales
+  Product
+  Engineering
+  People
+  Finance
+  Risk
+  General_Management @map("General Management")
+  Other
+}
+
+enum UseCase {
+  developmental
+  hiring_support_validated_blueprint
+}
+
+enum BlueprintApprovalStatus {
+  draft
+  reviewed
+  approved
+  validated
+}
+
+enum AssignmentStatus {
+  not_started
+  in_progress
+  completed
+  expired
+}
+
+enum InvitationStatus {
+  not_sent
+  sent
+  opened
+}
+
+enum SessionState {
+  created
+  in_progress
+  submitted
+  scored
+  expired
+}
+
+enum ValidityState {
+  VALID
+  PASS_WITH_LIMITS
+  VALID_BUT_UNINTERPRETABLE
+  INCOMPLETE
+  INVALID
+}
+
+enum ReleaseState {
+  Released                   @map("Released")
+  Released_with_Caution      @map("Released with Caution")
+  Partial_Release            @map("Partial Release")
+  Blocked_output_section     @map("Blocked output section")
+  Assessment_incomplete      @map("Assessment incomplete")
+  Invalid_for_interpretation @map("Invalid for interpretation")
+}
+
+enum AgentConversationStatus {
+  in_progress
+  completed
+}
+
+enum ReportAudience {
+  admin
+  candidate
+}
+
+// ─── Identity & access ─────────────────────────────────────────────────────────
+
+/// Login identities. role_type is the ONLY authorization source (two roles only).
+model User {
+  user_id       String    @id @default(uuid())
+  email         String    @unique
+  password_hash String
+  role_type     Role
+  display_name  String?
+  organization  String?
+  created_at    DateTime  @default(now())
+  last_login_at DateTime?
+
+  // A user may be the account behind a candidate profile.
+  candidate     Candidate?
+
+  @@map("users")
+}
+
+/// Candidate profile projection (mirrors StoredCandidate in the mock store).
+/// user_id is null until the candidate activates via the invitation link.
+model Candidate {
+  candidate_id   String   @id
+  user_id        String?  @unique
+  candidate_name String
+  candidate_email String  @unique
+  job_title      String?
+  created_at     DateTime @default(now())
+
+  user           User?        @relation(fields: [user_id], references: [user_id])
+  assignments    Assignment[]
+  sessions       AssessmentSession[]
+
+  @@map("candidates")
+}
+
+// ─── Question bank (read-mostly, governed, IMMUTABLE metadata) ─────────────────
+
+/// 1:1 with BankItem (31 fields). NEVER mutated at runtime — the agent rephrases
+/// into ContextualizedItem.contextualized_text, leaving this row untouched.
+/// keyed_answer / reverse_scored / use_status are scoring & governance critical
+/// and must never be exposed to candidates during a session.
+model QuestionBankItem {
+  item_id              String          @id // e.g. "NEX-GMB-001"
+  bank_version         String          @default("final")
+  domain_id            String
+  domain_name          String
+  dimension_id         String
+  dimension_name       String
+  facet_id             String
+  facet_name           String
+  method_family        MethodFamily
+  item_format          String
+  item_text            String
+  option_a             String?
+  option_b             String?
+  option_c             String?
+  option_d             String?
+  option_e             String?
+  keyed_answer         String? // governance-sensitive: never sent to candidate
+  response_scale       ResponseScale
+  primary_domain_id    String
+  primary_dimension_id String
+  primary_facet_id     String
+  secondary_dimension_ids String? // comma-delimited
+  loading_type         LoadingType
+  intended_meaning     String
+  prohibited_overlap   String?
+  bank_state           BankState
+  use_status           UseStatus // operational_blocked (D3/D5) must never reach candidates
+  validation_track     String
+  job_level_overlay    JobLevelOverlay
+  reverse_scored       Boolean // governance-sensitive: never sent to candidate
+
+  contextualized_items ContextualizedItem[]
+  responses            Response[]
+
+  @@index([domain_id])
+  @@index([dimension_id])
+  @@index([method_family])
+  @@index([use_status])
+  @@map("question_bank_items")
+}
+
+// ─── Blueprints (agent output; admin reviews & approves) ───────────────────────
+
+/// Agent-generated RoleBlueprint. role_context, context_profile (the 17-field
+/// Domain-6 context form), selected_dimensions, governance_warnings and
+/// blueprint_quality are stored as JSON to match the nexus.ts shapes exactly.
+/// approval_status gates downstream use; approve transitions are audited.
+model RoleBlueprint {
+  blueprint_id          String                  @id // e.g. "bp-001"
+  role_context          Json // RoleContext
+  context_profile       Json // ContextProfile (17-field context form — Domain 6 input, NOT a questionnaire domain)
+  included_domains      String[]
+  selected_dimensions   Json // SelectedDimension[]
+  governance_warnings   Json // GovernanceWarning[] — blocking warnings must be resolved before approval
+  approval_status       BlueprintApprovalStatus @default(draft)
+  blueprint_quality     Json // BlueprintQualityScore (E,C,S,W,R,composite)
+  agent_conversation_id String
+  created_at            DateTime                @default(now())
+  approved_at           DateTime?
+  approved_by           String? // admin email — audit trail
+
+  agent_conversation    AgentConversation?   @relation(fields: [agent_conversation_id], references: [agent_conversation_id])
+  assessment_blueprint  AssessmentBlueprint?
+  assignments           Assignment[]
+  reports               Report[]
+
+  @@index([approval_status])
+  @@map("role_blueprints")
+}
+
+/// Agent-selected item set with method mix + domain coverage. One per RoleBlueprint.
+model AssessmentBlueprint {
+  assessment_blueprint_id  String   @id // e.g. "abp-001"
+  role_blueprint_id        String   @unique
+  total_items              Int
+  estimated_duration_min   Int
+  method_mix               Json // { likert, contextual_self_report, forced_choice, cognitive_multiple_choice, sjt }
+  domain_coverage          Json // DomainCoverage[]
+  agent_selection_rationale String
+  generated_at             DateTime @default(now())
+
+  role_blueprint           RoleBlueprint        @relation(fields: [role_blueprint_id], references: [blueprint_id])
+  contextualized_items     ContextualizedItem[]
+  assignments              Assignment[]
+  sessions                 AssessmentSession[]
+  reports                  Report[]
+
+  @@map("assessment_blueprints")
+}
+
+/// The agent's rephrased item wording. original_text is an IMMUTABLE verbatim copy
+/// of QuestionBankItem.item_text; contextualized_text is the candidate-facing
+/// rewrite. The link to item_id preserves all original governance/scoring metadata.
+model ContextualizedItem {
+  id                          String  @id @default(uuid())
+  assessment_blueprint_id     String
+  item_id                     String // immutable link to the untouched bank item
+  original_text               String // verbatim copy — never edited
+  contextualized_text         String // agent-generated; wording only, no metadata change
+  contextualization_rationale String
+  display_order               Int
+
+  assessment_blueprint        AssessmentBlueprint @relation(fields: [assessment_blueprint_id], references: [assessment_blueprint_id])
+  bank_item                   QuestionBankItem    @relation(fields: [item_id], references: [item_id])
+
+  @@unique([assessment_blueprint_id, item_id])
+  @@index([assessment_blueprint_id])
+  @@map("contextualized_items")
+}
+
+// ─── Assignments, sessions, responses ──────────────────────────────────────────
+
+/// AssessmentAssignment. consent_confirmed gates session start (per-use-case
+/// informed consent). invitation_* tracks the candidate invite lifecycle.
+model Assignment {
+  assignment_id           String           @id // e.g. "asgn-001"
+  blueprint_id            String
+  assessment_blueprint_id String
+  candidate_id            String
+  candidate_name          String
+  candidate_email         String
+  job_title               String?
+  use_case                UseCase
+  status                  AssignmentStatus @default(not_started)
+  consent_confirmed       Boolean          @default(false)
+  consent_date            DateTime?
+  deadline                DateTime
+  assigned_at             DateTime         @default(now())
+  assigned_by             String // admin email — audit trail
+  session_id              String?          @unique
+  completed_at            DateTime?
+  invitation_link         String?
+  invitation_status       InvitationStatus?
+
+  role_blueprint          RoleBlueprint       @relation(fields: [blueprint_id], references: [blueprint_id])
+  assessment_blueprint    AssessmentBlueprint @relation(fields: [assessment_blueprint_id], references: [assessment_blueprint_id])
+  candidate               Candidate           @relation(fields: [candidate_id], references: [candidate_id])
+  session                 AssessmentSession?  @relation(fields: [session_id], references: [session_id])
+
+  @@index([candidate_id])
+  @@index([status])
+  @@map("assignments")
+}
+
+/// Runtime instance of a candidate taking an assessment.
+model AssessmentSession {
+  session_id              String       @id // e.g. "sess-001"
+  assignment_id           String       @unique
+  assessment_blueprint_id String
+  candidate_id            String
+  state                   SessionState @default(created)
+  started_at              DateTime?
+  submitted_at            DateTime?
+  current_index           Int          @default(0)
+
+  assessment_blueprint    AssessmentBlueprint @relation(fields: [assessment_blueprint_id], references: [assessment_blueprint_id])
+  candidate               Candidate           @relation(fields: [candidate_id], references: [candidate_id])
+  assignment              Assignment?
+  responses               Response[]
+  scoring_runs            ScoringRun[]
+
+  @@index([candidate_id])
+  @@map("assessment_sessions")
+}
+
+/// Raw captured responses (ItemResponse union, normalized).
+/// value = 1..5 for likert/frequency; selected_option = "A".."E" for the rest.
+model Response {
+  response_id     String       @id @default(uuid())
+  session_id      String
+  item_id         String
+  method_family   MethodFamily
+  value           Int? // likert / contextual_self_report (1..5)
+  selected_option String? // forced_choice (A/B), cognitive/sjt (A..E)
+  latency_ms      Int
+  captured_at     DateTime     @default(now())
+
+  session         AssessmentSession @relation(fields: [session_id], references: [session_id])
+  bank_item       QuestionBankItem  @relation(fields: [item_id], references: [item_id])
+
+  @@unique([session_id, item_id])
+  @@index([session_id])
+  @@map("responses")
+}
+
+// ─── Scoring ───────────────────────────────────────────────────────────────────
+
+/// ScoredResult. domain_scores (incl. nested dimension_scores) and qc_flags are
+/// stored as JSON to match nexus.ts exactly. validity_state and release_state are
+/// computed by the governance engine and drive what each report audience may see.
+/// Every run carries scoring_version + synthesis_weight_version for determinism.
+model ScoringRun {
+  scoring_run_id           String        @id // e.g. "score-001"
+  session_id               String
+  bank_version             String        @default("final")
+  norm_version             String        @default("provisional")
+  scoring_version          String        @default("1.0.0-provisional")
+  synthesis_weight_version String        @default("1.0.0-provisional")
+  validity_state           ValidityState
+  release_state            ReleaseState
+  domain_scores            Json // DomainScore[] (each contains DimensionScore[] with display_state)
+  qc_flags                 Json // QCFlag[] — admin-only; never surfaced to candidates
+  completion_ratio         Float
+  scored_at                DateTime      @default(now())
+
+  session                  AssessmentSession @relation(fields: [session_id], references: [session_id])
+  reports                  Report[]
+
+  @@index([session_id])
+  @@map("scoring_runs")
+}
+
+// ─── Reports (audience-partitioned) ────────────────────────────────────────────
+
+/// Report. admin_view (full detail incl. qc_flags, watch_points, governance_notes)
+/// and candidate_view (candidate-safe: HIGH/MODERATE dimensions, developmental
+/// language, no governance internals) are stored separately as JSON.
+/// GOVERNANCE: candidate-facing endpoints serialize candidate_view ONLY — admin_view
+/// must never be sent to a candidate. Blocked content (D3, D5, D6 DRI, percentiles,
+/// response-quality) is absent from candidate_view at build time, not hidden by UI.
+model Report {
+  report_id                String       @id // e.g. "rpt-001"
+  scoring_run_id           String
+  blueprint_id             String
+  assessment_blueprint_id  String
+  use_case                 UseCase
+  policy_version           String       @default("1.0.0")
+  scoring_version          String       @default("1.0.0-provisional")
+  synthesis_weight_version String       @default("1.0.0-provisional")
+  release_state            ReleaseState
+  visible_sections         String[]
+  blocked_sections         String[]
+  downgraded_dimension_ids String[]
+  hidden_dimension_ids     String[]
+  admin_view               Json // AdminReportView — ADMIN ONLY
+  candidate_view           Json // CandidateReportView — candidate-safe
+  generated_at             DateTime     @default(now())
+
+  scoring_run              ScoringRun          @relation(fields: [scoring_run_id], references: [scoring_run_id])
+  role_blueprint           RoleBlueprint       @relation(fields: [blueprint_id], references: [blueprint_id])
+  assessment_blueprint     AssessmentBlueprint @relation(fields: [assessment_blueprint_id], references: [assessment_blueprint_id])
+  exports                  ReportExport[]
+
+  @@index([scoring_run_id])
+  @@map("reports")
+}
+
+/// Generated PDF artifacts. Built from the SAME audience view as the web report,
+/// so a PDF can never reveal more than the screen. Candidates may export only the
+/// candidate audience. Every export is audited.
+model ReportExport {
+  export_id      String         @id @default(uuid())
+  report_id      String
+  audience       ReportAudience
+  storage_url    String
+  checksum       String
+  policy_version String         @default("1.0.0")
+  generated_at   DateTime       @default(now())
+  generated_by   String
+
+  report         Report @relation(fields: [report_id], references: [report_id])
+
+  @@index([report_id])
+  @@map("report_exports")
+}
+
+// ─── Agent ─────────────────────────────────────────────────────────────────────
+
+/// The admin↔agent interview transcript that produces a RoleBlueprint.
+/// turns holds AgentTurn[]. The agent may rephrase item wording but is constrained
+/// (in engine/tool code) so it can never mutate question bank metadata.
+model AgentConversation {
+  agent_conversation_id String                  @id // e.g. "conv-001"
+  admin_user_id         String
+  status                AgentConversationStatus @default(in_progress)
+  turns                 Json // AgentTurn[]
+  created_at            DateTime                @default(now())
+  completed_at          DateTime?
+
+  role_blueprints       RoleBlueprint[]
+
+  @@index([admin_user_id])
+  @@map("agent_conversations")
+}
+
+// ─── Audit (append-only) ───────────────────────────────────────────────────────
+
+/// Immutable system event log. Append-only: UPDATE/DELETE revoked at the DB role
+/// level. A failed audit write must FAIL the originating operation (SEV-1), e.g.
+/// blueprint.approved, session.submitted, score.suppressed, report.released,
+/// report.exported. This is the platform's accountability backbone.
+model AuditEvent {
+  event_id       String   @id @default(uuid())
+  actor_user_id  String?
+  actor_role     Role?
+  event_type     String // e.g. "blueprint.approved", "report.released", "score.suppressed"
+  target_type    String
+  target_id      String
+  payload        Json
+  policy_version String?
+  occurred_at    DateTime @default(now())
+
+  @@index([target_type, target_id])
+  @@index([event_type])
+  @@map("audit_events")
+}
