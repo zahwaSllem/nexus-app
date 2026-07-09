@@ -70,9 +70,10 @@ export function buildOpenApiSpec() {
         "- Role & Assessment Blueprints + approval (Sprint 3), admin-only",
         "- Assignments: list/get/create/bulk/update (Sprint 4), admin-only",
         "- Assessment sessions: start/get/questions/answers/submit (Sprint 5), candidate-only",
+        "- Scoring: run + read scoring runs (Sprint 6), admin-only (V1 provisional)",
         "",
         "**Planned / deferred (NOT yet implemented — not listed as operations):**",
-        "Scoring, Domain 6, Reports,",
+        "Domain 6, Reports,",
         "PDF export, and the AI Agent. See docs/API_CONTRACT.md for the full contract.",
         "",
         "**Auth:** endpoints marked with a lock require the Auth.js session cookie",
@@ -86,6 +87,7 @@ export function buildOpenApiSpec() {
       { name: "Blueprints", description: "Role & Assessment blueprints + approval (admin-only)" },
       { name: "Assignments", description: "Candidate assignments: list/get/create/bulk/update (admin-only)" },
       { name: "Sessions", description: "Assessment session lifecycle: start/get/questions/answers/submit (candidate-only)" },
+      { name: "Scoring", description: "V1 provisional scoring runs (admin-only; raw scores + qc_flags)" },
     ],
     components: {
       securitySchemes: {
@@ -175,6 +177,8 @@ export function buildOpenApiSpec() {
           },
           required: ["saved", "answered_count", "total_items"],
         },
+        RunScoringRequest: jsonSchema(RunScoringRequestSchema),
+        ScoredResult: jsonSchema(ScoredResultSchema),
         Session: {
           type: "object",
           properties: {
@@ -845,6 +849,98 @@ export function buildOpenApiSpec() {
             },
             "422": {
               description: "Not all questions answered.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/scoring/run": {
+        post: {
+          tags: ["Scoring"],
+          summary: "Run V1 provisional scoring (admin-only)",
+          description:
+            "Scores a SUBMITTED session with the deterministic V1 mock scorer using the " +
+            "session's saved responses. Persists one scoring run (domain/dimension " +
+            "scores, qc_flags, validity_state, release_state, completion_ratio), flips " +
+            "the session to scored, and writes a score.completed audit event. Returns " +
+            "409 if the session isn't submitted or was already scored. Does NOT create " +
+            "a report or trigger a PDF.",
+          security: [{ cookieAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/RunScoringRequest" },
+              },
+            },
+          },
+          responses: {
+            "201": {
+              description: "The scoring run.",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ScoredResult" } },
+              },
+            },
+            "400": ERROR_RESPONSES["400"],
+            "401": ERROR_RESPONSES["401"],
+            "403": ERROR_RESPONSES["403"],
+            "404": {
+              description: "Session not found.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+            "409": {
+              description: "Session is not submitted, or already scored.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/scoring/{scoringRunId}": {
+        get: {
+          tags: ["Scoring"],
+          summary: "Get a scoring run (admin-only)",
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            { name: "scoringRunId", in: "path", required: true, schema: { type: "string" }, example: "score-001" },
+          ],
+          responses: {
+            "200": {
+              description: "The scoring run.",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ScoredResult" } },
+              },
+            },
+            "401": ERROR_RESPONSES["401"],
+            "403": ERROR_RESPONSES["403"],
+            "404": {
+              description: "Scoring run not found.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/sessions/{sessionId}/scoring": {
+        get: {
+          tags: ["Scoring"],
+          summary: "Get a session's scoring run (admin-only)",
+          description:
+            "Returns the scoring run for a session (raw scores + qc_flags). Admin-only — " +
+            "unlike the candidate-only session metadata/questions/answers/submit endpoints.",
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            { name: "sessionId", in: "path", required: true, schema: { type: "string" }, example: "sess-001" },
+          ],
+          responses: {
+            "200": {
+              description: "The session's scoring run.",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ScoredResult" } },
+              },
+            },
+            "401": ERROR_RESPONSES["401"],
+            "403": ERROR_RESPONSES["403"],
+            "404": {
+              description: "Session not found, or not yet scored.",
               content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
             },
           },
