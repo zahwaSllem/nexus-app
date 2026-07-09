@@ -1,15 +1,31 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
 import { getReportByCandidateId } from "@/lib/mock-data/reports";
 import { useStore } from "@/lib/providers/store-provider";
 import { PageAmbient } from "@/components/layout/PageAmbient";
+import type { RoleBlueprint } from "@/lib/types/nexus";
+import { isApiMode } from "@/lib/api/config";
+import { ApiError } from "@/lib/api/client";
+import { loadReportList, type ReportListData } from "@/lib/data/reports-data";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const blueprintMap = new Map(BLUEPRINTS.map((b) => [b.blueprint_id, b]));
+const mockBlueprintMap = new Map(BLUEPRINTS.map((b) => [b.blueprint_id, b]));
+
+/** Unified row shape so the table renders identically for mock + api. */
+interface ReportRow {
+  key: string;
+  candidate_name: string;
+  candidate_email: string;
+  blueprint_id: string;
+  use_case: string;
+  completed_at?: string;
+  report_id: string;
+}
 
 const USE_CASE_LABELS: Record<string, string> = {
   developmental:                     "Developmental",
@@ -31,10 +47,71 @@ function fmtDate(iso: string): string {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ReportsPage() {
-  const { assignments } = useStore();
-  const completed = assignments.filter((a) => a.status === "completed");
+  // Data source: mock derives "reports" from completed assignments in the store;
+  // api drives the table from GET /api/reports with loading + error states.
+  const apiMode = isApiMode();
+  const store = useStore();
+
+  const [apiData, setApiData] = useState<ReportListData | null>(null);
+  const [loading, setLoading] = useState(apiMode);
+  const [error, setError] = useState<string | null>(null);
+
+  const reload = useCallback(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    loadReportList()
+      .then((d) => {
+        if (!cancelled) setApiData(d);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof ApiError ? err.message : "Failed to load reports.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!apiMode) return;
+    return reload();
+  }, [apiMode, reload]);
+
+  // Assignments feed the KPI cards; blueprint lookup feeds the role/domain columns.
+  const assignments = apiMode ? apiData?.assignments ?? [] : store.assignments;
+  const lookupBlueprint = (id: string): RoleBlueprint | undefined =>
+    apiMode ? apiData?.blueprintsById[id] : mockBlueprintMap.get(id);
+
+  // Report table rows — real Report records in api mode; completed assignments in mock.
+  const rows: ReportRow[] = apiMode
+    ? (apiData?.reports ?? []).map((r) => ({
+        key: r.report_id,
+        candidate_name: r.admin_view.candidate_name,
+        candidate_email: r.admin_view.candidate_email,
+        blueprint_id: r.blueprint_id,
+        use_case: r.use_case,
+        completed_at: r.generated_at,
+        report_id: r.report_id,
+      }))
+    : store.assignments
+        .filter((a) => a.status === "completed")
+        .map((a) => ({
+          key: a.assignment_id,
+          candidate_name: a.candidate_name,
+          candidate_email: a.candidate_email,
+          blueprint_id: a.blueprint_id,
+          use_case: a.use_case,
+          completed_at: a.completed_at,
+          report_id: getReportByCandidateId(a.candidate_id)?.report_id ?? "rpt-001",
+        }));
+
   const total = assignments.length;
   const pending = assignments.filter((a) => a.status === "not_started" || a.status === "in_progress").length;
+  const reportsAvailable = rows.length;
 
   return (
     <div className="relative min-h-full bg-slate-50 dark:bg-slate-900">
@@ -61,7 +138,9 @@ export default function ReportsPage() {
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5 shrink-0 text-amber-400">
                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
               </svg>
-              <span className="text-xs text-amber-300">Mock data · Not scientifically validated</span>
+              <span className="text-xs text-amber-300">
+                {apiMode ? "Provisional scoring · Not scientifically validated" : "Mock data · Not scientifically validated"}
+              </span>
             </div>
           </div>
         </div>
@@ -100,7 +179,7 @@ export default function ReportsPage() {
             },
             {
               label: "Reports Available",
-              value: completed.length,
+              value: reportsAvailable,
               valueColor: "text-emerald-400",
               accent: "from-emerald-500 to-teal-500",
               iconBg: "bg-emerald-500/10",
@@ -126,7 +205,28 @@ export default function ReportsPage() {
         </div>
 
         {/* Reports table / empty state */}
-        {completed.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-slate-800/60 bg-slate-800/30 py-16 text-center">
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-indigo-400" />
+            <p className="text-sm font-medium text-slate-400">Loading reports…</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-red-500/30 bg-red-500/5 py-16 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 text-red-400">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-sm font-medium text-slate-300">{error}</p>
+            <button
+              type="button"
+              onClick={() => reload()}
+              className="mt-3 rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-slate-600 hover:text-white"
+            >
+              Retry
+            </button>
+          </div>
+        ) : rows.length === 0 ? (
 
           <div className="animate-scale-in overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800/60 dark:bg-slate-800/40">
             <div className="flex flex-col items-center justify-center px-6 py-20 text-center">
@@ -158,7 +258,7 @@ export default function ReportsPage() {
             <div className="border-b border-slate-800/80 bg-slate-800/60 px-5 py-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-semibold text-slate-400">
-                  {completed.length} report{completed.length !== 1 ? "s" : ""} available
+                  {rows.length} report{rows.length !== 1 ? "s" : ""} available
                 </p>
               </div>
             </div>
@@ -178,16 +278,16 @@ export default function ReportsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/50">
-                  {completed.map((a) => {
-                    const blueprint = blueprintMap.get(a.blueprint_id);
+                  {rows.map((row) => {
+                    const blueprint = lookupBlueprint(row.blueprint_id);
                     return (
-                      <tr key={a.assignment_id} className="group relative transition-colors duration-150 hover:bg-slate-800/50">
+                      <tr key={row.key} className="group relative transition-colors duration-150 hover:bg-slate-800/50">
 
                         {/* Candidate */}
                         <td className="relative px-5 py-4">
                           <span className="absolute inset-y-0 left-0 w-0.5 bg-indigo-500 opacity-0 transition-opacity duration-150 group-hover:opacity-100" />
-                          <p className="text-sm font-semibold text-white">{a.candidate_name}</p>
-                          <p className="mt-0.5 font-mono text-xs text-slate-500">{a.candidate_email}</p>
+                          <p className="text-sm font-semibold text-white">{row.candidate_name}</p>
+                          <p className="mt-0.5 font-mono text-xs text-slate-500">{row.candidate_email}</p>
                         </td>
 
                         {/* Blueprint */}
@@ -195,14 +295,14 @@ export default function ReportsPage() {
                           {blueprint ? (
                             <p className="text-sm text-slate-200">{blueprint.role_context.role_title}</p>
                           ) : (
-                            <span className="font-mono text-xs text-slate-600">{a.blueprint_id}</span>
+                            <span className="font-mono text-xs text-slate-600">{row.blueprint_id}</span>
                           )}
                         </td>
 
                         {/* Use case */}
                         <td className="px-5 py-4">
                           <span className="rounded-full border border-slate-700/60 bg-slate-700/40 px-2.5 py-0.5 text-xs font-medium text-slate-300">
-                            {USE_CASE_LABELS[a.use_case] ?? a.use_case}
+                            {USE_CASE_LABELS[row.use_case] ?? row.use_case}
                           </span>
                         </td>
 
@@ -222,7 +322,7 @@ export default function ReportsPage() {
 
                         {/* Completed date */}
                         <td className="px-5 py-4 text-xs text-slate-400">
-                          {a.completed_at ? fmtDate(a.completed_at) : "—"}
+                          {row.completed_at ? fmtDate(row.completed_at) : "—"}
                         </td>
 
                         {/* Status */}
@@ -233,7 +333,7 @@ export default function ReportsPage() {
                         {/* Action */}
                         <td className="px-5 py-4">
                           <Link
-                            href={`/dashboard/reports/${getReportByCandidateId(a.candidate_id)?.report_id ?? "rpt-001"}`}
+                            href={`/dashboard/reports/${row.report_id}`}
                             className="flex items-center gap-1 text-xs font-semibold text-indigo-400 transition-colors hover:text-indigo-300"
                           >
                             Open report
@@ -251,7 +351,9 @@ export default function ReportsPage() {
 
             <div className="border-t border-slate-800/60 bg-slate-800/30 px-5 py-3">
               <p className="text-xs text-slate-600">
-                Mock mode · Reports generated for completed assignments only
+                {apiMode
+                  ? "Live data · loaded from the backend API (GET /api/reports)"
+                  : "Mock mode · Reports generated for completed assignments only"}
               </p>
             </div>
           </div>
