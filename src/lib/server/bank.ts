@@ -17,7 +17,7 @@
 import type { QuestionBankItem } from "@prisma/client";
 import { BankItemSchema, type BankItemDTO } from "@/lib/api/schemas";
 
-const RESPONSE_SCALE_TO_WIRE: Record<string, string> = {
+export const RESPONSE_SCALE_TO_WIRE: Record<string, string> = {
   agreement_1_5: "1-5 Agreement",
   frequency_1_5: "1-5 Frequency",
   forced_choice_binary: "forced_choice_binary",

@@ -589,14 +589,68 @@ export const SetInvitationStatusRequestSchema = z.object({
   invitation_status: InvitationStatusSchema,
 });
 
+/// Query filters + pagination for GET /api/assignments. All optional; filters are
+/// ANDed. page/page_size are coerced from the query string and bounded.
+export const AssignmentQuerySchema = z.object({
+  status: AssignmentStatusSchema.optional(),
+  blueprint_id: z.string().min(1).optional(),
+  candidate_email: z.string().email().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  page_size: z.coerce.number().int().min(1).max(100).default(20),
+});
+
+/// PATCH /api/assignments/:id — ONLY these three mutable fields may change.
+/// (No candidate/blueprint reassignment, no consent/session mutation here.)
+/// At least one field must be present.
+export const UpdateAssignmentRequestSchema = z
+  .object({
+    deadline: z.string().min(1).optional(),
+    invitation_status: InvitationStatusSchema.optional(),
+    status: AssignmentStatusSchema.optional(),
+  })
+  .refine(
+    (d) =>
+      d.deadline !== undefined ||
+      d.invitation_status !== undefined ||
+      d.status !== undefined,
+    { message: "Provide at least one of: deadline, invitation_status, status." },
+  );
+
 // Session runtime
 export const ConsentRequestSchema = z.object({
   use_case: UseCaseSchema,
   consent_text_version: z.string(),
 });
 
+/// POST /api/sessions/start — begin a session for one of the candidate's own
+/// assignments.
+export const StartSessionRequestSchema = z.object({
+  assignment_id: z.string().min(1),
+});
+
 export const SubmitResponsesRequestSchema = z.object({
   responses: z.array(ItemResponseSchema).min(1),
+});
+
+// Scoring
+/// POST /api/scoring/run — run V1 provisional scoring for a submitted session.
+export const RunScoringRequestSchema = z.object({
+  session_id: z.string().min(1),
+});
+
+/// Session metadata (NO items, NO scoring, NO keyed answers). Returned by
+/// start / get / submit.
+export const SessionMetadataSchema = z.object({
+  session_id: z.string(),
+  assignment_id: z.string(),
+  assessment_blueprint_id: z.string(),
+  candidate_id: z.string(),
+  state: z.enum(["created", "in_progress", "submitted", "scored", "expired"]),
+  started_at: z.string().optional(),
+  submitted_at: z.string().optional(),
+  current_index: z.number().int(),
+  total_items: z.number().int(),
+  answered_count: z.number().int(),
 });
 
 // Domain 6
@@ -664,7 +718,12 @@ export type CandidateReportViewDTO = z.infer<typeof CandidateReportViewSchema>;
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 export type CreateAssignmentRequest = z.infer<typeof CreateAssignmentRequestSchema>;
 export type CreateBulkAssignmentRequest = z.infer<typeof CreateBulkAssignmentRequestSchema>;
+export type AssignmentQuery = z.infer<typeof AssignmentQuerySchema>;
+export type UpdateAssignmentRequest = z.infer<typeof UpdateAssignmentRequestSchema>;
 export type SubmitResponsesRequest = z.infer<typeof SubmitResponsesRequestSchema>;
+export type StartSessionRequest = z.infer<typeof StartSessionRequestSchema>;
+export type SessionMetadataDTO = z.infer<typeof SessionMetadataSchema>;
+export type RunScoringRequest = z.infer<typeof RunScoringRequestSchema>;
 export type ConsentRequest = z.infer<typeof ConsentRequestSchema>;
 export type ApproveBlueprintRequest = z.infer<typeof ApproveBlueprintRequestSchema>;
 export type CreateContextRequest = z.infer<typeof CreateContextRequestSchema>;
