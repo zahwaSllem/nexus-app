@@ -638,6 +638,22 @@ export const RunScoringRequestSchema = z.object({
   session_id: z.string().min(1),
 });
 
+// Reports
+/// POST /api/reports/generate — build a report from a scoring run.
+export const GenerateReportRequestSchema = z.object({
+  scoring_run_id: z.string().min(1),
+});
+
+/// GET /api/me/report — the candidate-safe report payload. Deliberately OMITS
+/// admin_view, qc_flags, governance notes and all admin-only internals.
+export const CandidateReportResponseSchema = z.object({
+  report_id: z.string(),
+  use_case: UseCaseSchema,
+  release_state: ReleaseStateSchema,
+  candidate_view: CandidateReportViewSchema,
+  generated_at: z.string(),
+});
+
 /// Session metadata (NO items, NO scoring, NO keyed answers). Returned by
 /// start / get / submit.
 export const SessionMetadataSchema = z.object({
@@ -724,6 +740,8 @@ export type SubmitResponsesRequest = z.infer<typeof SubmitResponsesRequestSchema
 export type StartSessionRequest = z.infer<typeof StartSessionRequestSchema>;
 export type SessionMetadataDTO = z.infer<typeof SessionMetadataSchema>;
 export type RunScoringRequest = z.infer<typeof RunScoringRequestSchema>;
+export type GenerateReportRequest = z.infer<typeof GenerateReportRequestSchema>;
+export type CandidateReportResponseDTO = z.infer<typeof CandidateReportResponseSchema>;
 export type ConsentRequest = z.infer<typeof ConsentRequestSchema>;
 export type ApproveBlueprintRequest = z.infer<typeof ApproveBlueprintRequestSchema>;
 export type CreateContextRequest = z.infer<typeof CreateContextRequestSchema>;

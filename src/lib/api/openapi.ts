@@ -31,6 +31,9 @@ import {
   SubmitResponsesRequestSchema,
   RunScoringRequestSchema,
   ScoredResultSchema,
+  GenerateReportRequestSchema,
+  ReportSchema,
+  CandidateReportResponseSchema,
 } from "@/lib/api/schemas";
 
 /** Convert a Zod schema to an OpenAPI-embeddable JSON Schema (drop the $schema key). */
@@ -60,7 +63,7 @@ export function buildOpenApiSpec() {
     openapi: "3.0.3",
     info: {
       title: "Nexus Assessment Platform API",
-      version: "0.6.0",
+      version: "0.7.0",
       description: [
         "Implemented backend surface for the Nexus platform.",
         "",
@@ -71,10 +74,10 @@ export function buildOpenApiSpec() {
         "- Assignments: list/get/create/bulk/update (Sprint 4), admin-only",
         "- Assessment sessions: start/get/questions/answers/submit (Sprint 5), candidate-only",
         "- Scoring: run + read scoring runs (Sprint 6), admin-only (V1 provisional)",
+        "- Reports: generate + read admin/candidate views (Sprint 7), audience-partitioned",
         "",
         "**Planned / deferred (NOT yet implemented — not listed as operations):**",
-        "Domain 6, Reports,",
-        "PDF export, and the AI Agent. See docs/API_CONTRACT.md for the full contract.",
+        "Domain 6, PDF export, and the AI Agent. See docs/API_CONTRACT.md for the full contract.",
         "",
         "**Auth:** endpoints marked with a lock require the Auth.js session cookie",
         "(`authjs.session-token`), obtained by logging in via the credentials flow.",
@@ -88,6 +91,7 @@ export function buildOpenApiSpec() {
       { name: "Assignments", description: "Candidate assignments: list/get/create/bulk/update (admin-only)" },
       { name: "Sessions", description: "Assessment session lifecycle: start/get/questions/answers/submit (candidate-only)" },
       { name: "Scoring", description: "V1 provisional scoring runs (admin-only; raw scores + qc_flags)" },
+      { name: "Reports", description: "Audience-partitioned reports: admin_view (admin-only) + candidate_view (candidate-safe)" },
     ],
     components: {
       securitySchemes: {
@@ -179,6 +183,9 @@ export function buildOpenApiSpec() {
         },
         RunScoringRequest: jsonSchema(RunScoringRequestSchema),
         ScoredResult: jsonSchema(ScoredResultSchema),
+        GenerateReportRequest: jsonSchema(GenerateReportRequestSchema),
+        Report: jsonSchema(ReportSchema),
+        CandidateReport: jsonSchema(CandidateReportResponseSchema),
         Session: {
           type: "object",
           properties: {
@@ -941,6 +948,164 @@ export function buildOpenApiSpec() {
             "403": ERROR_RESPONSES["403"],
             "404": {
               description: "Session not found, or not yet scored.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/reports/generate": {
+        post: {
+          tags: ["Reports"],
+          summary: "Generate a report from a scoring run (admin-only)",
+          description:
+            "Builds admin_view (full detail) + candidate_view (candidate-safe) from a " +
+            "scoring run and persists both, plus section partitioning (visible/blocked/" +
+            "downgraded/hidden) and a report.generated audit event. One report per run " +
+            "(409 on a second attempt). Does NOT generate a PDF or compute Domain 6.",
+          security: [{ cookieAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/GenerateReportRequest" },
+              },
+            },
+          },
+          responses: {
+            "201": {
+              description: "The generated report (admin DTO).",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Report" } } },
+            },
+            "400": ERROR_RESPONSES["400"],
+            "401": ERROR_RESPONSES["401"],
+            "403": ERROR_RESPONSES["403"],
+            "404": {
+              description: "Scoring run not found.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+            "409": {
+              description: "A report already exists for this scoring run.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+            "422": {
+              description: "Session context is incomplete (cannot assemble the report).",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/reports": {
+        get: {
+          tags: ["Reports"],
+          summary: "List reports (admin-only)",
+          description: "Optional ?scoring_run_id / ?blueprint_id filters (ANDed).",
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            { name: "scoring_run_id", in: "query", required: false, schema: { type: "string" } },
+            { name: "blueprint_id", in: "query", required: false, schema: { type: "string" } },
+          ],
+          responses: {
+            "200": {
+              description: "Array of reports (admin DTOs).",
+              content: {
+                "application/json": {
+                  schema: { type: "array", items: { $ref: "#/components/schemas/Report" } },
+                },
+              },
+            },
+            "401": ERROR_RESPONSES["401"],
+            "403": ERROR_RESPONSES["403"],
+          },
+        },
+      },
+      "/api/reports/{reportId}": {
+        get: {
+          tags: ["Reports"],
+          summary: "Get a report (admin-only)",
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            { name: "reportId", in: "path", required: true, schema: { type: "string" }, example: "rpt-001" },
+          ],
+          responses: {
+            "200": {
+              description: "The report (admin DTO).",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Report" } } },
+            },
+            "401": ERROR_RESPONSES["401"],
+            "403": ERROR_RESPONSES["403"],
+            "404": {
+              description: "Report not found.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/reports/by-candidate/{candidateId}": {
+        get: {
+          tags: ["Reports"],
+          summary: "List a candidate's reports (admin-only)",
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            { name: "candidateId", in: "path", required: true, schema: { type: "string" }, example: "cand-002" },
+          ],
+          responses: {
+            "200": {
+              description: "Array of the candidate's reports (admin DTOs).",
+              content: {
+                "application/json": {
+                  schema: { type: "array", items: { $ref: "#/components/schemas/Report" } },
+                },
+              },
+            },
+            "401": ERROR_RESPONSES["401"],
+            "403": ERROR_RESPONSES["403"],
+          },
+        },
+      },
+      "/api/reports/by-scoring-run/{scoringRunId}": {
+        get: {
+          tags: ["Reports"],
+          summary: "Get the report for a scoring run (admin-only)",
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            { name: "scoringRunId", in: "path", required: true, schema: { type: "string" }, example: "score-001" },
+          ],
+          responses: {
+            "200": {
+              description: "The report (admin DTO).",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Report" } } },
+            },
+            "401": ERROR_RESPONSES["401"],
+            "403": ERROR_RESPONSES["403"],
+            "404": {
+              description: "No report for this scoring run.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/me/report": {
+        get: {
+          tags: ["Reports"],
+          summary: "Get my candidate-safe report (candidate-only)",
+          description:
+            "Returns the CALLER'S OWN latest report as candidate_view only — admin_view, " +
+            "qc_flags and governance internals are NEVER included. Candidate-only.",
+          security: [{ cookieAuth: [] }],
+          responses: {
+            "200": {
+              description: "The candidate-safe report.",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/CandidateReport" } },
+              },
+            },
+            "401": ERROR_RESPONSES["401"],
+            "403": {
+              description: "Not a candidate.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+            "404": {
+              description: "No report available for this candidate yet.",
               content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
             },
           },
