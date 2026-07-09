@@ -1,118 +1,91 @@
 # Nexus — Current Phase
 
-**Phase:** Results + Reporting Flow  
-**Status:** COMPLETE ✅  
-**Last updated:** 2026-06-15  
-**Prerequisite:** Phase 1 ✅, Phase 2 ✅ (Agent Wizard), Phase 3–5 scaffolded
+**Phase:** Frontend Integration Foundation
+**Status:** IN PROGRESS
+**Last updated:** 2026-07-09
+**Prerequisite:** Backend build complete (Prisma/Postgres, Auth.js, all 28 API routes, scoring, reports, exports, audit logging — see `PROJECT_STATUS.md`)
 
 ---
 
 ## Objective
 
-Build the complete Results and Reporting Flow for both the Candidate journey and the Admin journey.
+The backend is done and the entire product UI already exists (built in earlier phases
+against mock data — see `IMPLEMENTATION_ROADMAP.md` for that history). This phase migrates
+each page off the client-side mock store and onto the real backend, **one resource at a
+time**, without breaking pages that haven't been migrated yet.
+
+The mechanism (established in the foundation commit and repeated for every migrated page):
+
+1. A typed fetch client per backend resource — `src/lib/api/*-client.ts` (all 7 exist:
+   bank, blueprints, assignments, sessions, scoring, reports, exports).
+2. A page-level data adapter — `src/lib/data/*-data.ts` — that branches on `isApiMode()`
+   and returns a normalized shape whether it hit the API or the mock store.
+3. `NEXT_PUBLIC_DATA_SOURCE` env toggle (`mock` default in `.env.example`; `api` in this
+   environment's `.env`, so the app is live against Neon Postgres right now for migrated
+   pages).
+
+Full page-by-page status lives in **`INTEGRATION_STATUS.md`** — this file tracks the
+narrative of the phase, not the exhaustive table.
 
 ---
 
-## Deliverables — All Complete
+## Completed in this phase (chronological)
 
-### New / Modified Files
-
-| File | Action | Description |
-|---|---|---|
-| `src/lib/mock-data/reports.ts` | Modified | Added `getReportByCandidateId()` helper |
-| `src/app/dashboard/reports/page.tsx` | Modified | Fixed report link to use real report ID via `getReportByCandidateId` |
-| `src/app/dashboard/reports/[id]/page.tsx` | Refactored | Full rewrite using real `Report` + `ScoredResult` types |
-| `src/app/candidate/results/[id]/page.tsx` | Modified | Added Capability Highlights, Coverage Note, Role Fit sections |
-| `src/app/candidate/report/[id]/page.tsx` | Modified | Added Strengths, Learning Recommendations, Role Fit Explanation |
-
----
-
-## Results Flow — Complete Picture
-
-### Assessment Completion → Results
-
-```
-Assessment Complete (/assessment/complete)
-  → View My Results  → /candidate/results/[id]
-  → View My Report   → /candidate/report/[id]
-```
-
-### Admin Reports Flow
-
-```
-Admin Reports List (/dashboard/reports)
-  → Open Report  → /dashboard/reports/[id]  ← rpt-001 for Sam Rivera
-```
-
----
-
-## Candidate Results Page (`/candidate/results/[id]`)
-
-Shows:
-- **Release State** — amber/red/green banner (assessment-level validity)
-- **Domain Scores** — composite per domain with confidence indicator
-- **Dimension Scores** — bars per dimension with caution labels
-- **Capability Highlights** — top 3 visible dimensions by score (Critical Success Factors)
-- **Assessment Coverage Note** — downgraded dimensions explained supportively
-- **Role Fit Analysis** — blocked V1 notice (Phase 2)
-- **Development Suggestions** — from `candidate_view`
-- **CTA** → View Full Report
-
----
-
-## Candidate Report Page (`/candidate/report/[id]`)
-
-Language: developmental, supportive, first-person.
-
-Shows:
-- **Your Strengths** — top 3 behavioral descriptors sorted by score
-- **Your Profile** — domain analysis with all visible dimensions + descriptors
-- **Learning Recommendations** — development suggestions from `candidate_view`
-- **Role Fit** — explanation of what role fit will show (Phase 2)
-- **Coming in a Future Report** — blocked section notices (D5, D6, Percentile)
-- **Back to Results** CTA
-
----
-
-## Admin Report Page (`/dashboard/reports/[id]`)
-
-Language: decision-support, authoritative, data-precise.
-
-Shows:
-- **Release State Banner** — colored by release state + validity state
-- **Report Header** — candidate name, title, level, use case
-- **Sidebar**: Candidate card, Response Quality + QC flags, Blocked sections, Version tags
-- **Confidence Summary** — from `admin_view.confidence_summary`
-- **Critical Success Factors** — from `admin_view.strengths`
-- **Risk Indicators & Watch Points** — from `admin_view.watch_points` (with Disqualifying label on downgraded)
-- **Domain Breakdown** — all 3 scored domains + D5 blocked card, all dimensions with confidence badges
-- **Role Fit Indices** — blocked V1 notice
-- **Hiring Recommendation** — derived from release_state + validity_state
-- **Governance Notes** — from `admin_view.governance_notes`
-- **Footer** — version tags, report ID, generated date
-
----
-
-## Data Alignment
-
-| Concept | Source |
+| Commit | What |
 |---|---|
-| Release State | `ScoredResult.release_state` |
-| Validity State | `ScoredResult.validity_state` |
-| Domain Scores | `ScoredResult.domain_scores` / `AdminReportView.domain_scores` |
-| Critical Success Factors | `AdminReportView.strengths` |
-| Disqualifying Traits | `AdminReportView.watch_points` where dimension is in `downgraded_dimension_ids` |
-| Risk Indicators | `AdminReportView.watch_points` |
-| Governance Notes | `AdminReportView.governance_notes` |
-| Behavioral Descriptors (Candidate) | `CandidateReportView.behavioral_descriptors` |
-| Learning Recommendations | `CandidateReportView.development_suggestions` |
-| Role Fit | Domain 6 — blocked V1, Phase 2 |
-| QC Flags | `ScoredResult.qc_flags` |
-| Blocked Sections | `Report.blocked_sections` |
+| `a0f929b` — Frontend-Integration-Foundation | Built the entire `src/lib/api/` client layer (7 clients + `client.ts`/`config.ts`) and `.env.example` toggle. Nothing wired into a page yet. |
+| `3072c6d` | First two pages migrated: `dashboard/blueprints/page.tsx` + `dashboard/blueprints/[id]/page.tsx` (via new `blueprints-data.ts`), and `dashboard/assessments/page.tsx` (via new `assignments-data.ts`). |
+| `8b10391` | `.env` flipped to `NEXT_PUBLIC_DATA_SOURCE="api"` — the running app started reading live data for the migrated pages. |
+| `d7fb7dc` — **latest completed milestone** | `dashboard/reports/page.tsx` migrated via new `reports-data.ts` (calls `GET /api/reports` + `GET /api/assignments` + `GET /api/blueprints` for KPI cards and lookups). |
 
 ---
 
-## TypeScript Status
+## Next task (logical continuation)
 
-All new and modified files compile with 0 errors.  
-Pre-existing TS error in `assessment/[sessionId]/page.tsx:93` remains (Set iteration) — tracked in Phase 5.
+**Migrate `src/app/dashboard/reports/[id]/page.tsx` (admin report detail).**
+
+Why this is next: it's the direct sibling of the just-migrated reports list, the backend
+endpoint already exists and is unused (`getReport(reportId)` in `reports-client.ts` →
+`GET /api/reports/:reportId`), and the page currently imports `REPORT_1`/`SCORED_RESULT_1`
+straight from `mock-data` with no adapter at all. Follow the `reports-data.ts` pattern: add
+a `loadReportDetail(id)` function (new adapter or extend `reports-data.ts`), branch the page
+on `isApiMode()`, keep the mock path as fallback.
+
+## After that, in priority order
+
+1. **Candidate-facing reporting pages** — `candidate/results/[id]/page.tsx`,
+   `candidate/report/[id]/page.tsx`, `candidate/dashboard/page.tsx`. All three are fully
+   mock; `getMyReport()` (`GET /api/me/report`, candidate-safe) is implemented and unused.
+2. **`dashboard/page.tsx`** (admin home KPIs/analytics) — still reads `mock-data/reports` +
+   `mock-data/scored-results` directly.
+3. **Assignment creation** — `dashboard/assessments/new/page.tsx` and
+   `dashboard/assessments/bulk/page.tsx`. Both read `mock-data/blueprints` for the picker and
+   write only to the in-memory store. `createAssignment()`/`createAssignmentsBulk()` clients
+   exist and are unused.
+4. **`dashboard/candidates/page.tsx` + `[id]/page.tsx`** — currently have *no* adapter at
+   all, not even a partial one; they read `useStore()` directly and the UI literally says
+   "Mock mode: new assignments reset on refresh." No candidates-specific backend endpoint
+   exists yet either — likely needs to be derived from `/api/assignments` the way the
+   reports/assignments pages derive their KPIs.
+5. **Candidate assessment-taking flow** — the largest remaining gap, not really a
+   "migration" so much as a from-scratch build: `assessment/page.tsx`,
+   `assessment/[sessionId]/page.tsx`, and `assessment/complete/page.tsx` are still fully
+   hardcoded prototypes that were never even wired to the mock store. `sessions-client.ts`
+   and `scoring-client.ts` are fully implemented and completely unused. There is also no
+   consent-collection UI anywhere despite `Assignment.consent_confirmed` existing in the
+   schema and API.
+6. **Wire `exports-client.ts`** into `ReportExportButton.tsx`, which currently renders but
+   makes no API call.
+7. **Admin panel** (`/admin`, `/admin/users`, `/admin/settings`) — no data layer of any kind
+   yet; still static/placeholder.
+
+---
+
+## Out of scope for this phase
+
+- Any change to `prisma/schema.prisma` or API route behavior — backend is considered done
+  for V1 provisional scope.
+- The parallel UI/visual redesign stream tracked in `UI_REDESIGN_CHECKPOINT.md` — separate
+  effort, do not conflate.
+- D3/D5 activation, D6 scoring engine, real IRT/GGUM scoring, real PDF export generation —
+  all Phase-2-and-later backend work, not frontend wiring.
