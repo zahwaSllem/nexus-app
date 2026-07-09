@@ -87,3 +87,22 @@ export async function authorizeCandidate(): Promise<CandidateAuthResult> {
 
   return { ok: true, user: session.user, candidate };
 }
+
+/**
+ * Resolve the candidate profile id for a given user (by linked user_id, falling
+ * back to matching candidate_email), or null. Used by endpoints that authorize
+ * BOTH admins and candidates and need the caller's candidate_id for ownership
+ * checks (e.g. report export).
+ */
+export async function resolveCandidateId(user: AdminUser): Promise<string | null> {
+  const candidate = await prisma.candidate.findFirst({
+    where: {
+      OR: [
+        { user_id: user.user_id },
+        { candidate_email: (user.email ?? "").toLowerCase() },
+      ],
+    },
+    select: { candidate_id: true },
+  });
+  return candidate?.candidate_id ?? null;
+}

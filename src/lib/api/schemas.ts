@@ -645,10 +645,10 @@ export const GenerateReportRequestSchema = z.object({
 });
 
 /// GET /api/me/report — the candidate-safe report payload. Deliberately OMITS
-/// admin_view, qc_flags, governance notes and all admin-only internals.
+/// admin_view, qc_flags, governance notes and all admin-only internals. use_case
+/// is also omitted — candidates must not see hiring-context metadata.
 export const CandidateReportResponseSchema = z.object({
   report_id: z.string(),
-  use_case: UseCaseSchema,
   release_state: ReleaseStateSchema,
   candidate_view: CandidateReportViewSchema,
   generated_at: z.string(),
@@ -708,10 +708,16 @@ export const CreatedAssignmentRecordSchema = z.object({
 
 export const ExportStatusResponseSchema = z.object({
   export_id: z.string(),
+  report_id: z.string().optional(),
   status: z.enum(["pending", "ready", "failed"]),
   audience: RoleSchema,
   storage_url: z.string().optional(),
+  checksum: z.string().optional(),
   generated_at: z.string().optional(),
+  // V1: exports are a provisional stub (no real PDF bytes). This flag makes that
+  // explicit on the wire so clients don't treat storage_url as a live download.
+  provisional: z.boolean().optional(),
+  format: z.string().optional(),
 });
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -746,6 +752,7 @@ export type ConsentRequest = z.infer<typeof ConsentRequestSchema>;
 export type ApproveBlueprintRequest = z.infer<typeof ApproveBlueprintRequestSchema>;
 export type CreateContextRequest = z.infer<typeof CreateContextRequestSchema>;
 export type CreateExportRequest = z.infer<typeof CreateExportRequestSchema>;
+export type ExportStatusResponseDTO = z.infer<typeof ExportStatusResponseSchema>;
 export type CreatedAssignmentRecord = z.infer<typeof CreatedAssignmentRecordSchema>;
 
 // ═══════════════════════════════════════════════════════════════════════════════

@@ -285,7 +285,6 @@ export function toReportDTO(row: ReportRow): ReportDTO {
 export function toCandidateReportDTO(row: ReportRow): CandidateReportResponseDTO {
   return CandidateReportResponseSchema.parse({
     report_id: row.report_id,
-    use_case: row.use_case,
     release_state: RELEASE_STATE_TO_WIRE[row.release_state] ?? row.release_state,
     candidate_view: row.candidate_view,
     generated_at: row.generated_at.toISOString(),

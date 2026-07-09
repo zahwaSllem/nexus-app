@@ -34,6 +34,8 @@ import {
   GenerateReportRequestSchema,
   ReportSchema,
   CandidateReportResponseSchema,
+  CreateExportRequestSchema,
+  ExportStatusResponseSchema,
 } from "@/lib/api/schemas";
 
 /** Convert a Zod schema to an OpenAPI-embeddable JSON Schema (drop the $schema key). */
@@ -63,7 +65,7 @@ export function buildOpenApiSpec() {
     openapi: "3.0.3",
     info: {
       title: "Nexus Assessment Platform API",
-      version: "0.7.0",
+      version: "0.8.0",
       description: [
         "Implemented backend surface for the Nexus platform.",
         "",
@@ -75,9 +77,10 @@ export function buildOpenApiSpec() {
         "- Assessment sessions: start/get/questions/answers/submit (Sprint 5), candidate-only",
         "- Scoring: run + read scoring runs (Sprint 6), admin-only (V1 provisional)",
         "- Reports: generate + read admin/candidate views (Sprint 7), audience-partitioned",
+        "- Report exports: create + read (Sprint 8), audience-scoped (V1 provisional stub — no real PDF bytes)",
         "",
         "**Planned / deferred (NOT yet implemented — not listed as operations):**",
-        "Domain 6, PDF export, and the AI Agent. See docs/API_CONTRACT.md for the full contract.",
+        "Domain 6 and the AI Agent. See docs/API_CONTRACT.md for the full contract.",
         "",
         "**Auth:** endpoints marked with a lock require the Auth.js session cookie",
         "(`authjs.session-token`), obtained by logging in via the credentials flow.",
@@ -92,6 +95,7 @@ export function buildOpenApiSpec() {
       { name: "Sessions", description: "Assessment session lifecycle: start/get/questions/answers/submit (candidate-only)" },
       { name: "Scoring", description: "V1 provisional scoring runs (admin-only; raw scores + qc_flags)" },
       { name: "Reports", description: "Audience-partitioned reports: admin_view (admin-only) + candidate_view (candidate-safe)" },
+      { name: "Exports", description: "Report PDF exports (V1 provisional stub) — audience-scoped, permission-enforced" },
     ],
     components: {
       securitySchemes: {
@@ -186,6 +190,8 @@ export function buildOpenApiSpec() {
         GenerateReportRequest: jsonSchema(GenerateReportRequestSchema),
         Report: jsonSchema(ReportSchema),
         CandidateReport: jsonSchema(CandidateReportResponseSchema),
+        CreateExportRequest: jsonSchema(CreateExportRequestSchema),
+        ExportStatus: jsonSchema(ExportStatusResponseSchema),
         Session: {
           type: "object",
           properties: {
@@ -1106,6 +1112,79 @@ export function buildOpenApiSpec() {
             },
             "404": {
               description: "No report available for this candidate yet.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/reports/{reportId}/export": {
+        post: {
+          tags: ["Exports"],
+          summary: "Export a report (admin or candidate)",
+          description:
+            "Creates a V1 PROVISIONAL PDF export (no real bytes — provisional:true). " +
+            "Admin may export either audience; a candidate may export ONLY the candidate " +
+            "audience of THEIR OWN report (audience=admin or another's report → 403). The " +
+            "exported payload is the same JSON the report APIs return, so a candidate " +
+            "export never contains admin_view. Records a report_exports row + a " +
+            "report.exported audit event. Sends no email.",
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            { name: "reportId", in: "path", required: true, schema: { type: "string" }, example: "rpt-001" },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/CreateExportRequest" },
+              },
+            },
+          },
+          responses: {
+            "201": {
+              description: "The export status + provisional reference.",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ExportStatus" } },
+              },
+            },
+            "400": ERROR_RESPONSES["400"],
+            "401": ERROR_RESPONSES["401"],
+            "403": {
+              description: "Candidate requested the admin audience, or a report that isn't theirs.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+            "404": {
+              description: "Report not found.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+          },
+        },
+      },
+      "/api/exports/{exportId}": {
+        get: {
+          tags: ["Exports"],
+          summary: "Get an export's status (admin or candidate)",
+          description:
+            "Admin may read any export; a candidate may read only a candidate-audience " +
+            "export of their own report (else 403).",
+          security: [{ cookieAuth: [] }],
+          parameters: [
+            { name: "exportId", in: "path", required: true, schema: { type: "string" } },
+          ],
+          responses: {
+            "200": {
+              description: "The export status.",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ExportStatus" } },
+              },
+            },
+            "401": ERROR_RESPONSES["401"],
+            "403": {
+              description: "Not permitted to read this export.",
+              content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
+            },
+            "404": {
+              description: "Export not found.",
               content: { "application/json": { schema: { $ref: "#/components/schemas/Error" } } },
             },
           },
