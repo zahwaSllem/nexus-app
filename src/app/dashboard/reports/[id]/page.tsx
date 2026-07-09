@@ -233,7 +233,10 @@ export default function AdminReportDetailPage({ params }: PageProps) {
             </p>
             <p className="mt-1 text-xs text-slate-600">Generated {fmtDate(report.generated_at)}</p>
           </div>
-          <ReportExportButton data={exportData} />
+          <ReportExportButton
+            data={exportData}
+            apiExport={{ reportId: report.report_id, audience: "admin" }}
+          />
         </div>
       </div>
 

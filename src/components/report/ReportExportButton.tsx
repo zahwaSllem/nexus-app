@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { isApiMode } from "@/lib/api/config";
+import { ApiError } from "@/lib/api/client";
+import { createExport } from "@/lib/api/exports-client";
 
 // ─── Export data contract ─────────────────────────────────────────────────────
 // Pages compute a serializable snapshot and hand it to this client component.
@@ -32,6 +35,20 @@ export type ReportExportData = {
   governanceNotes?: string[];
 };
 
+/**
+ * Opt-in, admin-only real export. When provided AND the app is in api mode, the
+ * button first calls POST /api/reports/:reportId/export (audience: "admin") to
+ * create a real, audit-logged export record, then renders the same client-side
+ * print document as before (V1 backend export is a provisional stub — no real
+ * PDF bytes are generated server-side either way). Omit this prop (as the
+ * candidate report page does) to keep the button fully mock/client-only
+ * regardless of data source mode.
+ */
+export type AdminApiExport = {
+  reportId: string;
+  audience: "admin";
+};
+
 // ─── HTML document builder ────────────────────────────────────────────────────
 // Produces a clean, print-optimised standalone document. The browser's
 // "Save as PDF" target in the print dialog turns this into the exported file.
@@ -51,7 +68,12 @@ function scoreBarColor(score: number): string {
   return "#94a3b8";
 }
 
-function buildDocument(data: ReportExportData): string {
+interface DocumentMeta {
+  /** Banner shown at the top of the printable document. */
+  banner: string;
+}
+
+function buildDocument(data: ReportExportData, meta: DocumentMeta): string {
   const domainsHtml = data.domainScores
     .map((d) => {
       const dims = d.dimensions
@@ -141,7 +163,7 @@ function buildDocument(data: ReportExportData): string {
 </style>
 </head>
 <body>
-  <div class="mock-banner">Mock export: final PDF generation will be handled by backend.</div>
+  <div class="mock-banner">${esc(meta.banner)}</div>
 
   <header>
     <p class="eyebrow">${esc(data.reportType)}</p>
@@ -181,15 +203,31 @@ function buildDocument(data: ReportExportData): string {
 </html>`;
 }
 
+const MOCK_BANNER = "Mock export: final PDF generation will be handled by backend.";
+const API_BANNER =
+  "Export recorded (server-side, audit-logged). PDF rendering is still a provisional stub in V1.";
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function ReportExportButton({ data }: { data: ReportExportData }) {
+export function ReportExportButton({
+  data,
+  apiExport,
+}: {
+  data: ReportExportData;
+  apiExport?: AdminApiExport;
+}) {
   const [loading, setLoading] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<{ exportId: string; checksum?: string } | null>(null);
+
+  const useApiExport = Boolean(apiExport) && isApiMode();
 
   function handleExport() {
     if (loading) return;
     setBlocked(false);
+    setError(null);
+    setSuccess(null);
     setLoading(true);
 
     // Open synchronously within the click gesture to avoid popup blocking.
@@ -203,9 +241,28 @@ export function ReportExportButton({ data }: { data: ReportExportData }) {
       "<!doctype html><title>Preparing report…</title><body style='font-family:sans-serif;color:#475569;padding:48px'>Preparing report…</body>",
     );
 
-    // Brief delay simulates generation and surfaces the loading state.
+    if (useApiExport && apiExport) {
+      createExport(apiExport.reportId, { audience: apiExport.audience })
+        .then((status) => {
+          const html = buildDocument(data, { banner: API_BANNER });
+          win.document.open();
+          win.document.write(html);
+          win.document.close();
+          setSuccess({ exportId: status.export_id, checksum: status.checksum });
+        })
+        .catch((err) => {
+          win.close();
+          setError(err instanceof ApiError ? err.message : "Failed to create export record.");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      return;
+    }
+
+    // Mock path — brief delay simulates generation and surfaces the loading state.
     setTimeout(() => {
-      const html = buildDocument(data);
+      const html = buildDocument(data, { banner: MOCK_BANNER });
       win.document.open();
       win.document.write(html);
       win.document.close();
@@ -228,7 +285,7 @@ export function ReportExportButton({ data }: { data: ReportExportData }) {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
             </svg>
-            Generating…
+            {useApiExport ? "Exporting…" : "Generating…"}
           </>
         ) : (
           <>
@@ -241,11 +298,24 @@ export function ReportExportButton({ data }: { data: ReportExportData }) {
         )}
       </button>
       <p className="max-w-[16rem] text-right text-[11px] leading-snug text-slate-400 dark:text-slate-500">
-        Mock export: final PDF generation will be handled by backend.
+        {useApiExport
+          ? "Creates a real, audit-logged export record. PDF rendering is still provisional in V1."
+          : "Mock export: final PDF generation will be handled by backend."}
       </p>
       {blocked && (
         <p className="text-right text-[11px] font-medium text-red-500 dark:text-red-400">
           Pop-up blocked — allow pop-ups for this site, then try again.
+        </p>
+      )}
+      {error && (
+        <p className="max-w-[16rem] text-right text-[11px] font-medium text-red-500 dark:text-red-400">
+          {error}
+        </p>
+      )}
+      {success && (
+        <p className="max-w-[16rem] text-right text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+          Export recorded · {success.exportId.slice(0, 8)}
+          {success.checksum ? `… · checksum ${success.checksum.slice(0, 8)}…` : "…"}
         </p>
       )}
     </div>
