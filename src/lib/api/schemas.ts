@@ -179,6 +179,15 @@ export const BankItemSchema = z.object({
   reverse_scored: z.boolean(),
 });
 
+/// Query filters for GET /api/bank (all optional, ANDed). Enum params reuse the
+/// existing method_family / use_status schemas so invalid values are rejected 400.
+export const BankQuerySchema = z.object({
+  domain_id: z.string().min(1).optional(),
+  dimension_id: z.string().min(1).optional(),
+  method_family: MethodFamilySchema.optional(),
+  use_status: UseStatusSchema.optional(),
+});
+
 /// Candidate-safe projection of a bank item for session delivery. Deliberately
 /// OMITS keyed_answer, reverse_scored, intended_meaning, scoring/governance fields.
 export const SessionItemSchema = z.object({

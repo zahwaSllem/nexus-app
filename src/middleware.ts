@@ -1,25 +1,22 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+// Nexus — route protection middleware (Auth.js v5, Edge runtime)
+// ─────────────────────────────────────────────────────────────────────────────
+// Delegates to the edge-safe `authConfig.authorized` callback, which enforces:
+//   /dashboard/*, /admin/*      → admin only
+//   /candidate/*, /assessment/* → candidate only
+// Unauthenticated users are redirected to /login?redirect=<path>; wrong-role users
+// are redirected to their own home. No Prisma/crypto here (Edge-safe by design).
+// ─────────────────────────────────────────────────────────────────────────────
 
-const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/assessment", "/candidate"];
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const session = request.cookies.get("nexus_session")?.value;
-
-  const isProtected = PROTECTED_PREFIXES.some((prefix) =>
-    pathname.startsWith(prefix)
-  );
-
-  if (isProtected && !session) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return NextResponse.next();
-}
+export default NextAuth(authConfig).auth;
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*", "/assessment/:path*", "/candidate/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/admin/:path*",
+    "/assessment/:path*",
+    "/candidate/:path*",
+  ],
 };

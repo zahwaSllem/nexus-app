@@ -1,15 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 export default function LogoutPage() {
-  const router = useRouter();
-
   useEffect(() => {
-    document.cookie = "nexus_session=; path=/; max-age=0; SameSite=Strict";
-    router.replace("/");
-  }, [router]);
+    // Clears the Auth.js session cookie server-side, then returns home.
+    signOut({ callbackUrl: "/" });
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900">

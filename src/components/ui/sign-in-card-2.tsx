@@ -17,6 +17,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signIn, getSession } from "next-auth/react";
 import {
   motion,
   useMotionValue,
@@ -98,23 +99,36 @@ export function SignInCard() {
     rotateYRaw.set(0);
   }
 
-  // ── Real Nexus authentication (logic preserved verbatim) ────────────────
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  // ── Real Nexus authentication (Auth.js / NextAuth credentials) ──────────
+  // Verifies email + password against the seeded users in the DB (scrypt hash).
+  // The destination follows the AUTHENTICATED user's real role_type from the
+  // session, not the selected UI tab — the DB is the source of truth.
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setIsLoading(true);
 
-    const creds = MOCK_CREDENTIALS[role];
-    if (email === creds.email && password === creds.password) {
-      document.cookie = `nexus_session=${role}; path=/; max-age=86400; SameSite=Strict`;
-      const params = new URLSearchParams(window.location.search);
-      const redirect = params.get("redirect");
-      router.push(redirect ?? (role === "admin" ? "/dashboard/agent" : "/candidate/dashboard"));
-      // Keep the button in its loading state through navigation/unmount.
-    } else {
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    if (!res || res.error) {
       setError(t.login.errorMessage);
       setIsLoading(false);
+      return;
     }
+
+    const session = await getSession();
+    const sessionRole = session?.user?.role_type;
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect");
+    router.push(
+      redirect ??
+        (sessionRole === "admin" ? "/dashboard/agent" : "/candidate/dashboard"),
+    );
+    // Keep the button in its loading state through navigation/unmount.
   }
 
   const ROLES: { value: Role; label: string; hint: string; icon: typeof User }[] = [
