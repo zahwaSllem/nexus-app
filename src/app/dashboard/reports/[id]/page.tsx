@@ -1,8 +1,17 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { ReportExportButton, type ReportExportData } from "@/components/report/ReportExportButton";
-import { REPORT_1 } from "@/lib/mock-data/reports";
-import { SCORED_RESULT_1 } from "@/lib/mock-data/scored-results";
+import { isApiMode } from "@/lib/api/config";
+import { ApiError } from "@/lib/api/client";
+import {
+  loadReportDetail,
+  mockReportDetail,
+  type ReportDetailData,
+} from "@/lib/data/report-detail-data";
 import type {
   DomainScore,
   DimensionScore,
@@ -48,11 +57,93 @@ function fmtDate(iso: string) {
 
 interface PageProps { params: { id: string } }
 
-export default function AdminReportDetailPage({ params: _params }: PageProps) {
-  const report = REPORT_1;
-  const result = SCORED_RESULT_1;
+export default function AdminReportDetailPage({ params }: PageProps) {
+  // Data source: mock renders synchronously (no loading); api fetches GET
+  // /api/reports/:id with loading + error states. See
+  // src/lib/data/report-detail-data.ts. Scoring (validity_state,
+  // completion_ratio, scored_at) is out of scope here — `result` is null in
+  // api mode and the UI falls back gracefully instead of calling /api/scoring.
+  const apiMode = isApiMode();
+  const [data, setData] = useState<ReportDetailData | null>(() =>
+    apiMode ? null : mockReportDetail(params.id),
+  );
+  const [loading, setLoading] = useState(apiMode);
+  const [error, setError] = useState<string | null>(null);
+
+  const reload = useCallback(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    loadReportDetail(params.id)
+      .then((next) => {
+        if (!cancelled) setData(next);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof ApiError ? err.message : "Failed to load report.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (!apiMode) return;
+    const cancel = reload();
+    return cancel;
+  }, [apiMode, reload]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-full items-center justify-center bg-slate-50 p-8 dark:bg-slate-900">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-blue-400" />
+          <p className="text-sm text-slate-400">Loading report…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-full items-center justify-center bg-slate-50 p-8 dark:bg-slate-900">
+        <div className="flex max-w-md flex-col items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/5 px-6 py-10 text-center">
+          <p className="text-sm font-medium text-slate-300">{error}</p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => reload()}
+              className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-slate-600 hover:text-white"
+            >
+              Retry
+            </button>
+            <Link
+              href="/dashboard/reports"
+              className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-slate-600 hover:text-white"
+            >
+              Back to reports
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data || !data.report) notFound();
+
+  const report = data.report;
+  const result = data.result; // null in api mode — scoring integration is a separate task
   const av = report.admin_view;
+  const qcFlags = av.qc_flags;
   const rc = RELEASE_CONFIG[report.release_state] ?? RELEASE_CONFIG["Released with Caution"];
+
+  // ScoredResult-only fields — fall back gracefully when result is unavailable (api mode).
+  const validityLabel = result ? result.validity_state : "—";
+  const completionLabel = result ? `${Math.round(result.completion_ratio * 100)}%` : "—";
+  const scoredDateLabel = result ? fmtDate(result.scored_at) : fmtDate(report.generated_at);
 
   const exportData: ReportExportData = {
     candidateName: av.candidate_name,
@@ -107,7 +198,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
           <div>
             <p className={`text-sm font-semibold ${rc.text}`}>{report.release_state}</p>
             <p className="text-xs text-slate-400">
-              Validity: {result.validity_state} · Scored {fmtDate(result.scored_at)}
+              Validity: {validityLabel} · Scored {scoredDateLabel}
             </p>
           </div>
         </div>
@@ -163,8 +254,8 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
                   ["Title",        av.job_title],
                   ["Level",        av.job_level],
                   ["Organization", av.organization],
-                  ["Completion",   `${Math.round(result.completion_ratio * 100)}%`],
-                  ["Assessed",     fmtDate(result.scored_at)],
+                  ["Completion",   completionLabel],
+                  ["Assessed",     scoredDateLabel],
                 ] as [string, string][]
               ).map(([label, value]) => (
                 <div key={label} className="flex items-start justify-between gap-3">
@@ -184,20 +275,20 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-slate-400">Validity State</span>
                 <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-400">
-                  {result.validity_state}
+                  {validityLabel}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <span className="text-xs text-slate-400">Completion</span>
                 <span className="text-xs font-semibold text-slate-300">
-                  {Math.round(result.completion_ratio * 100)}%
+                  {completionLabel}
                 </span>
               </div>
             </div>
-            {result.qc_flags.length > 0 && (
+            {qcFlags.length > 0 && (
               <div className="mt-4 space-y-2 border-t border-slate-700/60 pt-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-600">QC Flags</p>
-                {result.qc_flags.map((flag: QCFlag) => (
+                {qcFlags.map((flag: QCFlag) => (
                   <div
                     key={flag.flag_code}
                     className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-2.5"
@@ -514,7 +605,7 @@ export default function AdminReportDetailPage({ params: _params }: PageProps) {
             <p className="text-xs leading-relaxed text-amber-300/70">
               Release state is{" "}
               <span className="font-medium text-amber-400">{report.release_state}</span> (validity:{" "}
-              {result.validity_state}). Results may support hiring consideration with the following
+              {validityLabel}). Results may support hiring consideration with the following
               advisories: (1) verify numerical reasoning capacity through technical interview probing
               (D2-NR: 56); (2) treat D4-SA as exploratory only — low confidence, do not use in hiring
               decision; (3) all scores are provisional pending calibration confirmation. Do not use
