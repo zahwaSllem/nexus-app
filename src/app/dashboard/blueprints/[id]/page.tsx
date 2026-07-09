@@ -1,11 +1,18 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBlueprintById } from "@/lib/mock-data/blueprints";
-import { getAssessmentBlueprintByRoleBlueprint } from "@/lib/mock-data/assessment-blueprints";
-import { getBankItemById } from "@/lib/mock-data/question-bank";
 import { BlueprintStatusStepper } from "@/components/agent/BlueprintStatusStepper";
 import { ItemContextCard } from "@/components/agent/ItemContextCard";
-import type { GovernanceSeverity } from "@/lib/types/nexus";
+import type { GovernanceSeverity, BankItem } from "@/lib/types/nexus";
+import { isApiMode } from "@/lib/api/config";
+import { ApiError } from "@/lib/api/client";
+import {
+  loadBlueprintDetail,
+  mockBlueprintDetail,
+  type BlueprintDetailData,
+} from "@/lib/data/blueprints-data";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -88,10 +95,82 @@ interface PageProps {
 }
 
 export default function BlueprintDetailPage({ params }: PageProps) {
-  const bp = getBlueprintById(params.id);
-  if (!bp) notFound();
+  // Data source: mock renders synchronously (no loading); api fetches with
+  // loading + error states. See src/lib/data/blueprints-data.ts.
+  const apiMode = isApiMode();
+  const [data, setData] = useState<BlueprintDetailData | null>(() =>
+    apiMode ? null : mockBlueprintDetail(params.id),
+  );
+  const [loading, setLoading] = useState(apiMode);
+  const [error, setError] = useState<string | null>(null);
 
-  const ab            = getAssessmentBlueprintByRoleBlueprint(bp.blueprint_id);
+  const reload = useCallback(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    loadBlueprintDetail(params.id)
+      .then((next) => {
+        if (!cancelled) setData(next);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof ApiError ? err.message : "Failed to load blueprint.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [params.id]);
+
+  useEffect(() => {
+    if (!apiMode) return;
+    const cancel = reload();
+    return cancel;
+  }, [apiMode, reload]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-full items-center justify-center bg-slate-50 p-8 dark:bg-slate-900">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-blue-400" />
+          <p className="text-sm text-slate-400">Loading blueprint…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-full items-center justify-center bg-slate-50 p-8 dark:bg-slate-900">
+        <div className="flex max-w-md flex-col items-center gap-3 rounded-xl border border-red-500/30 bg-red-500/5 px-6 py-10 text-center">
+          <p className="text-sm font-medium text-slate-300">{error}</p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => reload()}
+              className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-slate-600 hover:text-white"
+            >
+              Retry
+            </button>
+            <Link
+              href="/dashboard/blueprints"
+              className="rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-slate-600 hover:text-white"
+            >
+              Back to library
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data || !data.blueprint) notFound();
+
+  const bp            = data.blueprint;
+  const ab            = data.assessment;
+  const resolveBankItem = data.resolveBankItem;
   const isApproved    = bp.approval_status === "approved" || bp.approval_status === "validated";
   const bqPct         = Math.round(bp.blueprint_quality.composite * 100);
   const bqc           = bqColor(bp.blueprint_quality.composite);
@@ -421,12 +500,12 @@ export default function BlueprintDetailPage({ params }: PageProps) {
                 domain_name: string;
                 dims: Record<string, {
                   dim_name: string;
-                  items: Array<{ ci: typeof ab.contextualized_items[0]; bi: NonNullable<ReturnType<typeof getBankItemById>> }>;
+                  items: Array<{ ci: typeof ab.contextualized_items[0]; bi: BankItem }>;
                 }>;
               }> = {};
 
               for (const ci of ab.contextualized_items) {
-                const bi = getBankItemById(ci.item_id);
+                const bi = resolveBankItem(ci.item_id);
                 if (!bi) continue;
                 if (!groups[bi.domain_id]) {
                   groups[bi.domain_id] = { domain_name: bi.domain_name, dims: {} };

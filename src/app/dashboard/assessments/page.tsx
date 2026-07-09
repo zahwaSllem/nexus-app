@@ -1,15 +1,19 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
 import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
 import { useStore } from "@/lib/providers/store-provider";
-import type { AssessmentAssignment } from "@/lib/types/nexus";
+import type { AssessmentAssignment, RoleBlueprint } from "@/lib/types/nexus";
 import { PageAmbient } from "@/components/layout/PageAmbient";
+import { isApiMode } from "@/lib/api/config";
+import { ApiError } from "@/lib/api/client";
+import { loadAssignmentList, type AssignmentListData } from "@/lib/data/assignments-data";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const blueprintMap = new Map(BLUEPRINTS.map((b) => [b.blueprint_id, b]));
+const mockBlueprintMap = new Map(BLUEPRINTS.map((b) => [b.blueprint_id, b]));
 
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -43,7 +47,47 @@ const DOMAIN_COLORS: Record<string, string> = {
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function AssessmentsPage() {
-  const { assignments } = useStore();
+  // Data source: mock reads the in-memory store (synchronous, includes runtime
+  // creates); api fetches from the backend with loading + error states.
+  const apiMode = isApiMode();
+  const store = useStore();
+
+  const [apiData, setApiData] = useState<AssignmentListData | null>(null);
+  const [loading, setLoading] = useState(apiMode);
+  const [error, setError] = useState<string | null>(null);
+
+  const reload = useCallback(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    loadAssignmentList()
+      .then((d) => {
+        if (!cancelled) setApiData(d);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof ApiError ? err.message : "Failed to load assignments.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!apiMode) return;
+    return reload();
+  }, [apiMode, reload]);
+
+  const assignments: AssessmentAssignment[] = apiMode
+    ? apiData?.assignments ?? []
+    : store.assignments;
+
+  const lookupBlueprint = (id: string): RoleBlueprint | undefined =>
+    apiMode ? apiData?.blueprintsById[id] : mockBlueprintMap.get(id);
+
   const total     = assignments.length;
   const pending   = assignments.filter((a) => a.status === "not_started" || a.status === "in_progress").length;
   const completed = assignments.filter((a) => a.status === "completed").length;
@@ -152,6 +196,28 @@ export default function AssessmentsPage() {
         </div>
 
         {/* Table */}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-slate-800/60 bg-slate-800/30 py-16 text-center">
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-indigo-400" />
+            <p className="text-sm font-medium text-slate-400">Loading assignments…</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-red-500/30 bg-red-500/5 py-16 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 text-red-400">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-sm font-medium text-slate-300">{error}</p>
+            <button
+              type="button"
+              onClick={() => reload()}
+              className="mt-3 rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-slate-600 hover:text-white"
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
         <div className="animate-scale-in overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800/60 dark:bg-slate-800/40">
           {/* Table toolbar */}
           <div className="border-b border-slate-800/80 bg-slate-800/60 px-5 py-3">
@@ -176,7 +242,7 @@ export default function AssessmentsPage() {
               </thead>
               <tbody className="divide-y divide-slate-800/50">
                 {assignments.map((a) => {
-                  const blueprint = blueprintMap.get(a.blueprint_id);
+                  const blueprint = lookupBlueprint(a.blueprint_id);
                   const statusCfg = STATUS_BADGE[a.status];
 
                   return (
@@ -266,10 +332,13 @@ export default function AssessmentsPage() {
 
           <div className="border-t border-slate-800/60 bg-slate-800/30 px-5 py-3">
             <p className="text-xs text-slate-600">
-              Mock mode · New assignments reset on refresh
+              {apiMode
+                ? "Live data · loaded from the backend API"
+                : "Mock mode · New assignments reset on refresh"}
             </p>
           </div>
         </div>
+        )}
 
       </div>
     </div>

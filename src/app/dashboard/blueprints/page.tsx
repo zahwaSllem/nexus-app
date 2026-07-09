@@ -1,11 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { BLUEPRINTS } from "@/lib/mock-data/blueprints";
-import { getAssessmentBlueprintByRoleBlueprint } from "@/lib/mock-data/assessment-blueprints";
-import type { RoleBlueprint, BlueprintApprovalStatus } from "@/lib/types/nexus";
+import type { RoleBlueprint, AssessmentBlueprint, BlueprintApprovalStatus } from "@/lib/types/nexus";
 import { PageAmbient } from "@/components/layout/PageAmbient";
+import { isApiMode } from "@/lib/api/config";
+import { ApiError } from "@/lib/api/client";
+import {
+  loadBlueprintList,
+  mockBlueprintList,
+  type BlueprintListData,
+} from "@/lib/data/blueprints-data";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -49,8 +54,7 @@ function bqTextColor(score: number): string {
 
 // ─── Blueprint card ────────────────────────────────────────────────────────────
 
-function BlueprintCard({ bp }: { bp: RoleBlueprint }) {
-  const ab         = getAssessmentBlueprintByRoleBlueprint(bp.blueprint_id);
+function BlueprintCard({ bp, ab }: { bp: RoleBlueprint; ab: AssessmentBlueprint | null }) {
   const status     = STATUS_CONFIG[bp.approval_status];
   const bqPct      = Math.round(bp.blueprint_quality.composite * 100);
   const ringColor  = bqRingColor(bp.blueprint_quality.composite);
@@ -180,8 +184,45 @@ export default function BlueprintsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterStatus>("all");
 
+  // Data source: mock renders synchronously (no loading); api fetches with
+  // loading + error states. See src/lib/data/blueprints-data.ts.
+  const apiMode = isApiMode();
+  const [data, setData] = useState<BlueprintListData>(() =>
+    apiMode ? { blueprints: [], assessments: {} } : mockBlueprintList(),
+  );
+  const [loading, setLoading] = useState(apiMode);
+  const [error, setError] = useState<string | null>(null);
+
+  const reload = useCallback(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    loadBlueprintList()
+      .then((next) => {
+        if (!cancelled) setData(next);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err instanceof ApiError ? err.message : "Failed to load blueprints.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!apiMode) return;
+    const cancel = reload();
+    return cancel;
+  }, [apiMode, reload]);
+
+  const blueprints = data.blueprints;
+
   const filtered = useMemo(() => {
-    return BLUEPRINTS.filter((bp) => {
+    return blueprints.filter((bp) => {
       const matchSearch =
         search.trim() === "" ||
         bp.role_context.role_title.toLowerCase().includes(search.toLowerCase()) ||
@@ -189,10 +230,10 @@ export default function BlueprintsPage() {
       const matchFilter = filter === "all" || bp.approval_status === filter;
       return matchSearch && matchFilter;
     });
-  }, [search, filter]);
+  }, [blueprints, search, filter]);
 
-  const totalApproved = BLUEPRINTS.filter((b) => b.approval_status === "approved" || b.approval_status === "validated").length;
-  const totalDraft    = BLUEPRINTS.filter((b) => b.approval_status === "draft").length;
+  const totalApproved = blueprints.filter((b) => b.approval_status === "approved" || b.approval_status === "validated").length;
+  const totalDraft    = blueprints.filter((b) => b.approval_status === "draft").length;
 
   return (
     <div className="relative min-h-full bg-slate-50 dark:bg-slate-900">
@@ -236,7 +277,7 @@ export default function BlueprintsPage() {
           {[
             {
               label: "Total Blueprints",
-              value: BLUEPRINTS.length,
+              value: blueprints.length,
               valueColor: "text-white",
               accent: "from-slate-500 to-slate-600",
               iconBg: "bg-slate-700/60",
@@ -321,7 +362,28 @@ export default function BlueprintsPage() {
         </div>
 
         {/* Blueprint cards grid */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-slate-800/60 bg-slate-800/30 py-16 text-center">
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-indigo-400" />
+            <p className="text-sm font-medium text-slate-400">Loading blueprints…</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-red-500/30 bg-red-500/5 py-16 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10">
+              <svg viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 text-red-400">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-sm font-medium text-slate-300">{error}</p>
+            <button
+              type="button"
+              onClick={() => reload()}
+              className="mt-3 rounded-lg border border-slate-700/60 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-slate-600 hover:text-white"
+            >
+              Retry
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="animate-scale-in flex flex-col items-center justify-center rounded-xl border border-slate-800/60 bg-slate-800/30 py-16 text-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-slate-700/60 bg-slate-800">
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 text-slate-600">
@@ -340,7 +402,7 @@ export default function BlueprintsPage() {
         ) : (
           <div className="grid gap-5 sm:grid-cols-2">
             {filtered.map((bp) => (
-              <BlueprintCard key={bp.blueprint_id} bp={bp} />
+              <BlueprintCard key={bp.blueprint_id} bp={bp} ab={data.assessments[bp.blueprint_id] ?? null} />
             ))}
           </div>
         )}
